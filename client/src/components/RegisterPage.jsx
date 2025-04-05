@@ -1,134 +1,142 @@
 import React, { useState } from "react";
+import {
+  Container,
+  TextField,
+  Button,
+  CircularProgress,
+  Snackbar,
+  Typography,
+  Box,
+  FormControlLabel,
+  Checkbox,
+} from "@mui/material";
 import { useNavigate } from "react-router-dom";
 
+import { ROLES } from "../constants";
 import { registerUser } from "../services/user-service";
 
 const Register = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [role, setRole] = useState(1);
+  const [role, setRole] = useState(ROLES.NORMAL_USER);
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [openSnackbar, setOpenSnackbar] = useState(false);
 
-  const handleSubmit = async (e) => {
+  const handleRoleChange = (event) => {
+    setRole(event.target.name);
+  };
+
+  const handleRegister = async (e) => {
     e.preventDefault();
-
     setLoading(true);
-    setErrorMessage("");
-
     try {
-      await registerUser(email, password, role);
-      navigate("/home");
-    } catch (err) {
-      setErrorMessage(
-        "Error: " + (err.response?.data?.message || "Something went wrong")
-      );
-    } finally {
+      const response = await registerUser({ email, password, role });
+
+      // Save token to local storage
+      localStorage.setItem("access_token", response.data.access_token);
+
       setLoading(false);
+      setOpenSnackbar(true);
+
+      navigate("/home");
+    } catch (error) {
+      setLoading(false);
+      if (error.response && error.response.status === 400) {
+        setErrorMessage(error.response.data.message);
+      } else {
+        setErrorMessage("An error occurred, please try again later.");
+      }
+      setOpenSnackbar(true);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="bg-white p-8 rounded-lg shadow-lg w-80">
-        <h2 className="text-2xl font-bold text-center mb-6">Create Account</h2>
-
-        {errorMessage && (
-          <div className="text-red-500 text-center mb-4">{errorMessage}</div>
-        )}
-
-        <form onSubmit={handleSubmit}>
-          <div className="mb-4">
-            <label
-              className="block text-sm font-medium text-gray-700"
-              htmlFor="email"
-            >
-              Email
-            </label>
-            <input
-              type="email"
-              id="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
-              required
-            />
-          </div>
-
-          <div className="mb-4">
-            <label
-              className="block text-sm font-medium text-gray-700"
-              htmlFor="password"
-            >
-              Password
-            </label>
-            <input
-              type="password"
-              id="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
-              required
-            />
-          </div>
-
-          <div className="mb-4">
-            <label
-              className="block text-sm font-medium text-gray-700"
-              htmlFor="role"
-            >
-              Role
-            </label>
-            <select
-              id="role"
-              value={role}
-              onChange={(e) => setRole(Number(e.target.value))}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
-            >
-              <option value={0}>Admin</option>
-              <option value={1}>User</option>
-              <option value={2}>Premium User</option>
-            </select>
-          </div>
-
-          <button
-            type="submit"
-            className={`w-full py-2 bg-blue-600 text-white font-semibold rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-              loading ? "opacity-50 cursor-not-allowed" : ""
-            }`}
-            disabled={loading}
-          >
-            {loading ? "Registering..." : "Create Account"}
-          </button>
-
-          {loading && (
-            <div className="flex justify-center mt-4">
-              <svg
-                className="w-6 h-6 text-blue-600 animate-spin"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <circle
-                  className="opacity-25"
-                  cx="12"
-                  cy="12"
-                  r="10"
-                  strokeWidth="4"
-                ></circle>
-                <path
-                  className="opacity-75"
-                  fill="currentColor"
-                  d="M4 12a8 8 0 1116 0A8 8 0 014 12z"
-                ></path>
-              </svg>
-            </div>
-          )}
-        </form>
-      </div>
-    </div>
+    <Container className="register-container">
+      <Typography variant="h4" sx={{ marginBottom: 3 }}>
+        Register
+      </Typography>
+      <form onSubmit={handleRegister}>
+        <TextField
+          label="Email"
+          variant="outlined"
+          fullWidth
+          required
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          sx={{ marginBottom: 1 }}
+        />
+        <TextField
+          label="Password"
+          variant="outlined"
+          type="password"
+          fullWidth
+          required
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          sx={{ marginBottom: 1 }}
+        />
+        <Box sx={{ marginBottom: 3 }}>
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={role === ROLES.NORMAL_USER}
+                onChange={handleRoleChange}
+                name={ROLES.NORMAL_USER}
+                color="primary"
+              />
+            }
+            label="Normal User"
+          />
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={role === ROLES.PREMIUM_USER}
+                onChange={handleRoleChange}
+                name={ROLES.PREMIUM_USER}
+                color="primary"
+              />
+            }
+            label="Premium User"
+          />
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={role === ROLES.ADMIN}
+                onChange={handleRoleChange}
+                name={ROLES.ADMIN}
+                color="primary"
+              />
+            }
+            label="Admin"
+          />
+        </Box>
+        <Button
+          type="submit"
+          variant="contained"
+          color="primary"
+          fullWidth
+          disabled={loading}
+        >
+          {loading ? <CircularProgress size={24} /> : "Register"}
+        </Button>
+      </form>
+      <Button
+        variant="contained"
+        color="primary"
+        onClick={() => navigate("/login")}
+        sx={{ position: "absolute", top: 16, right: 16 }}
+      >
+        Login
+      </Button>
+      <Snackbar
+        open={openSnackbar}
+        autoHideDuration={6000}
+        onClose={() => setOpenSnackbar(false)}
+        message={errorMessage}
+      />
+    </Container>
   );
 };
 

@@ -37,15 +37,6 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-#### Or Set up a Conda environment
-
-```bash
-cd server
-
-conda env create -f environment.yml
-conda activate matapp
-```
-
 ### Install client's dependencies:
 
 ```bash

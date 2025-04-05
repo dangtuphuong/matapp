@@ -5,6 +5,7 @@ import "./App.css";
 import Register from "./components/RegisterPage";
 import Login from "./components/LoginPage";
 import Home from "./components/HomePage";
+import Landing from "./components/LandingPage";
 
 function App() {
   return (
@@ -13,7 +14,7 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
         <Route path="/home" element={<Home />} />
-        <Route exact path="/" element={<Login />} />
+        <Route exact path="/" element={<Landing />} />
       </Routes>
     </Router>
   );

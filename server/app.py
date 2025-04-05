@@ -7,10 +7,11 @@ from flask_jwt_extended import (
     get_jwt_identity,
 )
 from flask_cors import CORS
-import bcrypt
+from flask_bcrypt import Bcrypt
 import os
 
 app = Flask(__name__)
+bcrypt = Bcrypt(app)
 
 # Enable CORS for all routes
 CORS(app)
@@ -18,6 +19,7 @@ CORS(app)
 # MongoDB URI from the .env file (Make sure to have MongoDB running locally or use a MongoDB cloud URI)
 app.config["MONGO_URI"] = os.getenv("MONGO_URI", "mongodb://localhost:27017/matdb")
 app.config["JWT_SECRET_KEY"] = os.getenv("JWT_SECRET_KEY")
+app.config["JWT_TOKEN_LOCATION"] = ["headers"]
 
 # Initialize Flask-PyMongo and JWT
 mongo = PyMongo(app)
@@ -26,15 +28,15 @@ jwt = JWTManager(app)
 
 # Helper to hash passwords
 def hash_password(password):
-    return bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt())
+    return bcrypt.generate_password_hash(password).decode("utf-8")
 
 
 # Helper to check password
 def check_password(stored_password, input_password):
-    return bcrypt.checkpw(input_password.encode("utf-8"), stored_password)
+    return bcrypt.check_password_hash(stored_password, input_password)
 
 
-@app.route("/register", methods=["POST"])
+@app.route("/api/register", methods=["POST"])
 def register():
     # Get user data from the request
     email = request.json.get("email")
@@ -53,10 +55,19 @@ def register():
         {"email": email, "password": hashed_password, "role": role}
     )
 
-    return jsonify({"message": "User created successfully!"}), 201
+    # Generate JWT token
+    access_token = create_access_token(identity=email)
+
+    # Return the access token
+    return (
+        jsonify(
+            {"message": "User created successfully!", "access_token": access_token}
+        ),
+        201,
+    )
 
 
-@app.route("/login", methods=["POST"])
+@app.route("/api/login", methods=["POST"])
 def login():
     email = request.json.get("email")
     password = request.json.get("password")
@@ -72,7 +83,7 @@ def login():
     return jsonify(access_token=access_token), 200
 
 
-@app.route("/profile", methods=["GET"])
+@app.route("/api/profile", methods=["GET"])
 @jwt_required()
 def profile():
     current_user = get_jwt_identity()

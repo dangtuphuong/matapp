@@ -1,16 +1,36 @@
 import React from "react";
+import { Container, Typography, Button } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 
-const Home = () => {
+const HomePage = () => {
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    // Clear the local storage token
+    localStorage.removeItem("access_token");
+
+    // Redirect to the login page
+    navigate("/login");
+  };
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="bg-white p-8 rounded-lg shadow-lg w-80">
-        <h2 className="text-2xl font-bold text-center mb-6">
-          MatApp Home Page
-        </h2>
-        <p className="text-center">You are logged in successfully!</p>
-      </div>
-    </div>
+    <Container>
+      <Typography variant="h4" sx={{ marginBottom: 3 }}>
+        MatApp Home Page
+      </Typography>
+      <Typography variant="body1" sx={{ marginBottom: 3 }}>
+        You are logged in successfully!
+      </Typography>
+      <Button
+        variant="contained"
+        color="primary"
+        onClick={handleLogout}
+        sx={{ position: "absolute", top: 16, right: 16 }}
+      >
+        Logout
+      </Button>
+    </Container>
   );
 };
 
-export default Home;
+export default HomePage;
