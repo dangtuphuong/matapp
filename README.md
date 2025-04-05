@@ -15,7 +15,15 @@ git clone https://github.com/dangtuphuong/matapp.git
 cd matapp
 ```
 
-### Set Up a Virtual Environment and Install Dependencies:
+### Client: Install Dependencies:
+
+```bash
+cd client
+
+npm install
+```
+
+### Server: Set Up a Virtual Environment and Install Dependencies:
 
 #### For Windows:
 
@@ -37,13 +45,10 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-### Install client's dependencies:
+### Database: Setup
 
-```bash
-cd client
-
-npm install
-```
+Make sure the MongoDB service is running locally
+Create a database named `matdb`
 
 ## Running the Application
 
