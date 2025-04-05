@@ -18,7 +18,7 @@ CORS(app)
 
 # MongoDB URI from the .env file (Make sure to have MongoDB running locally or use a MongoDB cloud URI)
 app.config["MONGO_URI"] = os.getenv("MONGO_URI", "mongodb://localhost:27017/matdb")
-app.config["JWT_SECRET_KEY"] = os.getenv("JWT_SECRET_KEY")
+app.config["JWT_SECRET_KEY"] = os.getenv("JWT_SECRET_KEY", "jwt_dummy_secret_key")
 app.config["JWT_TOKEN_LOCATION"] = ["headers"]
 
 # Initialize Flask-PyMongo and JWT

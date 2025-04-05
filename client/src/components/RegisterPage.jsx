@@ -24,8 +24,9 @@ const Register = () => {
   const [errorMessage, setErrorMessage] = useState("");
   const [openSnackbar, setOpenSnackbar] = useState(false);
 
-  const handleRoleChange = (event) => {
-    setRole(event.target.name);
+  const handleRoleChange = (e) => {
+    e.preventDefault();
+    setRole(Number(e?.target?.name));
   };
 
   const handleRegister = async (e) => {
