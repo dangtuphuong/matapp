@@ -1,0 +1,12 @@
+name: matapp
+channels:
+  - defaults
+  - conda-forge
+dependencies:
+  - python
+  - python-dotenv
+  - Flask
+  - Flask-Cors
+  - Flask-PyMongo
+  - Flask-JWT-Extended
+  - bcrypt
