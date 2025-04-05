@@ -3,28 +3,21 @@
 #### Tech Stack
 
 - **Frontend**: React
-- **Backend**: Python
+- **Backend**: Python + Flask
 - **AI/ML**: TBA
 
 ## Installation
 
-### Clone the project repository:
+### Clone the project repository
 
 ```bash
 git clone https://github.com/dangtuphuong/matapp.git
 cd matapp
 ```
 
-### Set up a Conda environment and install dependencies:
+### Set Up a Virtual Environment and Install Dependencies:
 
-```bash
-cd server
-
-conda env create -f environment.yml
-conda activate matapp
-```
-
-### Or Set Up a Virtual Environment and Install Dependencies for Windows:
+#### For Windows:
 
 ```bash
 cd server
@@ -34,7 +27,7 @@ venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
-### Or Set Up a Virtual Environment and Install Dependencies for Mac:
+#### For Mac:
 
 ```bash
 cd server
@@ -42,6 +35,15 @@ cd server
 python -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
+```
+
+#### Or Set up a Conda environment
+
+```bash
+cd server
+
+conda env create -f environment.yml
+conda activate matapp
 ```
 
 ### Install client's dependencies:
