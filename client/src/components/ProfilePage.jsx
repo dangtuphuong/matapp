@@ -4,15 +4,21 @@ import {
   Container,
   Typography,
   Box,
-  IconButton,
   Button,
   Paper,
   Avatar,
 } from "@mui/material";
-import { AccountCircle } from "@mui/icons-material";
+import { AccountCircle, Download, Group } from "@mui/icons-material";
 import { getUserProfile } from "../services/user-service";
 import { useNavigate } from "react-router-dom";
 import "./styles/Profile.css";
+import { ROLES } from "../constants";
+
+const roleLabelMap = {
+  0: "Admin",
+  1: "Normal User",
+  2: "Premium User",
+};
 
 const ProfilePage = () => {
   const [profile, setProfile] = useState(null);
@@ -33,12 +39,51 @@ const ProfilePage = () => {
       });
   }, [navigate]);
 
+  const renderRoleButtons = (role) => {
+    switch (role) {
+      case ROLES.NORMAL_USER: // 1
+        return (
+          <Button
+            variant="contained"
+            color="secondary"
+            className="go-premium-button"
+            size="large"
+          >
+            Go Premium
+          </Button>
+        );
+      case ROLES.PREMIUM_USER: // 2
+        return (
+          <Button variant="outlined" startIcon={<Download />}>
+            Export Data
+          </Button>
+        );
+      case ROLES.ADMIN: // 0
+        return (
+          <>
+            <Button
+              variant="outlined"
+              startIcon={<Group />}
+              onClick={() => navigate("/edit-users")}
+            >
+              Edit Users
+            </Button>
+
+            <Button variant="outlined" startIcon={<Download />}>
+              Export Data
+            </Button>
+          </>
+        );
+      default:
+        return null;
+    }
+  };
+
   return (
     <>
       <NavbarPrivate username={profile?.firstName || "User"} />
 
       <Container className="profile-container">
-        {/* Profile Card */}
         <Paper elevation={2} className="profile-card">
           <Avatar className="profile-avatar">
             <AccountCircle sx={{ fontSize: 80 }} />
@@ -46,16 +91,31 @@ const ProfilePage = () => {
           <Typography variant="h6" className="profile-name">
             {profile?.firstName || "John Smith"}
           </Typography>
-          <Typography variant="body2" className="profile-email">
-            {profile?.email || "johnsmith@email.com"}
-          </Typography>
+
+          <Box className="profile-info-box">
+            <Typography variant="body1">
+              <strong>Full Name:</strong> {profile?.firstName}{" "}
+              {profile?.lastName}
+            </Typography>
+            <Typography variant="body1">
+              <strong>Email:</strong> {profile?.email}
+            </Typography>
+            <Typography variant="body1">
+              <strong>Gender:</strong> {profile?.gender}
+            </Typography>
+            <Typography variant="body1">
+              <strong>Date of Birth:</strong> {profile?.dateOfBirth}
+            </Typography>
+            <Typography variant="body1">
+              <strong>Role:</strong> {roleLabelMap[profile?.role] || "Unknown"}
+            </Typography>
+          </Box>
+
           <Box className="profile-buttons">
-            <Button variant="contained">Edit Profile</Button>
-            <Button variant="outlined">Account Settings</Button>
+            {renderRoleButtons(profile?.role)}
           </Box>
         </Paper>
 
-        {/* Stats Section */}
         <Box className="profile-stats-section">
           <Typography variant="h6" className="profile-stats-title">
             My Stats

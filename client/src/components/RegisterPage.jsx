@@ -6,12 +6,11 @@ import {
   Snackbar,
   Typography,
   Box,
-  FormControlLabel,
-  Checkbox,
   FormControl,
   FormLabel,
   RadioGroup,
   Radio,
+  FormControlLabel,
   InputAdornment,
   IconButton,
 } from "@mui/material";
@@ -21,7 +20,7 @@ import { useNavigate } from "react-router-dom";
 import { ROLES } from "../constants";
 import { registerUser } from "../services/user-service";
 import logo from "../img/onlylogo.png";
-import NavbarPublic from "./NavbarPublic"; // ✅ using public navbar
+import NavbarPublic from "./NavbarPublic";
 import "./styles/Register.css";
 
 const Register = () => {
@@ -32,18 +31,13 @@ const Register = () => {
   const [gender, setGender] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState(""); // ✅ new
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [role, setRole] = useState(ROLES.NORMAL_USER);
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false); // ✅ new
-
-  const handleRoleChange = (e) => {
-    e.preventDefault();
-    setRole(Number(e?.target?.name));
-  };
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const handleRegister = async (e) => {
     e.preventDefault();
@@ -53,6 +47,12 @@ const Register = () => {
 
     if (birthDate > currentDate) {
       setErrorMessage("Invalid Date of Birth");
+      setOpenSnackbar(true);
+      return;
+    }
+
+    if (!gender) {
+      setErrorMessage("Please select a gender");
       setOpenSnackbar(true);
       return;
     }
@@ -85,7 +85,6 @@ const Register = () => {
       });
       localStorage.setItem("access_token", response.data.access_token);
       setLoading(false);
-      setOpenSnackbar(true);
       navigate("/home");
     } catch (error) {
       setLoading(false);
@@ -135,21 +134,21 @@ const Register = () => {
               type="email"
               fullWidth
               required
-              autoComplete="off"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               className="register-form-control"
+              autoComplete="off"
             />
             <TextField
               label="Password"
               variant="outlined"
+              type={showPassword ? "text" : "password"}
               fullWidth
               required
-              type={showPassword ? "text" : "password"}
-              autoComplete="new-password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className="register-form-control"
+              autoComplete="new-password"
               InputProps={{
                 endAdornment: (
                   <InputAdornment position="end">
@@ -165,9 +164,9 @@ const Register = () => {
             <TextField
               label="Confirm Password"
               variant="outlined"
+              type={showConfirmPassword ? "text" : "password"}
               fullWidth
               required
-              type={showConfirmPassword ? "text" : "password"}
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               className="register-form-control"
@@ -185,14 +184,14 @@ const Register = () => {
             />
             <TextField
               label="Date of Birth"
-              variant="outlined"
               type="date"
-              InputLabelProps={{ shrink: true }}
+              variant="outlined"
               fullWidth
               required
               value={dateOfBirth}
               onChange={(e) => setDateOfBirth(e.target.value)}
               className="register-form-control"
+              InputLabelProps={{ shrink: true }}
             />
             <FormControl component="fieldset" className="register-form-control">
               <FormLabel component="legend">Gender</FormLabel>
@@ -218,46 +217,37 @@ const Register = () => {
                 />
               </RadioGroup>
             </FormControl>
-            <Box className="register-role-box">
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    checked={role === ROLES.NORMAL_USER}
-                    onChange={handleRoleChange}
-                    name={ROLES.NORMAL_USER}
-                    color="primary"
-                  />
-                }
-                label="Normal User"
-              />
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    checked={role === ROLES.PREMIUM_USER}
-                    onChange={handleRoleChange}
-                    name={ROLES.PREMIUM_USER}
-                    color="primary"
-                  />
-                }
-                label="Premium User"
-              />
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    checked={role === ROLES.ADMIN}
-                    onChange={handleRoleChange}
-                    name={ROLES.ADMIN}
-                    color="primary"
-                  />
-                }
-                label="Admin"
-              />
-            </Box>
+
+            <FormControl component="fieldset" className="register-form-control">
+              <FormLabel component="legend">User Role</FormLabel>
+              <RadioGroup
+                row
+                value={String(role)}
+                onChange={(e) => setRole(Number(e.target.value))}
+              >
+                <FormControlLabel
+                  value={String(ROLES.NORMAL_USER)}
+                  control={<Radio />}
+                  label="Normal User"
+                />
+                <FormControlLabel
+                  value={String(ROLES.PREMIUM_USER)}
+                  control={<Radio />}
+                  label="Premium User"
+                />
+                <FormControlLabel
+                  value={String(ROLES.ADMIN)}
+                  control={<Radio />}
+                  label="Admin"
+                />
+              </RadioGroup>
+            </FormControl>
+
             <Button
               type="submit"
               variant="contained"
-              color="primary"
               fullWidth
+              color="primary"
               disabled={loading}
               className="register-button"
             >

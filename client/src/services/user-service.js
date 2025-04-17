@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_URL = "/api"; // Leave this as-is; works with proxy setup during development
+const API_URL = "/api";
 
 // Register user
 export const registerUser = async ({
@@ -29,7 +29,7 @@ export const loginUser = async ({ email, password }) =>
     password,
   });
 
-// ✅ New: Get profile
+// Get current user profile
 export const getUserProfile = async (token) =>
   await axios
     .get(`${API_URL}/profile`, {
@@ -38,3 +38,41 @@ export const getUserProfile = async (token) =>
       },
     })
     .then((res) => res.data);
+
+// ✅ Get all users (admin only)
+export const getAllUsers = async (token) =>
+  await axios
+    .get(`${API_URL}/users`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+    .then((res) => res.data);
+
+// ✅ Update user info (admin only)
+export const updateUserInfo = async (token, email, updatedData) =>
+  await axios.put(`${API_URL}/users/${email}`, updatedData, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+// ✅ Reset user password (admin only)
+export const resetUserPassword = async (token, email, newPassword) =>
+  await axios.put(
+    `${API_URL}/users/${email}/password`,
+    { newPassword },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+
+// ✅ Delete a user (admin only)
+export const deleteUser = async (token, email) =>
+  await axios.delete(`${API_URL}/users/${email}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
