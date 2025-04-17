@@ -25,8 +25,8 @@ const Register = () => {
   const [openSnackbar, setOpenSnackbar] = useState(false);
 
   const handleRoleChange = (e) => {
-    e.preventDefault();
-    setRole(Number(e?.target?.name));
+    e?.preventDefault();
+    setRole(e?.target?.name);
   };
 
   const handleRegister = async (e) => {
