@@ -1,0 +1,140 @@
+/* login.css */
+#root {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  font-family: sans-serif;
+}
+
+.login-page {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* Left Side */
+.login-left {
+  flex: 2; /* take 2/3 of the space */
+  background-color: #f8f8f8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.login-right {
+  flex: 1; /* take 1/3 of the space */
+  min-width: 320px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  background-color: #fefefe;
+}
+
+.login-left img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Paper container for login form */
+.paper-container {
+  width: 100%;
+  max-width: 500px;
+  padding: 32px;
+}
+
+/* Login header style: Logo and title */
+.login-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+/* Style for logo image */
+.login-logo {
+  width: 150px;
+  height: 150px;
+}
+
+/* Title and subtitle */
+.login-title {
+  color: #030000;
+  font-weight: bold;
+  margin: 0;
+}
+
+.login-subtitle {
+  color: #000000;
+  margin-bottom: 36px;
+  font-weight: bold;
+}
+
+/* Form styling with increased gap between child elements */
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+/* Add extra spacing for each TextField */
+.login-textfield {
+  margin-bottom: 16px;
+}
+
+/* Custom login button styling with !important to override MUI defaults */
+.login-button {
+  background-color: #000000 !important;
+  color: #fff !important;
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
+  font-weight: 600;
+}
+
+.login-button:hover {
+  background-color: #5e5e5e !important;
+}
+
+/* Register button styling */
+.register-button {
+  margin-top: 0 !important;
+  color: #fff !important;
+  background-color: #000000 !important;
+}
+
+.register-button:hover {
+  background-color: #5e5e5e !important;
+}
+
+/* RESPONSIVE DESIGN */
+@media (max-width: 1024px) {
+  .login-page {
+    flex-direction: column;
+  }
+
+  .login-left {
+    width: 100%;
+    height: 40vh;
+    max-width: none;
+  }
+
+  .login-right {
+    width: 100%;
+    padding: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .login-logo {
+    width: 100px;
+    height: 100px;
+  }
+
+  .paper-container {
+    padding: 16px;
+  }
+}

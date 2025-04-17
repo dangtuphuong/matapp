@@ -1,0 +1,131 @@
+.register-container {
+  background-color: #f5f5f5;
+  min-height: 100vh;
+  width: 100vw;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  box-sizing: border-box;
+  gap: 32px; /* spacing between logo section and box */
+}
+
+.register-logo-section {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.register-logo-image {
+  height: 50px;
+  width: auto;
+}
+
+.register-title {
+  color: #000000;
+  /* font-weight: bold; */
+  text-align: center;
+  font-size: 2.5rem;
+}
+
+.register-box {
+  background-color: #fff;
+  color: #000;
+  border-radius: 16px;
+  width: 100%;
+  max-width: 450px;
+  padding: 32px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 20px; /* gap between elements inside the form box */
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px; /* 👈 vertical spacing between fields */
+}
+
+.register-form-control {
+  width: 100%;
+}
+
+.register-role-box {
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.register-button {
+  margin-bottom: 8px;
+}
+
+@media (max-width: 480px) {
+  .register-title {
+    font-size: 2rem;
+  }
+
+  .register-box {
+    padding: 16px;
+  }
+
+  .register-logo-section {
+    flex-direction: column;
+    gap: 8px;
+  }
+}
+
+/* Checked checkbox icon color */
+.MuiCheckbox-root.Mui-checked {
+  color: #000 !important;
+}
+
+/* Optional: Unchecked hover effect */
+.MuiCheckbox-root:hover {
+  background-color: rgba(0, 0, 0, 0.04) !important;
+}
+
+/* Optional: consistent label color */
+.MuiFormControlLabel-label {
+  color: #000 !important;
+}
+
+/* Selected radio button circle color */
+.MuiRadio-root.Mui-checked {
+  color: #000 !important;
+}
+
+/* Optional: Hover effect on radio buttons */
+.MuiRadio-root:hover {
+  background-color: rgba(0, 0, 0, 0.04) !important;
+}
+
+/* Optional: Label color for radio buttons */
+.MuiFormControlLabel-label {
+  color: #000 !important;
+}
+
+.login-link-button {
+  color: #555 !important; /* subtle gray */
+  text-transform: none !important;
+  font-weight: 500;
+  font-size: 0.95rem;
+  padding: 0 !important;
+  min-width: unset !important;
+  background: none !important;
+  border: none;
+  cursor: pointer;
+  display: inline-block;
+  vertical-align: middle;
+  line-height: 1.5;
+  transition: color 0.2s ease-in-out;
+}
+
+.login-link-button:hover {
+  color: #000 !important; /* black on hover */
+}

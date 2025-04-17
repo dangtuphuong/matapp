@@ -38,34 +38,37 @@ def check_password(stored_password, input_password):
 
 @app.route("/api/register", methods=["POST"])
 def register():
-    # Get user data from the request
     email = request.json.get("email")
     password = request.json.get("password")
-    role = request.json.get("role", 1)  # Default role to 1 (user)
+    role = request.json.get("role", 1)
+    first_name = request.json.get("firstName")
+    last_name = request.json.get("lastName")
+    dob = request.json.get("dateOfBirth")
+    gender = request.json.get("gender")
 
-    # Check if user already exists
     if mongo.db.users.find_one({"email": email}):
         return jsonify({"message": "User already exists!"}), 400
 
-    # Hash the password
     hashed_password = hash_password(password)
 
-    # Create new user
     mongo.db.users.insert_one(
-        {"email": email, "password": hashed_password, "role": role}
+        {
+            "email": email,
+            "password": hashed_password,
+            "role": role,
+            "firstName": first_name,
+            "lastName": last_name,
+            "dateOfBirth": dob,
+            "gender": gender,
+        }
     )
 
-    # Generate JWT token
     access_token = create_access_token(identity=email)
 
-    # Return the access token
     return (
-        jsonify(
-            {"message": "User created successfully!", "access_token": access_token}
-        ),
+        jsonify({"message": "User created successfully!", "access_token": access_token}),
         201,
     )
-
 
 @app.route("/api/login", methods=["POST"])
 def login():
@@ -74,13 +77,16 @@ def login():
 
     user = mongo.db.users.find_one({"email": email})
 
-    # If user does not exist or password is incorrect
     if not user or not check_password(user["password"], password):
         return jsonify({"message": "Invalid credentials!"}), 401
 
-    # Create JWT token
-    access_token = create_access_token(identity=user["email"])
-    return jsonify(access_token=access_token), 200
+    access_token = create_access_token(identity=email)
+
+    return jsonify(
+        access_token=access_token,
+        firstName=user.get("firstName", "")
+    ), 200
+
 
 
 @app.route("/api/profile", methods=["GET"])
@@ -89,7 +95,11 @@ def profile():
     current_user = get_jwt_identity()
     user = mongo.db.users.find_one({"email": current_user})
 
-    return jsonify({"email": user["email"], "role": user["role"]})
+    return jsonify({
+        "email": user["email"],
+        "role": user["role"],
+        "firstName": user.get("firstName", "")  # ✅ Add this line
+    })
 
 
 if __name__ == "__main__":
