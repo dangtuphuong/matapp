@@ -20,11 +20,13 @@ import { loginUser } from "../services/user-service";
 import "./styles/login.css";
 import logo from "../img/logo.png";
 import onlylogo from "../img/onlylogo.png";
-import "./styles/navbar.css"; // <-- Adjust the path if needed
+import "./styles/navbar.css";
 import { Link } from "react-router-dom";
 
 const Login = () => {
   const navigate = useNavigate();
+
+  // Form state variables
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -32,18 +34,24 @@ const Login = () => {
   const [errorMessage, setErrorMessage] = useState("");
   const [openSnackbar, setOpenSnackbar] = useState(false);
 
+  // Handle login submission
   const handleLogin = async (e) => {
     e.preventDefault();
     setLoading(true);
     try {
       const response = await loginUser({ email, password });
+
+      // Store tokens and user info in localStorage
       localStorage.setItem("access_token", response.data.access_token);
       localStorage.setItem("username", response.data.firstName);
+
       setLoading(false);
       setOpenSnackbar(true);
       navigate("/home");
     } catch (error) {
       setLoading(false);
+
+      // Show error messages
       if (error.response && error.response.status === 401) {
         setErrorMessage(error.response.data.message);
       } else {
@@ -55,26 +63,34 @@ const Login = () => {
 
   return (
     <>
+      {/* Public navbar at the top */}
       <NavbarPublic />
 
+      {/* Main login page layout */}
       <div className="login-page">
+        {/* Left side with image */}
         <div className="login-left">
           <img src="/src/img/steels.jpg" alt="login-illustration" />
         </div>
 
+        {/* Right side with login form */}
         <div className="login-right">
           <Paper elevation={0} className="paper-container">
+            {/* Logo and header */}
             <div className="login-header">
               <img src={logo} alt="logo" className="login-logo" />
               <Typography variant="h4" className="login-title">
                 Welcome Back!
               </Typography>
             </div>
+
             <Typography variant="body2" className="login-subtitle">
               Please enter your details
             </Typography>
 
+            {/* Login form */}
             <form onSubmit={handleLogin} className="login-form">
+              {/* Email input */}
               <TextField
                 placeholder="Email"
                 variant="outlined"
@@ -86,6 +102,7 @@ const Login = () => {
                 className="login-textfield"
               />
 
+              {/* Password input with toggle visibility */}
               <TextField
                 placeholder="Password"
                 variant="outlined"
@@ -109,6 +126,7 @@ const Login = () => {
                 }}
               />
 
+              {/* Login button */}
               <Button
                 type="submit"
                 variant="contained"
@@ -119,6 +137,7 @@ const Login = () => {
                 {loading ? <CircularProgress size={24} /> : "Log in"}
               </Button>
 
+              {/* Register button */}
               <Button
                 variant="outlined"
                 fullWidth
@@ -131,6 +150,7 @@ const Login = () => {
           </Paper>
         </div>
 
+        {/* Snackbar to show error messages */}
         <Snackbar
           open={openSnackbar}
           autoHideDuration={6000}

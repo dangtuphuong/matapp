@@ -8,6 +8,7 @@ const NavbarPublic = () => {
   return (
     <AppBar position="static" className="navbar-root" elevation={0}>
       <Toolbar className="navbar-toolbar">
+        {/* Left section: logo and title */}
         <Box component={Link} to="/" className="navbar-logo">
           <img src={logo} alt="Logo" />
           <Typography variant="h6" className="navbar-logo-text">
@@ -15,6 +16,7 @@ const NavbarPublic = () => {
           </Typography>
         </Box>
 
+        {/* Right section: navigation links and login button */}
         <Box className="navbar-right-group">
           <Box className="navbar-nav-links">
             <Button className="navbar-link" component={Link} to="/features">
@@ -24,6 +26,8 @@ const NavbarPublic = () => {
               About Us
             </Button>
           </Box>
+
+          {/* Login button */}
           <Button
             component={Link}
             to="/login"

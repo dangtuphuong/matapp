@@ -5,9 +5,12 @@ const SessionTimeout = ({ timeout = 15 * 60 * 1000 }) => {
   const navigate = useNavigate();
   const timer = useRef(null);
 
+  // Resets the logout timer on user activity
   const resetTimer = () => {
     if (timer.current) clearTimeout(timer.current);
+
     timer.current = setTimeout(() => {
+      // Auto-logout: clear session data and redirect to login
       localStorage.removeItem("access_token");
       localStorage.removeItem("username");
       navigate("/login");
@@ -15,21 +18,21 @@ const SessionTimeout = ({ timeout = 15 * 60 * 1000 }) => {
   };
 
   useEffect(() => {
-    // Events to monitor user activity
+    // Events that count as user activity
     const events = ["mousemove", "keydown", "click", "touchstart"];
     events.forEach((event) => window.addEventListener(event, resetTimer));
 
-    // Start the timer initially
+    // Start the timer on component mount
     resetTimer();
 
+    // Clean up listeners and timer on component unmount
     return () => {
-      // Clean up on unmount
       events.forEach((event) => window.removeEventListener(event, resetTimer));
       if (timer.current) clearTimeout(timer.current);
     };
   }, []);
 
-  return null; // No visible component
+  return null; // No UI rendered
 };
 
 export default SessionTimeout;

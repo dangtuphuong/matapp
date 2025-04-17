@@ -2,12 +2,13 @@ import React from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import "./App.css";
 
+// Component imports
 import Register from "./components/RegisterPage";
 import Login from "./components/LoginPage";
 import Home from "./components/HomePage";
 import Landing from "./components/LandingPage";
 import Profile from "./components/ProfilePage";
-import EditUsers from "./components/EditUsers"; // ✅
+import EditUsers from "./components/EditUsers";
 
 import ProtectedRoute from "./components/ProtectedRoute";
 import PublicRoute from "./components/PublicRoute";
@@ -17,6 +18,7 @@ function App() {
   return (
     <Router>
       <Routes>
+        {/* Public routes (accessible only when not logged in) */}
         <Route
           path="/login"
           element={
@@ -33,6 +35,8 @@ function App() {
             </PublicRoute>
           }
         />
+
+        {/* Protected routes (require login) */}
         <Route
           path="/home"
           element={
@@ -57,6 +61,8 @@ function App() {
             </ProtectedRoute>
           }
         />
+
+        {/* Public landing page (root route) */}
         <Route path="/" element={<Landing />} />
       </Routes>
     </Router>

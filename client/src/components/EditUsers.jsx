@@ -27,6 +27,7 @@ import {
 import NavbarPrivate from "./NavbarPrivate";
 import "./styles/EditUsers.css";
 
+// Role mappings
 const roleMap = {
   0: "Admin",
   1: "Normal User",
@@ -43,6 +44,7 @@ const EditUsers = () => {
 
   const currentEmail = localStorage.getItem("username");
 
+  // Fetch all users from backend
   const fetchUsers = async () => {
     try {
       const token = localStorage.getItem("access_token");
@@ -53,6 +55,7 @@ const EditUsers = () => {
     }
   };
 
+  // Fetch current admin profile for displaying name
   const fetchAdminProfile = async () => {
     try {
       const token = localStorage.getItem("access_token");
@@ -68,11 +71,13 @@ const EditUsers = () => {
     fetchAdminProfile();
   }, []);
 
+  // Open edit dialog with selected user
   const handleEditClick = (user) => {
     setEditUser(user);
     setEditDialogOpen(true);
   };
 
+  // Save updated user info
   const handleEditSave = async () => {
     try {
       const token = localStorage.getItem("access_token");
@@ -84,12 +89,13 @@ const EditUsers = () => {
         email: editUser.email,
       });
       setEditDialogOpen(false);
-      fetchUsers();
+      fetchUsers(); // Refresh list
     } catch (err) {
       console.error("Update failed", err);
     }
   };
 
+  // Reset user password
   const handleResetPassword = async () => {
     try {
       const token = localStorage.getItem("access_token");
@@ -101,6 +107,7 @@ const EditUsers = () => {
     }
   };
 
+  // Delete user after confirmation
   const handleDelete = async (user) => {
     if (user.email === currentEmail) {
       alert("You cannot delete your own account.");
@@ -111,7 +118,7 @@ const EditUsers = () => {
       try {
         const token = localStorage.getItem("access_token");
         await deleteUser(token, user._id);
-        fetchUsers();
+        fetchUsers(); // Refresh list
       } catch (err) {
         console.error("Delete failed", err);
       }
@@ -120,10 +127,12 @@ const EditUsers = () => {
 
   return (
     <>
+      {/* Navbar with logged-in admin's name */}
       <NavbarPrivate username={adminName || "Admin"} />
       <Container>
         <Typography className="edit-users-title">Manage Users</Typography>
 
+        {/* Users Table */}
         <Table className="user-table">
           <TableHead>
             <TableRow>
@@ -146,9 +155,11 @@ const EditUsers = () => {
                 <TableCell>{user.dateOfBirth}</TableCell>
                 <TableCell>{roleMap[user.role] || "Unknown"}</TableCell>
                 <TableCell align="right">
+                  {/* Edit Button */}
                   <IconButton onClick={() => handleEditClick(user)}>
                     <Edit />
                   </IconButton>
+                  {/* Reset Password Button */}
                   <Tooltip title="Reset Password">
                     <IconButton
                       onClick={() => {
@@ -159,6 +170,7 @@ const EditUsers = () => {
                       <LockReset />
                     </IconButton>
                   </Tooltip>
+                  {/* Delete Button */}
                   <IconButton onClick={() => handleDelete(user)}>
                     <Delete />
                   </IconButton>
@@ -168,7 +180,7 @@ const EditUsers = () => {
           </TableBody>
         </Table>
 
-        {/* Edit Dialog */}
+        {/* Edit User Dialog */}
         <Dialog open={editDialogOpen} onClose={() => setEditDialogOpen(false)}>
           <DialogTitle>Edit User</DialogTitle>
           <DialogContent>

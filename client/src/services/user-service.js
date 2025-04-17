@@ -2,7 +2,7 @@ import axios from "axios";
 
 const API_URL = "/api";
 
-// Register user
+// Register a new user
 export const registerUser = async ({
   firstName,
   lastName,
@@ -22,14 +22,14 @@ export const registerUser = async ({
     role,
   });
 
-// Login user
+// Login an existing user
 export const loginUser = async ({ email, password }) =>
   await axios.post(`${API_URL}/login`, {
     email,
     password,
   });
 
-// Get current user profile
+// Fetch the currently logged-in user's profile
 export const getUserProfile = async (token) =>
   await axios
     .get(`${API_URL}/profile`, {
@@ -39,7 +39,7 @@ export const getUserProfile = async (token) =>
     })
     .then((res) => res.data);
 
-// ✅ Get all users (admin only)
+// Get all users (admin access required)
 export const getAllUsers = async (token) =>
   await axios
     .get(`${API_URL}/users`, {
@@ -49,7 +49,7 @@ export const getAllUsers = async (token) =>
     })
     .then((res) => res.data);
 
-// ✅ Update user info (admin only)
+// Update a user's info (admin access required)
 export const updateUserInfo = async (token, email, updatedData) =>
   await axios.put(`${API_URL}/users/${email}`, updatedData, {
     headers: {
@@ -57,7 +57,7 @@ export const updateUserInfo = async (token, email, updatedData) =>
     },
   });
 
-// ✅ Reset user password (admin only)
+// Reset a user's password (admin access required)
 export const resetUserPassword = async (token, email, newPassword) =>
   await axios.put(
     `${API_URL}/users/${email}/password`,
@@ -69,7 +69,7 @@ export const resetUserPassword = async (token, email, newPassword) =>
     }
   );
 
-// ✅ Delete a user (admin only)
+// Delete a user by email (admin access required)
 export const deleteUser = async (token, email) =>
   await axios.delete(`${API_URL}/users/${email}`, {
     headers: {

@@ -19,9 +19,12 @@ import NavbarPublic from "./NavbarPublic";
 const LandingPage = () => {
   return (
     <>
+      {/* Public navbar with login/register links */}
       <NavbarPublic />
 
+      {/* Main content container */}
       <Container className="landing-container">
+        {/* Hero section */}
         <Box className="landing-hero">
           <Typography variant="h3" className="landing-hero-title">
             Smart Material
@@ -36,16 +39,21 @@ const LandingPage = () => {
             needs
           </Typography>
 
+          {/* Call to action */}
           <Button variant="contained" className="search-button">
             Search for Materials
           </Button>
         </Box>
 
+        {/* Step-by-step section */}
         <Box className="how-it-works">
           <Typography variant="h5" className="section-title">
             How It Works
           </Typography>
+
+          {/* Flip card grid for material types */}
           <Box className="steps-grid">
+            {/* Metal Card */}
             <Box className="step-card">
               <Box className="step-card-inner">
                 <Box className="step-card-front">
@@ -63,6 +71,7 @@ const LandingPage = () => {
               </Box>
             </Box>
 
+            {/* Plastic Card */}
             <Box className="step-card">
               <Box className="step-card-inner">
                 <Box className="step-card-front">
@@ -80,6 +89,7 @@ const LandingPage = () => {
               </Box>
             </Box>
 
+            {/* Fluids Card */}
             <Box className="step-card">
               <Box className="step-card-inner">
                 <Box className="step-card-front">
@@ -97,6 +107,7 @@ const LandingPage = () => {
               </Box>
             </Box>
 
+            {/* Composites Card */}
             <Box className="step-card">
               <Box className="step-card-inner">
                 <Box className="step-card-front">
@@ -116,10 +127,13 @@ const LandingPage = () => {
           </Box>
         </Box>
 
+        {/* About the Project Section */}
         <Box className="about-project">
           <Typography variant="h6" className="section-title">
             About the Project
           </Typography>
+
+          {/* Informative points about the project */}
           <Box className="about-points">
             {[
               {

@@ -25,6 +25,8 @@ import "./styles/Register.css";
 
 const Register = () => {
   const navigate = useNavigate();
+
+  // Form fields state
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [dateOfBirth, setDateOfBirth] = useState("");
@@ -33,36 +35,42 @@ const Register = () => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [role, setRole] = useState(ROLES.NORMAL_USER);
+
+  // UI state
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
+  // Handle form submission
   const handleRegister = async (e) => {
     e.preventDefault();
 
+    // Validate date of birth
     const currentDate = new Date();
     const birthDate = new Date(dateOfBirth);
-
     if (birthDate > currentDate) {
       setErrorMessage("Invalid Date of Birth");
       setOpenSnackbar(true);
       return;
     }
 
+    // Ensure gender is selected
     if (!gender) {
       setErrorMessage("Please select a gender");
       setOpenSnackbar(true);
       return;
     }
 
+    // Ensure passwords match
     if (password !== confirmPassword) {
       setErrorMessage("Passwords do not match");
       setOpenSnackbar(true);
       return;
     }
 
+    // Password strength validation
     const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).+$/;
     if (!passwordPattern.test(password)) {
       setErrorMessage(
@@ -72,6 +80,7 @@ const Register = () => {
       return;
     }
 
+    // Submit registration request
     setLoading(true);
     try {
       const response = await registerUser({
@@ -83,6 +92,8 @@ const Register = () => {
         password,
         role,
       });
+
+      // Save token and navigate to home
       localStorage.setItem("access_token", response.data.access_token);
       setLoading(false);
       navigate("/home");
@@ -99,16 +110,24 @@ const Register = () => {
 
   return (
     <>
+      {/* Top public navigation bar */}
       <NavbarPublic />
+
+      {/* Main registration layout */}
       <Box className="register-container">
+        {/* Logo and heading */}
         <Box className="register-logo-section">
           <img src={logo} alt="Logo" className="register-logo-image" />
           <Typography variant="h2" className="register-title">
             Matapp
           </Typography>
         </Box>
+
+        {/* Form card */}
         <Box className="register-box">
           <Typography variant="h5">Create a new account</Typography>
+
+          {/* Registration form */}
           <form onSubmit={handleRegister}>
             <TextField
               label="First Name"
@@ -193,6 +212,8 @@ const Register = () => {
               className="register-form-control"
               InputLabelProps={{ shrink: true }}
             />
+
+            {/* Gender radio buttons */}
             <FormControl component="fieldset" className="register-form-control">
               <FormLabel component="legend">Gender</FormLabel>
               <RadioGroup
@@ -218,6 +239,7 @@ const Register = () => {
               </RadioGroup>
             </FormControl>
 
+            {/* Role selection radio buttons */}
             <FormControl component="fieldset" className="register-form-control">
               <FormLabel component="legend">User Role</FormLabel>
               <RadioGroup
@@ -243,6 +265,7 @@ const Register = () => {
               </RadioGroup>
             </FormControl>
 
+            {/* Submit button */}
             <Button
               type="submit"
               variant="contained"
@@ -254,6 +277,8 @@ const Register = () => {
               {loading ? <CircularProgress size={24} /> : "Sign Up"}
             </Button>
           </form>
+
+          {/* Link to login */}
           <Typography variant="body2">
             Already have an account?{" "}
             <Button
@@ -264,6 +289,8 @@ const Register = () => {
             </Button>
           </Typography>
         </Box>
+
+        {/* Error message snackbar */}
         <Snackbar
           open={openSnackbar}
           autoHideDuration={6000}

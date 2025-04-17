@@ -16,11 +16,12 @@ import "./styles/Navbar.css";
 const Navbar = () => {
   const navigate = useNavigate();
 
-  // ✅ Load username from localStorage immediately
+  // Load username from localStorage initially
   const [username, setUsername] = useState(
     localStorage.getItem("username") || ""
   );
 
+  // Fetch user profile on initial render to update username
   useEffect(() => {
     const token = localStorage.getItem("access_token");
     if (!token) return;
@@ -28,13 +29,14 @@ const Navbar = () => {
     getUserProfile(token)
       .then((data) => {
         setUsername(data.firstName);
-        localStorage.setItem("username", data.firstName);
+        localStorage.setItem("username", data.firstName); // Cache username
       })
       .catch(() => {
-        setUsername("User"); // fallback
+        setUsername("User"); // Fallback if profile fetch fails
       });
   }, []);
 
+  // Handle logout: clear storage and redirect to login
   const handleLogout = () => {
     localStorage.removeItem("access_token");
     localStorage.removeItem("username");
@@ -44,7 +46,7 @@ const Navbar = () => {
   return (
     <AppBar position="static" className="navbar-root" elevation={0}>
       <Toolbar className="navbar-toolbar">
-        {/* Left: Logo */}
+        {/* Left section: logo and title */}
         <Box component={Link} to="/home" className="navbar-logo">
           <img src={logo} alt="Logo" />
           <Typography variant="h6" className="navbar-logo-text">
@@ -52,7 +54,7 @@ const Navbar = () => {
           </Typography>
         </Box>
 
-        {/* Center: Navigation Links */}
+        {/* Center section: navigation links */}
         <Box className="navbar-center-links">
           <Link to="/page1" className="navbar-link">
             Page 1
@@ -71,7 +73,7 @@ const Navbar = () => {
           </Link>
         </Box>
 
-        {/* Right: Profile + Logout */}
+        {/* Right section: profile icon and logout button */}
         <Box className="navbar-right-group">
           <Box component={Link} to="/profile" className="navbar-profile-link">
             <IconButton color="inherit">

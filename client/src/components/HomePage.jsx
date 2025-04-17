@@ -20,26 +20,31 @@ const HomePage = () => {
   const navigate = useNavigate();
   const [username, setUsername] = useState("");
 
+  // Fetch user info on component mount
   useEffect(() => {
     const token = localStorage.getItem("access_token");
+
+    // Redirect to login if token is missing
     if (!token) {
       navigate("/login");
       return;
     }
 
+    // Get user's profile data
     const fetchUser = async () => {
       try {
         const data = await getUserProfile(token);
-        setUsername(data.firstName || "User");
+        setUsername(data.firstName || "User"); // Display first name
       } catch (err) {
         console.error("Failed to fetch profile:", err);
-        navigate("/login");
+        navigate("/login"); // Redirect on failure
       }
     };
 
     fetchUser();
   }, [navigate]);
 
+  // Clear token and redirect to login
   const handleLogout = () => {
     localStorage.removeItem("access_token");
     navigate("/login");
@@ -47,8 +52,10 @@ const HomePage = () => {
 
   return (
     <>
+      {/* Private Navbar with username */}
       <NavbarPrivate username={username} />
 
+      {/* Home Page Content */}
       <Container className="home-container">
         <Typography variant="h4" className="home-title">
           MatApp Home Page
