@@ -35,7 +35,6 @@ jwt = JWTManager(app)
 try:
     mongo.cx.admin.command('ping')
     print("Pinged your deployment. You successfully connected to MongoDB!")
-    print(mongo.db.list_collection_names())
 except Exception as e:
     print(f"MongoDB connection error: {e}")
 
