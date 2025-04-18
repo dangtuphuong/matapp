@@ -9,10 +9,10 @@ MatApp is a modern full-stack web application that simplifies the process of sel
 ### 🔐 Authentication & User Roles
 
 - JWT-based user authentication using Flask and React
-- Roles stored as numbers in MongoDB:
-  - `0` → Admin
-  - `1` → Normal User
-  - `2` → Premium User
+- Roles stored in MongoDB:
+  - `admin` → Admin
+  - `normal_user` → Normal User
+  - `premium_user` → Premium User
 - Protected routes via role-based access control
 
 ### 👤 Registration
