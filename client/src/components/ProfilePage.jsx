@@ -12,14 +12,7 @@ import { AccountCircle, Download, Group } from "@mui/icons-material";
 import { getUserProfile } from "../services/user-service";
 import { useNavigate } from "react-router-dom";
 import "./styles/Profile.css";
-import { ROLES } from "../constants";
-
-// Mapping numeric roles to readable labels
-const roleLabelMap = {
-  0: "Admin",
-  1: "Normal User",
-  2: "Premium User",
-};
+import { ROLES, ROLE_LABELS } from "../constants";
 
 const ProfilePage = () => {
   const [profile, setProfile] = useState(null);
@@ -116,7 +109,7 @@ const ProfilePage = () => {
               <strong>Date of Birth:</strong> {profile?.dateOfBirth}
             </Typography>
             <Typography variant="body1">
-              <strong>Role:</strong> {roleLabelMap[profile?.role] || "Unknown"}
+              <strong>Role:</strong> {ROLE_LABELS[profile?.role] || "Unknown"}
             </Typography>
           </Box>
 
