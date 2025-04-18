@@ -10,6 +10,11 @@ from flask_cors import CORS
 from flask_bcrypt import Bcrypt
 import os
 from bson.objectid import ObjectId
+from datetime import datetime, timezone
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 app = Flask(__name__)
 bcrypt = Bcrypt(app)
@@ -26,6 +31,16 @@ app.config["JWT_TOKEN_LOCATION"] = ["headers"]
 mongo = PyMongo(app)
 jwt = JWTManager(app)
 
+# Test MongoDB connection
+try:
+    mongo.cx.admin.command('ping')
+    print("Pinged your deployment. You successfully connected to MongoDB!")
+    print(mongo.db.list_collection_names())
+except Exception as e:
+    print(f"MongoDB connection error: {e}")
+
+VALID_ROLES = {"admin", "normal_user", "premium_user"}
+
 # Helper to hash passwords
 def hash_password(password):
     return bcrypt.generate_password_hash(password).decode("utf-8")
@@ -39,22 +54,32 @@ def check_password(stored_password, input_password):
 def register():
     email = request.json.get("email")
     password = request.json.get("password")
-    
-    try:
-        role = int(request.json.get("role", 1))  # Default role: Normal User
-    except (ValueError, TypeError):
-        role = 1
-
     first_name = request.json.get("firstName")
     last_name = request.json.get("lastName")
     dob = request.json.get("dateOfBirth")
     gender = request.json.get("gender")
+    
+    try:
+        role = request.json.get("role", "normal_user").lower()
+    except (ValueError, TypeError):
+        role = "normal_user"
+
+    
+
+    if not email or not password:
+        return jsonify({"message": "Email and password are required!"}), 400
+
+    if role not in VALID_ROLES:
+        return jsonify({"message": f"Invalid role. Must be one of: {', '.join(VALID_ROLES)}"}), 400
 
     if mongo.db.users.find_one({"email": email}):
         return jsonify({"message": "User already exists!"}), 400
 
     hashed_password = hash_password(password)
 
+    current_time = datetime.now(timezone.utc)
+
+    # Create new user
     mongo.db.users.insert_one({
         "email": email,
         "password": hashed_password,
@@ -63,6 +88,8 @@ def register():
         "lastName": last_name,
         "dateOfBirth": dob,
         "gender": gender,
+        "created_at": current_time,
+        "updated_at": current_time
     })
 
     access_token = create_access_token(identity=email)
@@ -75,19 +102,25 @@ def login():
     email = request.json.get("email")
     password = request.json.get("password")
 
+    if not email or not password:
+        return jsonify({"message": "Email and password are required!"}), 400
+
     user = mongo.db.users.find_one({"email": email})
     if not user or not check_password(user["password"], password):
         return jsonify({"message": "Invalid credentials!"}), 401
 
+    # Create JWT token
     access_token = create_access_token(identity=email)
+
     return jsonify(access_token=access_token, firstName=user.get("firstName", "")), 200
+
 
 # Get the profile of the current user
 @app.route("/api/profile", methods=["GET"])
 @jwt_required()
 def profile():
-    current_user = get_jwt_identity()
-    user = mongo.db.users.find_one({"email": current_user})
+    current_user_email = get_jwt_identity()
+    user = mongo.db.users.find_one({"email": current_user_email})
 
     if not user:
         return jsonify({"message": "User not found"}), 404

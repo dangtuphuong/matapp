@@ -245,7 +245,7 @@ const Register = () => {
               <RadioGroup
                 row
                 value={String(role)}
-                onChange={(e) => setRole(Number(e.target.value))}
+                onChange={(e) => setRole(e?.target?.value)}
               >
                 <FormControlLabel
                   value={String(ROLES.NORMAL_USER)}
