@@ -1,0 +1,179 @@
+/* --- Landing Content --- */
+.landing-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 48px 16px;
+  gap: 64px;
+}
+
+.landing-hero {
+  text-align: center;
+  max-width: 800px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+}
+
+.landing-hero-title {
+  font-weight: bold;
+  font-size: 62px !important;
+  margin-top: 30px !important;
+  margin-bottom: 5px !important;
+}
+
+.landing-hero-subtitle {
+  font-size: 22px !important;
+  margin-bottom: 24px;
+  color: #555;
+}
+
+.typing-text {
+  overflow: hidden;
+  white-space: nowrap;
+  border-right: 3px solid #000;
+  max-width: 100%;
+  font-family: monospace;
+  animation: typing 11s steps(60, end) infinite,
+    blink-caret 0.75s step-end infinite;
+}
+
+/* Typing happens in first 5s, then pause for 6s (total 11s) */
+@keyframes typing {
+  0% {
+    width: 0;
+  }
+  45.45% {
+    width: 100%;
+  }
+  90.9% {
+    width: 100%;
+  }
+  100% {
+    width: 0;
+  }
+}
+
+@keyframes blink-caret {
+  0%,
+  100% {
+    border-color: transparent;
+  }
+  50% {
+    border-color: #000;
+  }
+}
+
+.search-button {
+  background-color: #000 !important;
+  color: #fff !important;
+  padding: 10px 30px !important;
+  font-weight: 500;
+  text-transform: none;
+}
+
+/* --- How It Works --- */
+.how-it-works {
+  text-align: center;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 32px;
+}
+
+.section-title {
+  font-weight: bold;
+  margin-bottom: 32px;
+}
+
+.steps-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+  justify-content: center;
+  perspective: 1000px;
+}
+
+.step-card {
+  width: 180px;
+  height: 220px;
+  position: relative;
+  perspective: 1000px;
+}
+
+.step-card-inner {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  transition: transform 0.8s;
+  transform-style: preserve-3d;
+}
+
+.step-card:hover .step-card-inner {
+  transform: rotateY(180deg);
+}
+
+.step-card-front,
+.step-card-back {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: #fff;
+  text-align: center;
+}
+
+.step-card-back {
+  transform: rotateY(180deg);
+  background-color: #f4f4f4;
+}
+
+.step-image {
+  width: 100%;
+  height: 100px;
+  object-fit: contain;
+  aspect-ratio: 1 / 1;
+  background-color: #f9f9f9;
+  padding: 12px;
+  border-radius: 12px;
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.1);
+}
+
+.about-project {
+  text-align: center;
+  padding: 40px 20px;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.about-points {
+  margin-top: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  text-align: left;
+}
+
+.about-point-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  font-size: 1.05rem;
+  line-height: 1.6;
+}
+
+.about-icon {
+  font-size: 1.5rem;
+  line-height: 1.5;
+  min-width: 24px;
+  margin-top: 2px;
+}
