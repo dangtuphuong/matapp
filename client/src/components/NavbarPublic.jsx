@@ -19,8 +19,8 @@ const NavbarPublic = () => {
         {/* Right section: navigation links and login button */}
         <Box className="navbar-right-group">
           <Box className="navbar-nav-links">
-            <Button className="navbar-link" component={Link} to="/features">
-              Features
+            <Button className="navbar-link" component={Link} to="/">
+              Home
             </Button>
             <Button className="navbar-link" component={Link} to="/aboutus">
               About Us

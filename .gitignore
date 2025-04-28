@@ -1,6 +1,6 @@
 venv
 .venv
-# .env
+# server/.env
 __pycache__
 myenv
 upload.py
