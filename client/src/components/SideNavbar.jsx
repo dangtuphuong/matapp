@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { debounce } from 'lodash';
 import {
   Drawer,
   List,
@@ -20,7 +19,6 @@ import {
 import {
   ChevronLeft,
   ChevronRight,
-  FilterList,
   ExpandMore,
 } from "@mui/icons-material";
 import MaterialsTable from "./MaterialsTable";
@@ -53,12 +51,12 @@ const SideNavbar = () => {
   };
 
   // incase for type search
-  const handleMaterialTypeChange = debounce((event) => {
+  const handleMaterialTypeChange = (event) => {
     setMaterialTypes({
       ...materialTypes,
       [event.target.name]: event.target.checked,
     });
-  }, 500);
+  };
 
   // incase for range search
   const handleRangeChange = (setter) => (event, newValue) => {
