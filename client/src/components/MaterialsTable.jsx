@@ -74,36 +74,44 @@ const MaterialsTable = () => {
           </TableRow>
         </TableHead>
         <TableBody>
-          {isLoading
-            ? Array.from({ length: limit }).map((_, index) => (
-                <TableRow key={index}>
-                  <TableCell>
-                    <Skeleton variant="text" width="100%" />
-                  </TableCell>
-                  <TableCell>
-                    <Skeleton variant="text" width="60%" />
-                  </TableCell>
-                </TableRow>
-              ))
-            : materials.map((material) => (
-                <TableRow
-                  key={material?._id}
-                  onClick={() => onRowClick(material?.matGUID)}
-                  sx={{ cursor: "pointer" }}
-                >
-                  <TableCell>{material?.["Material Name"]}</TableCell>
-                  <TableCell>{material?.Categories?.join(", ")}</TableCell>
-                </TableRow>
-              ))}
+          {isLoading ? (
+            Array.from({ length: limit }).map((_, index) => (
+              <TableRow key={index}>
+                <TableCell>
+                  <Skeleton variant="text" width="100%" />
+                </TableCell>
+                <TableCell>
+                  <Skeleton variant="text" width="60%" />
+                </TableCell>
+              </TableRow>
+            ))
+          ) : materials?.length > 0 ? (
+            materials?.map((material) => (
+              <TableRow
+                key={material?._id}
+                onClick={() => onRowClick(material?.matGUID)}
+                sx={{ cursor: "pointer" }}
+              >
+                <TableCell>{material?.["Material Name"]}</TableCell>
+                <TableCell>{material?.Categories?.join(", ")}</TableCell>
+              </TableRow>
+            ))
+          ) : (
+            <TableRow>
+              <TableCell>No data available</TableCell>
+            </TableRow>
+          )}
         </TableBody>
       </Table>
 
-      <Pagination
-        currentPage={currentPage}
-        totalPages={totalPages}
-        handlePageChange={handlePageChange}
-        isLoading={isLoading}
-      />
+      {totalPages > 0 && (
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          handlePageChange={handlePageChange}
+          isLoading={isLoading}
+        />
+      )}
     </>
   );
 };
