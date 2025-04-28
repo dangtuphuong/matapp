@@ -64,6 +64,14 @@ function App() {
           }
         />
         <Route
+          path="/search"
+          element={
+            <ProtectedRoute>
+              <SearchPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
           path="/material/:matGUID"
           element={
             <ProtectedRoute>

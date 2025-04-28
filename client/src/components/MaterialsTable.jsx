@@ -62,10 +62,6 @@ const MaterialsTable = () => {
 
   return (
     <>
-      <Typography variant="h4" sx={{ mt: 3, mb: 3 }}>
-        Materials List
-      </Typography>
-
       <Table>
         <TableHead>
           <TableRow>

@@ -1,7 +1,6 @@
 /* --- Side Navbar --- */
 .sidenav-root {
   background-color: #1a1a1a;
-  height: 100vh;
   color: #ffffff;
   border-right: 1px solid #ddd;
   display: flex;

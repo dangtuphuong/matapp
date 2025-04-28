@@ -1,26 +1,46 @@
 import NavbarPrivate from "./NavbarPrivate";
-import React from "react";
-import { Typography, Container } from "@mui/material";
-
-import MaterialsTable from "./MaterialsTable";
-
+import React, { useState } from "react"; // Add useState
+import {
+  Typography,
+  Container,
+  Box,
+  Button,
+  Snackbar,
+  Alert,
+} from "@mui/material";
+import { Link } from "react-router-dom";
 import "./styles/navbar.css";
 import "./styles/Home.css";
+import "./styles/Landing.css";
+
 import m1 from "../img/materials/m1.png";
 import m2 from "../img/materials/m2.png";
 import m3 from "../img/materials/m3.png";
 import m4 from "../img/materials/m4.png";
-import "./styles/Landing.css";
-import { Snackbar, Alert } from "@mui/material";
 
 const HomePage = () => {
+  const [openSnackbar, setOpenSnackbar] = useState(false); // ADD state
+  const [username, setUsername] = useState(
+    localStorage.getItem("username") || "User"
+  );
+
+  // Check if it's the first login
+  const isFirstLogin = localStorage.getItem("first_login");
+
+  // If it's the first login, show the snackbar
+  if (isFirstLogin === "true") {
+    setOpenSnackbar(true);
+    // After showing the snackbar, set the flag to false so it won't show again
+    localStorage.setItem("first_login", "false");
+  }
+
   return (
     <>
       {/* Private Navbar with username */}
       <NavbarPrivate />
 
       {/* Main content container */}
-      <Container className="landing-container">
+      <Container className="landing-container" sx={{ marginTop: "80px" }}>
         {/* Hero section */}
         <Box className="landing-hero">
           <Typography variant="h3" className="landing-hero-title">
@@ -37,7 +57,12 @@ const HomePage = () => {
           </Typography>
 
           {/* Call to action */}
-          <Button variant="contained" className="search-button">
+          <Button
+            variant="contained"
+            className="search-button"
+            component={Link}
+            to="/search"
+          >
             Search for Materials
           </Button>
         </Box>
@@ -164,6 +189,7 @@ const HomePage = () => {
           </Box>
         </Box>
 
+        {/* Snackbar (login welcome popup) */}
         <Snackbar
           open={openSnackbar}
           autoHideDuration={4000}

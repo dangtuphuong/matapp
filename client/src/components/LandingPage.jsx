@@ -1,5 +1,6 @@
 import React from "react";
 import { Container, Box, Typography, Button } from "@mui/material";
+import { Link } from "react-router-dom";
 
 import m1 from "../img/materials/m1.png";
 import m2 from "../img/materials/m2.png";
@@ -32,7 +33,12 @@ const LandingPage = () => {
           </Typography>
 
           {/* Call to action */}
-          <Button variant="contained" className="search-button">
+          <Button
+            variant="contained"
+            className="search-button"
+            component={Link}
+            to="/login"
+          >
             Search for Materials
           </Button>
         </Box>

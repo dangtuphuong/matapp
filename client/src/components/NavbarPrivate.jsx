@@ -51,7 +51,7 @@ const Navbar = () => {
 
   return (
     <AppBar
-      position="fixed"
+      position="static"
       sx={{
         backgroundColor: "#1a1a1a",
         zIndex: (theme) => theme.zIndex.drawer + 1,

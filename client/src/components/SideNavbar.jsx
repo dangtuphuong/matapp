@@ -22,6 +22,7 @@ import {
   FilterList,
   ExpandMore,
 } from "@mui/icons-material";
+import MaterialsTable from "./MaterialsTable";
 import "./styles/SideNavbar.css";
 
 const drawerWidth = 240;
@@ -103,201 +104,200 @@ const SideNavbar = () => {
         <Divider sx={{ backgroundColor: "#444" }} />
 
         {/* Material Type Filter */}
-        <Accordion defaultExpanded disabled={!open}>
-          <AccordionSummary
-            expandIcon={open ? <ExpandMore sx={{ color: "#fff" }} /> : null}
-            aria-controls="material-type-content"
-            id="material-type-header"
-          >
-            {open && (
-              <Typography variant="subtitle1" sx={{ color: "#fff" }}>
-                Material Type
-              </Typography>
-            )}
-          </AccordionSummary>
-
-          {open && (
-            <AccordionDetails>
-              <List>
-                {[
-                  "metals",
-                  "polymers",
-                  "ceramics",
-                  "composites",
-                  "alloys",
-                  "magnetic",
-                ].map((type) => (
-                  <ListItem key={type} button sx={{ px: 2.5 }}>
-                    <FormControlLabel
-                      control={
-                        <Checkbox
-                          checked={materialTypes[type]}
-                          onChange={handleMaterialTypeChange}
-                          name={type}
-                          sx={{ color: "#fff" }}
-                        />
-                      }
-                      label={type.charAt(0).toUpperCase() + type.slice(1)}
-                      sx={{ color: "#fff" }}
-                    />
-                  </ListItem>
-                ))}
-              </List>
-            </AccordionDetails>
-          )}
-        </Accordion>
-
-        <Divider sx={{ backgroundColor: "#444" }} />
-
-        {/* Strength Filter */}
-        <Accordion defaultExpanded disabled={!open}>
-          <AccordionSummary
-            expandIcon={open ? <ExpandMore sx={{ color: "#fff" }} /> : null}
-            aria-controls="strength-content"
-            id="strength-header"
-          >
-            {open && (
-              <Typography variant="subtitle1" sx={{ color: "#fff" }}>
-                Strength
-              </Typography>
-            )}
-          </AccordionSummary>
-
-          {open && (
-            <AccordionDetails>
-              <ListItem sx={{ px: 2.5 }}>
-                <Typography variant="body2" sx={{ color: "#fff" }}>
-                  Tensile Strength Range: {strengthRange[0]} -{" "}
-                  {strengthRange[1]} MPa
+        <Box sx={{ flexGrow: 1, overflowY: "auto" }}>
+          <Accordion disabled={!open}>
+            <AccordionSummary
+              expandIcon={open ? <ExpandMore sx={{ color: "#fff" }} /> : null}
+              aria-controls="material-type-content"
+              id="material-type-header"
+            >
+              {open && (
+                <Typography variant="subtitle1" sx={{ color: "#fff" }}>
+                  Material Type
                 </Typography>
-              </ListItem>
-              <ListItem sx={{ px: 2.5 }}>
-                <Slider
-                  value={strengthRange}
-                  onChange={handleRangeChange(setStrengthRange)}
-                  valueLabelDisplay="auto"
-                  valueLabelFormat={(value) => `${value} MPa`}
-                  min={0}
-                  max={1000}
-                />
-              </ListItem>
-            </AccordionDetails>
-          )}
-        </Accordion>
+              )}
+            </AccordionSummary>
 
-        {/* Conductivity Filter */}
-        <Accordion defaultExpanded disabled={!open}>
-          <AccordionSummary
-            expandIcon={open ? <ExpandMore sx={{ color: "#fff" }} /> : null}
-            aria-controls="conductivity-content"
-            id="conductivity-header"
-          >
             {open && (
-              <Typography variant="subtitle1" sx={{ color: "#fff" }}>
-                Conductivity
-              </Typography>
+              <AccordionDetails>
+                <List>
+                  {[
+                    "metals",
+                    "polymers",
+                    "ceramics",
+                    "composites",
+                    "alloys",
+                    "magnetic",
+                  ].map((type) => (
+                    <ListItem key={type} button sx={{ px: 2.5 }}>
+                      <FormControlLabel
+                        control={
+                          <Checkbox
+                            checked={materialTypes[type]}
+                            onChange={handleMaterialTypeChange}
+                            name={type}
+                            sx={{ color: "#fff" }}
+                          />
+                        }
+                        label={type.charAt(0).toUpperCase() + type.slice(1)}
+                        sx={{ color: "#fff" }}
+                      />
+                    </ListItem>
+                  ))}
+                </List>
+              </AccordionDetails>
             )}
-          </AccordionSummary>
+          </Accordion>
 
-          {open && (
-            <AccordionDetails>
-              <ListItem sx={{ px: 2.5 }}>
-                <Typography variant="body2" sx={{ color: "#fff" }}>
-                  Electrical Conductivity Range: {conductivityRange[0]} -{" "}
-                  {conductivityRange[1]} S/m
+          <Divider sx={{ backgroundColor: "#444" }} />
+
+          {/* Strength Filter */}
+          <Accordion disabled={!open}>
+            <AccordionSummary
+              expandIcon={open ? <ExpandMore sx={{ color: "#fff" }} /> : null}
+              aria-controls="strength-content"
+              id="strength-header"
+            >
+              {open && (
+                <Typography variant="subtitle1" sx={{ color: "#fff" }}>
+                  Strength
                 </Typography>
-              </ListItem>
-              <ListItem sx={{ px: 2.5 }}>
-                <Slider
-                  value={conductivityRange}
-                  onChange={handleRangeChange(setConductivityRange)}
-                  valueLabelDisplay="auto"
-                  valueLabelFormat={(value) => `${value} S/m`}
-                  min={0}
-                  max={200}
-                />
-              </ListItem>
-            </AccordionDetails>
-          )}
-        </Accordion>
+              )}
+            </AccordionSummary>
 
-        {/* Density Filter */}
-        <Accordion defaultExpanded disabled={!open}>
-          <AccordionSummary
-            expandIcon={open ? <ExpandMore sx={{ color: "#fff" }} /> : null}
-            aria-controls="density-content"
-            id="density-header"
-          >
             {open && (
-              <Typography variant="subtitle1" sx={{ color: "#fff" }}>
-                Density
-              </Typography>
+              <AccordionDetails>
+                <ListItem sx={{ px: 2.5 }}>
+                  <Typography variant="body2" sx={{ color: "#fff" }}>
+                    Tensile Strength Range: {strengthRange[0]} -{" "}
+                    {strengthRange[1]} MPa
+                  </Typography>
+                </ListItem>
+                <ListItem sx={{ px: 2.5 }}>
+                  <Slider
+                    value={strengthRange}
+                    onChange={handleRangeChange(setStrengthRange)}
+                    valueLabelDisplay="auto"
+                    valueLabelFormat={(value) => `${value} MPa`}
+                    min={0}
+                    max={1000}
+                  />
+                </ListItem>
+              </AccordionDetails>
             )}
-          </AccordionSummary>
+          </Accordion>
 
-          {open && (
-            <AccordionDetails>
-              <ListItem sx={{ px: 2.5 }}>
-                <Typography variant="body2" sx={{ color: "#fff" }}>
-                  Density Range: {densityRange[0]} - {densityRange[1]} g/cm³
+          {/* Conductivity Filter */}
+          <Accordion disabled={!open}>
+            <AccordionSummary
+              expandIcon={open ? <ExpandMore sx={{ color: "#fff" }} /> : null}
+              aria-controls="conductivity-content"
+              id="conductivity-header"
+            >
+              {open && (
+                <Typography variant="subtitle1" sx={{ color: "#fff" }}>
+                  Conductivity
                 </Typography>
-              </ListItem>
-              <ListItem sx={{ px: 2.5 }}>
-                <Slider
-                  value={densityRange}
-                  onChange={handleRangeChange(setDensityRange)}
-                  valueLabelDisplay="auto"
-                  valueLabelFormat={(value) => `${value} g/cm³`}
-                  min={0}
-                  max={10}
-                />
-              </ListItem>
-            </AccordionDetails>
-          )}
-        </Accordion>
+              )}
+            </AccordionSummary>
 
-        {/* Thermal Expansion Filter */}
-        <Accordion defaultExpanded disabled={!open}>
-          <AccordionSummary
-            expandIcon={open ? <ExpandMore sx={{ color: "#fff" }} /> : null}
-            aria-controls="thermal-expansion-content"
-            id="thermal-expansion-header"
-          >
             {open && (
-              <Typography variant="subtitle1" sx={{ color: "#fff" }}>
-                Thermal Expansion
-              </Typography>
+              <AccordionDetails>
+                <ListItem sx={{ px: 2.5 }}>
+                  <Typography variant="body2" sx={{ color: "#fff" }}>
+                    Electrical Conductivity Range: {conductivityRange[0]} -{" "}
+                    {conductivityRange[1]} S/m
+                  </Typography>
+                </ListItem>
+                <ListItem sx={{ px: 2.5 }}>
+                  <Slider
+                    value={conductivityRange}
+                    onChange={handleRangeChange(setConductivityRange)}
+                    valueLabelDisplay="auto"
+                    valueLabelFormat={(value) => `${value} S/m`}
+                    min={0}
+                    max={200}
+                  />
+                </ListItem>
+              </AccordionDetails>
             )}
-          </AccordionSummary>
+          </Accordion>
 
-          {open && (
-            <AccordionDetails>
-              <ListItem sx={{ px: 2.5 }}>
-                <Typography variant="body2" sx={{ color: "#fff" }}>
-                  Thermal Expansion Range: {thermalExpansionRange[0]} -{" "}
-                  {thermalExpansionRange[1]} x10⁻⁶ /°C
+          {/* Density Filter */}
+          <Accordion disabled={!open}>
+            <AccordionSummary
+              expandIcon={open ? <ExpandMore sx={{ color: "#fff" }} /> : null}
+              aria-controls="density-content"
+              id="density-header"
+            >
+              {open && (
+                <Typography variant="subtitle1" sx={{ color: "#fff" }}>
+                  Density
                 </Typography>
-              </ListItem>
-              <ListItem sx={{ px: 2.5 }}>
-                <Slider
-                  value={thermalExpansionRange}
-                  onChange={handleRangeChange(setThermalExpansionRange)}
-                  valueLabelDisplay="auto"
-                  valueLabelFormat={(value) => `${value} x10⁻⁶ /°C`}
-                  min={0}
-                  max={30}
-                />
-              </ListItem>
-            </AccordionDetails>
-          )}
-        </Accordion>
+              )}
+            </AccordionSummary>
+
+            {open && (
+              <AccordionDetails>
+                <ListItem sx={{ px: 2.5 }}>
+                  <Typography variant="body2" sx={{ color: "#fff" }}>
+                    Density Range: {densityRange[0]} - {densityRange[1]} g/cm³
+                  </Typography>
+                </ListItem>
+                <ListItem sx={{ px: 2.5 }}>
+                  <Slider
+                    value={densityRange}
+                    onChange={handleRangeChange(setDensityRange)}
+                    valueLabelDisplay="auto"
+                    valueLabelFormat={(value) => `${value} g/cm³`}
+                    min={0}
+                    max={10}
+                  />
+                </ListItem>
+              </AccordionDetails>
+            )}
+          </Accordion>
+
+          {/* Thermal Expansion Filter */}
+          <Accordion disabled={!open}>
+            <AccordionSummary
+              expandIcon={open ? <ExpandMore sx={{ color: "#fff" }} /> : null}
+              aria-controls="thermal-expansion-content"
+              id="thermal-expansion-header"
+            >
+              {open && (
+                <Typography variant="subtitle1" sx={{ color: "#fff" }}>
+                  Thermal Expansion
+                </Typography>
+              )}
+            </AccordionSummary>
+
+            {open && (
+              <AccordionDetails>
+                <ListItem sx={{ px: 2.5 }}>
+                  <Typography variant="body2" sx={{ color: "#fff" }}>
+                    Thermal Expansion Range: {thermalExpansionRange[0]} -{" "}
+                    {thermalExpansionRange[1]} x10⁻⁶ /°C
+                  </Typography>
+                </ListItem>
+                <ListItem sx={{ px: 2.5 }}>
+                  <Slider
+                    value={thermalExpansionRange}
+                    onChange={handleRangeChange(setThermalExpansionRange)}
+                    valueLabelDisplay="auto"
+                    valueLabelFormat={(value) => `${value} x10⁻⁶ /°C`}
+                    min={0}
+                    max={30}
+                  />
+                </ListItem>
+              </AccordionDetails>
+            )}
+          </Accordion>
+        </Box>
       </Drawer>
 
-      {/* Main Content */}
-      <Box component="main" sx={{ flexGrow: 1, p: 3, mt: "64px" }}>
-        <Typography variant="h5" color="textSecondary">
-          Search Results will appear here
-        </Typography>
+      <Box component="main" sx={{ flexGrow: 1 }}>
+        <MaterialsTable />
       </Box>
     </Box>
   );

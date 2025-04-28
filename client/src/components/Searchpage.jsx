@@ -9,26 +9,21 @@ import "./styles/Home.css";
 const SearchPage = () => {
   const navigate = useNavigate();
   const [username, setUsername] = useState("");
+  const [openSnackbar, setOpenSnackbar] = useState(false);
 
-  // Fetch user info on component mount
   useEffect(() => {
     const token = localStorage.getItem("access_token");
-
-    // Redirect to login if token is missing
     if (!token) {
       navigate("/login");
       return;
     }
 
-    // Check if it's the first login
     const isFirstLogin = localStorage.getItem("first_login");
-
     if (isFirstLogin === "true") {
       setOpenSnackbar(true);
       localStorage.setItem("first_login", "false");
     }
 
-    // Get user's profile data
     const fetchUser = async () => {
       try {
         const data = await getUserProfile(token);
@@ -43,10 +38,12 @@ const SearchPage = () => {
   }, [navigate]);
 
   return (
-    <>
-      <NavbarPrivate />
-      <SideNavbar />
-    </>
+    <div className="search-page-container">
+      <NavbarPrivate username={username} />
+      <div className="search-page-body">
+        <SideNavbar />
+      </div>
+    </div>
   );
 };
 
