@@ -1,9 +1,9 @@
 import React, { useState } from "react";
+import { debounce } from 'lodash';
 import {
   Drawer,
   List,
   ListItem,
-  ListItemText,
   Divider,
   IconButton,
   Toolbar,
@@ -53,12 +53,12 @@ const SideNavbar = () => {
   };
 
   // incase for type search
-  const handleMaterialTypeChange = (event) => {
+  const handleMaterialTypeChange = debounce((event) => {
     setMaterialTypes({
       ...materialTypes,
       [event.target.name]: event.target.checked,
     });
-  };
+  }, 500);
 
   // incase for range search
   const handleRangeChange = (setter) => (event, newValue) => {
@@ -152,7 +152,7 @@ const SideNavbar = () => {
                     "alloys",
                     "magnetic",
                   ].map((type) => (
-                    <ListItem key={type} button sx={{ px: 2.5 }}>
+                    <ListItem key={type} button="true" sx={{ px: 2.5 }}>
                       <FormControlLabel
                         control={
                           <Checkbox
