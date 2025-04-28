@@ -1,0 +1,132 @@
+{
+  "_id": { "$oid": "6800d7c887b4e033c878f703" },
+  "matGUID": "00c6ac5676494678a6abbd08ca4a5bc5",
+  "Material Name": "3A Composites Core Materials AIREX® R82.110 High Performance Structural Foam",
+  "Categories": [
+    "Other Engineering Material",
+    "Composite Core Material",
+    "Polymer",
+    "Thermoplastic"
+  ],
+  "Material Notes": "AIREX® R82 is a closed-cell, thermoplastic polymer foam that combines outstanding fire resistance with low smoke and toxicity, along with excellent dielectric properties. It has a good strength to weight ratio, very low moisture absorption, is thermoformable and ductile. AIREX® R82 is a core material for use in structural lightweight applications that demand high fire resistance, radar transparency or operation in extremely hot or cold environments. Characteristics Fulfils most stringent fire requirements Operating temperature from -194°C to +160°C (-317° F to +320 °F) Remains ductile at cryogenic temperatures Excellent dielectric properties (radar transparent outstanding) Very low moisture absorption Good fatigue resistance High impact resistance (non-brittle failure mode) Thermoformable Good sound and thermal insulation Applications Aircraft and Aerospace: Interiors, cockpit doors, cryogenic tanks, insulating panels, radomes, helicopter rotor blades, general aviation (fuselage and wing) Road and Rail: Front-ends, side skirts, roof panels, interiors Marine: Fast-ferries, fire resistant interiors, radomes Defense: Naval superstructures, antennas, combat communication systems Industrial: High-temperature tooling, radomes, x-ray tables",
+  "Vendors": "No vendors are listed for this material. Please click here if you are a supplier and would like information on how to add your listing to this material.",
+  "Properties": {
+    "Physical Properties": {
+      "Density": [
+        {
+          "Metric": "0.110 g/cc",
+          "English": "0.00397 lb/in³",
+          "Comments": "average; ISO 845"
+        },
+        {
+          "Metric": "0.0990 - 0.126 g/cc",
+          "English": "0.00358 - 0.00455 lb/in³",
+          "Comments": "typical range; ISO 845"
+        }
+      ]
+    },
+    "Mechanical Properties": {
+      "Tensile Strength": [
+        {
+          "Metric": ">= 1.90 MPa",
+          "English": ">= 276 psi",
+          "Comments": "in the plane; ISO 527 1-2"
+        },
+        {
+          "Metric": "2.20 MPa",
+          "English": "319 psi",
+          "Comments": "average; in the plane; ISO 527 1-2"
+        }
+      ],
+      "Elongation at Break": [
+        {
+          "Metric": ">= 10 %",
+          "English": ">= 10 %",
+          "Comments": "shear; ISO 1922"
+        },
+        {
+          "Metric": "18 %",
+          "English": "18 %",
+          "Comments": "average; shear; ISO 1922"
+        }
+      ],
+      "Tensile Modulus": [
+        {
+          "Metric": ">= 0.0540 GPa",
+          "English": ">= 7.83 ksi",
+          "Comments": "in the plane; ISO 527 1-2"
+        },
+        {
+          "Metric": "0.0640 GPa",
+          "English": "9.28 ksi",
+          "Comments": "average; in the plane; ISO 527 1-2"
+        }
+      ],
+      "Compressive Strength": [
+        {
+          "Metric": ">= 1.20 MPa",
+          "English": ">= 174 psi",
+          "Comments": "perpendicular to plane; ISO 844"
+        },
+        {
+          "Metric": "1.40 MPa",
+          "English": "203 psi",
+          "Comments": "average; perpendicular to plane; ISO 844"
+        }
+      ],
+      "Compressive Modulus": [
+        {
+          "Metric": ">= 0.0600 GPa",
+          "English": ">= 8.70 ksi",
+          "Comments": "perpendicular to plane; DIN 53421"
+        },
+        {
+          "Metric": "0.0830 GPa",
+          "English": "12.0 ksi",
+          "Comments": "average; perpendicular to plane; DIN 53421"
+        }
+      ],
+      "Shear Modulus": [
+        {
+          "Metric": ">= 0.0250 GPa",
+          "English": ">= 3.63 ksi",
+          "Comments": "ASTM C393"
+        },
+        {
+          "Metric": "0.0300 GPa",
+          "English": "4.35 ksi",
+          "Comments": "average; ASTM C393"
+        }
+      ],
+      "Shear Strength": [
+        {
+          "Metric": ">= 1.15 MPa",
+          "English": ">= 167 psi",
+          "Comments": "ISO 1922"
+        },
+        {
+          "Metric": "1.40 MPa",
+          "English": "203 psi",
+          "Comments": "average; ISO 1922"
+        }
+      ],
+      "Charpy Impact, Notched": [
+        {
+          "Metric": "0.140 J/cm²",
+          "English": "0.666 ft-lb/in²",
+          "Comments": "DIN 53453"
+        }
+      ]
+    },
+    "Thermal Properties": {
+      "Thermal Conductivity": [
+        {
+          "Metric": "0.0400 W/m-K",
+          "English": "0.278 BTU-in/hr-ft²-°F",
+          "Comments": "ISO 8301"
+        }
+      ]
+    },
+    "Descriptive Properties": { "Color": ["off white"] }
+  }
+}
