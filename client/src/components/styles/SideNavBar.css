@@ -1,0 +1,103 @@
+/* --- Side Navbar --- */
+.sidenav-root {
+  background-color: #1a1a1a;
+  height: 100vh;
+  color: #ffffff;
+  border-right: 1px solid #ddd;
+  display: flex;
+  flex-direction: column;
+}
+
+.sidenav-root .sidenav-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 64px;
+  border-bottom: 1px solid #ddd;
+  padding: 0 10px;
+}
+
+.sidenav-root .sidenav-title {
+  font-weight: 1000;
+  font-size: 1.5rem;
+  letter-spacing: 1px;
+}
+
+.sidenav-root .sidenav-list {
+  flex-grow: 1;
+  padding-top: 20px;
+  overflow-y: auto;
+}
+
+.sidenav-root .sidenav-item {
+  padding: 12px 24px;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+  display: flex;
+  align-items: center;
+}
+
+.sidenav-root .sidenav-item:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.sidenav-root .sidenav-text {
+  font-weight: 500;
+  font-size: 1.1rem;
+}
+
+.sidenav-root .sidenav-divider {
+  background-color: #ddd;
+  margin: 20px 0;
+}
+
+/* --- Accordion Styling Only inside SideNavbar --- */
+.sidenav-root .MuiAccordion-root {
+  background-color: #1a1a1a !important;
+  border: none;
+  box-shadow: none;
+}
+
+.sidenav-root .MuiAccordionSummary-root {
+  background-color: #333 !important;
+  color: #fff;
+  padding: 10px 24px;
+  border-radius: 4px;
+  margin: 8px 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: background-color 0.3s ease;
+}
+
+.sidenav-root .MuiAccordionSummary-root:hover {
+  background-color: #444 !important;
+}
+
+.sidenav-root .MuiAccordionDetails-root {
+  background-color: #333 !important;
+  padding: 0;
+}
+
+.sidenav-root .MuiListItem-root {
+  padding: 8px 16px;
+  background-color: #1a1a1a;
+}
+
+.sidenav-root .MuiCheckbox-root {
+  color: #fff !important;
+}
+
+.sidenav-root .MuiSlider-root {
+  color: #fff !important;
+  margin-top: 10px;
+}
+
+.sidenav-root .MuiTypography-root {
+  color: #fff !important;
+}
+
+/* Accordion expand icon style */
+.sidenav-root .MuiAccordionSummary-expandIcon {
+  color: #fff !important;
+}

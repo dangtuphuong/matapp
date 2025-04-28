@@ -13,6 +13,7 @@ import EditUsers from "./components/EditUsers";
 import ProtectedRoute from "./components/ProtectedRoute";
 import PublicRoute from "./components/PublicRoute";
 import SessionTimeout from "./components/SessionTimeout";
+import SearchPage from "./components/SearchPage";
 
 function App() {
   return (
@@ -58,6 +59,14 @@ function App() {
           element={
             <ProtectedRoute>
               <EditUsers />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/search"
+          element={
+            <ProtectedRoute>
+              <SearchPage />
             </ProtectedRoute>
           }
         />

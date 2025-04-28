@@ -45,7 +45,13 @@ const Navbar = () => {
   };
 
   return (
-    <AppBar position="static" className="navbar-root" elevation={0}>
+    <AppBar
+      position="fixed"
+      sx={{
+        backgroundColor: "#1a1a1a",
+        zIndex: (theme) => theme.zIndex.drawer + 1,
+      }}
+    >
       <Toolbar className="navbar-toolbar">
         {/* Left section: logo and title */}
         <Box component={Link} to="/home" className="navbar-logo">
@@ -63,8 +69,8 @@ const Navbar = () => {
           <Link to="/page2" className="navbar-link">
             Page 2
           </Link>
-          <Link to="/page3" className="navbar-link">
-            Page 3
+          <Link to="/search" className="navbar-link">
+            Search
           </Link>
           <Link to="/features" className="navbar-link">
             Features
