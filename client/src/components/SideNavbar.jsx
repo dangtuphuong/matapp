@@ -15,6 +15,7 @@ import {
   Accordion,
   AccordionSummary,
   AccordionDetails,
+  TextField,
 } from "@mui/material";
 import {
   ChevronLeft,
@@ -30,6 +31,8 @@ const collapsedWidth = 72; // Width when minimized
 
 const SideNavbar = () => {
   const [open, setOpen] = useState(true);
+
+  const [searchTerm, setSearchTerm] = useState("");
 
   // Filter states
   const [materialTypes, setMaterialTypes] = useState({
@@ -49,6 +52,7 @@ const SideNavbar = () => {
     setOpen(!open);
   };
 
+  // incase for type search
   const handleMaterialTypeChange = (event) => {
     setMaterialTypes({
       ...materialTypes,
@@ -56,8 +60,13 @@ const SideNavbar = () => {
     });
   };
 
+  // incase for range search
   const handleRangeChange = (setter) => (event, newValue) => {
     setter(newValue);
+  };
+
+  const handleSearchChange = (event) => {
+    setSearchTerm(event.target.value); // Update search term
   };
 
   return (
@@ -102,6 +111,20 @@ const SideNavbar = () => {
         </Toolbar>
 
         <Divider sx={{ backgroundColor: "#444" }} />
+
+        {/* Search Bar */}
+        <Box sx={{ padding: "10px" }}>
+          <TextField
+            label="Search Materials"
+            variant="outlined"
+            fullWidth
+            value={searchTerm}
+            onChange={handleSearchChange} // Update search term
+            sx={{ marginBottom: "10px", color: "#fff" }}
+            InputLabelProps={{ style: { color: "#fff" } }} // Style the label
+            InputProps={{ style: { color: "#fff" } }} // Style the input text
+          />
+        </Box>
 
         {/* Material Type Filter */}
         <Box sx={{ flexGrow: 1, overflowY: "auto" }}>
@@ -297,7 +320,7 @@ const SideNavbar = () => {
       </Drawer>
 
       <Box component="main" sx={{ flexGrow: 1 }}>
-        <MaterialsTable />
+        <MaterialsTable searchTerm={searchTerm} />
       </Box>
     </Box>
   );

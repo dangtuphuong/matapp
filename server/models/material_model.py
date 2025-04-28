@@ -1,35 +1,27 @@
 from extensions import mongo
 
-
 class MaterialModel:
     @staticmethod
-    def get_all_materials(page=1, limit=10):
+    def get_all_materials(page=1, limit=10, search_term=""):
         materials_collection = mongo.db["materials"]
 
-        # If page > 1, set the starting point for the query to the last _id from the previous page
-        last_id = None
-        if page > 1:
-            # Calculate how many documents to skip to get to the start of the current page
-            skip = (page - 1) * limit
-            # Get the last material's _id from the previous page
-            last_material = materials_collection.find().skip(skip - 1).limit(1)
-            last_doc = last_material.next() if last_material.alive else None
-            last_id = last_doc["_id"] if last_doc else None
-
-        # Fetch materials starting after the last _id
+        # Build the query
         query = {}
-        if last_id:
-            query["_id"] = {"$gt": last_id}
+        if search_term:
+            # Case-insensitive search for material name
+            query["Material Name"] = {"$regex": search_term, "$options": "i"}  # 'i' for case-insensitive
 
-        materials = materials_collection.find(query).limit(limit)
+        # Pagination Logic
+        skip = (page - 1) * limit
+        materials = materials_collection.find(query).skip(skip).limit(limit)
 
         materials_list = []
         for material in materials:
             material["_id"] = str(material["_id"])
             materials_list.append(material)
 
-        # Get total count of materials for pagination info
-        total_count = materials_collection.count_documents({})
+        # Get the total count of materials that match the query
+        total_count = materials_collection.count_documents(query)
 
         return materials_list, total_count
 
@@ -43,3 +35,4 @@ class MaterialModel:
             material["_id"] = str(material["_id"])
 
         return material
+
