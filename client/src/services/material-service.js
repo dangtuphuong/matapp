@@ -2,6 +2,16 @@ import axios from "axios";
 
 const API_URL = "/api";
 
+export const getMaterialDetail = async (matID, setMaterial) => {
+  const token = localStorage.getItem("access_token");
+  axios.get(`${API_URL}/material/detail/${matID}`, {
+      headers: {
+          Authorization: `Bearer ${token}`,
+      }
+    })
+    .then(response => setMaterial(response.data.material))
+}
+
 export const getAllMaterials = async ({ page, limit }) => {
   // Get the token from localStorage
   const token = localStorage.getItem("access_token");
