@@ -9,10 +9,12 @@ import Home from "./components/HomePage";
 import Landing from "./components/LandingPage";
 import Profile from "./components/ProfilePage";
 import EditUsers from "./components/EditUsers";
+import SmartSearch from "./components/SmartSearch"
 
 import ProtectedRoute from "./components/ProtectedRoute";
 import PublicRoute from "./components/PublicRoute";
 import SessionTimeout from "./components/SessionTimeout";
+import MaterialDetail from "./components/MaterialDetail";
 
 function App() {
   return (
@@ -61,7 +63,22 @@ function App() {
             </ProtectedRoute>
           }
         />
-
+        <Route
+          path="/smart-search"
+          element={
+            <ProtectedRoute>
+              <SmartSearch /> 
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/material/detail/:matID"
+          element={
+            <ProtectedRoute>
+              <MaterialDetail /> 
+            </ProtectedRoute>
+          }
+        />
         {/* Public landing page (root route) */}
         <Route path="/" element={<Landing />} />
       </Routes>

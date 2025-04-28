@@ -56,6 +56,9 @@ const Navbar = () => {
 
         {/* Center section: navigation links */}
         <Box className="navbar-center-links">
+          <Link to="/smart-search" className="navbar-link">
+            Smart Search
+          </Link>
           <Link to="/page1" className="navbar-link">
             Page 1
           </Link>

@@ -1,5 +1,4 @@
 from flask import Flask, request, jsonify
-from flask_pymongo import PyMongo
 from flask_jwt_extended import (
     JWTManager,
     create_access_token,
@@ -12,6 +11,10 @@ import os
 from bson.objectid import ObjectId
 from datetime import datetime, timezone
 from dotenv import load_dotenv
+
+from extension.mongo import mongo
+from machine_learning.llmSearch import ml_bp
+from machine_learning.vectorSearch import vt_bp
 
 # Load environment variables from .env file
 load_dotenv()
@@ -28,8 +31,12 @@ app.config["JWT_SECRET_KEY"] = os.getenv("JWT_SECRET_KEY", "jwt_dummy_secret_key
 app.config["JWT_TOKEN_LOCATION"] = ["headers"]
 
 # Initialize database and JWT
-mongo = PyMongo(app)
+mongo.init_app(app)
 jwt = JWTManager(app)
+
+# Register route
+app.register_blueprint(ml_bp)
+app.register_blueprint(vt_bp)
 
 # Test MongoDB connection
 try:
@@ -62,8 +69,6 @@ def register():
         role = request.json.get("role", "normal_user").lower()
     except (ValueError, TypeError):
         role = "normal_user"
-
-    
 
     if not email or not password:
         return jsonify({"message": "Email and password are required!"}), 400
@@ -219,6 +224,18 @@ def delete_user(user_id):
 
     mongo.db.users.delete_one({"_id": ObjectId(user_id)})
     return jsonify({"message": "User deleted successfully"}), 200
+
+@app.route("/api/material/detail/<mat_id>", methods=["GET"])
+@jwt_required()
+def get_material_detail(mat_id):
+    current_email = get_jwt_identity()
+    current_user = mongo.db.users.find_one({"email": current_email})
+
+    cursor = mongo.db.materials.find({ "matGUID": mat_id }, { "_id": False })
+
+    materials = list(cursor)
+
+    return jsonify({ "material": materials[0] }), 200
 
 if __name__ == "__main__":
     app.run(debug=True)
