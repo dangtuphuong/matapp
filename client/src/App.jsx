@@ -9,6 +9,7 @@ import Home from "./components/HomePage";
 import Landing from "./components/LandingPage";
 import Profile from "./components/ProfilePage";
 import EditUsers from "./components/EditUsers";
+import Material from "./components/MaterialPage";
 
 import ProtectedRoute from "./components/ProtectedRoute";
 import PublicRoute from "./components/PublicRoute";
@@ -63,10 +64,10 @@ function App() {
           }
         />
         <Route
-          path="/search"
+          path="/material/:matGUID"
           element={
             <ProtectedRoute>
-              <SearchPage />
+              <Material />
             </ProtectedRoute>
           }
         />

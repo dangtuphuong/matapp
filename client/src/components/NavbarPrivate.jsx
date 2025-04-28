@@ -24,7 +24,12 @@ const Navbar = () => {
   // Fetch user profile on initial render to update username
   useEffect(() => {
     const token = localStorage.getItem("access_token");
-    if (!token) return;
+
+    // Redirect to login if token is missing
+    if (!token) {
+      navigate("/login");
+      return;
+    }
 
     getUserProfile(token)
       .then((data) => {
@@ -63,17 +68,11 @@ const Navbar = () => {
 
         {/* Center section: navigation links */}
         <Box className="navbar-center-links">
-          <Link to="/page1" className="navbar-link">
-            Page 1
-          </Link>
-          <Link to="/page2" className="navbar-link">
-            Page 2
+          <Link to="/home" className="navbar-link">
+            Home
           </Link>
           <Link to="/search" className="navbar-link">
             Search
-          </Link>
-          <Link to="/features" className="navbar-link">
-            Features
           </Link>
           <Link to="/aboutus" className="navbar-link">
             About Us
