@@ -4,6 +4,7 @@ from flask_jwt_extended import (
     jwt_required,
     get_jwt_identity,
 )
+from datetime import timedelta
 from models.user_model import User
 from utils.auth import hash_password, check_password
 
@@ -51,7 +52,7 @@ def register():
         }
     )
 
-    access_token = create_access_token(identity=email)
+    access_token = create_access_token(identity=email, expires_delta=timedelta(days=7))
     return (
         jsonify(
             {"message": "User created successfully!", "access_token": access_token}
@@ -73,7 +74,7 @@ def login():
     if not user or not check_password(user["password"], password):
         return jsonify({"message": "Invalid credentials!"}), 401
 
-    access_token = create_access_token(identity=email)
+    access_token = create_access_token(identity=email, expires_delta=timedelta(days=7))
     return jsonify(access_token=access_token, firstName=user.get("firstName", "")), 200
 
 

@@ -2,6 +2,7 @@ from flask import Flask
 from extensions import mongo, jwt, bcrypt, cors
 from config import Config
 from routes.user_routes import user_bp
+from routes.material_routes import material_bp
 
 
 def create_app():
@@ -16,6 +17,7 @@ def create_app():
 
     # Register Blueprints
     app.register_blueprint(user_bp, url_prefix="/api")
+    app.register_blueprint(material_bp, url_prefix="/api")
 
     # Test DB connection
     with app.app_context():
