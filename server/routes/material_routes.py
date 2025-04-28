@@ -12,8 +12,9 @@ def get_materials():
     try:
         page = int(request.args.get("page", 1))
         limit = int(request.args.get("limit", 10))
+        search_term = request.args.get("searchTerm", "")  # Get search term from query string
 
-        materials, total_count = MaterialModel.get_all_materials(page, limit)
+        materials, total_count = MaterialModel.get_all_materials(page, limit, search_term)
 
         # Calculate total pages
         total_pages = (total_count + limit - 1) // limit

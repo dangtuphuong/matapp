@@ -23,21 +23,23 @@ const headerStyle = {
   fontWeight: "bold",
 };
 
-const MaterialsTable = () => {
+const MaterialsTable = ({ searchTerm }) => {
   const navigate = useNavigate();
   const [isLoading, setLoading] = useState(false);
   const [materials, setMaterials] = useState([]);
+  const [filteredMaterials, setFilteredMaterials] = useState([]); // Filtered based on search
   const [totalCount, setTotalCount] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
   const [limit] = useState(10);
 
   // Fetch materials from API
-  const fetchMaterials = useCallback(({ page, limit }) => {
+  const fetchMaterials = useCallback(({ page, limit, searchTerm }) => {
     setLoading(true);
-    return getAllMaterials({ page, limit })
+    return getAllMaterials({ page, limit, searchTerm }) // Make sure to pass searchTerm to the API call
       .then((data) => {
-        setMaterials(data.materials);
-        setTotalCount(data.total_count);
+        setMaterials(data.materials); // Set all materials at once
+        setFilteredMaterials(data.materials); // Set the filtered materials
+        setTotalCount(data.total_count); // Set the total count (you can adjust this based on how you want to count)
       })
       .catch((err) => console.error(err))
       .finally(() => setLoading(false));
@@ -52,8 +54,22 @@ const MaterialsTable = () => {
 
   // Load data on component mount and page change
   useEffect(() => {
-    fetchMaterials({ page: currentPage, limit });
-  }, [currentPage]);
+    fetchMaterials({ page: currentPage, limit, searchTerm });
+  }, [currentPage, searchTerm]);
+
+  // Update filteredMaterials whenever materials or searchTerm changes
+  useEffect(() => {
+    if (searchTerm) {
+      const filtered = materials.filter((material) =>
+        material["Material Name"]
+          .toLowerCase()
+          .includes(searchTerm.toLowerCase())
+      );
+      setFilteredMaterials(filtered); // Set filtered materials
+    } else {
+      setFilteredMaterials(materials); // If no searchTerm, show all materials
+    }
+  }, [searchTerm, materials]);
 
   // Calculate total pages
   const totalPages = Math.ceil(totalCount / limit);
@@ -62,10 +78,6 @@ const MaterialsTable = () => {
 
   return (
     <>
-      <Typography variant="h4" sx={{ mt: 3, mb: 3 }}>
-        Materials List
-      </Typography>
-
       <Table>
         <TableHead>
           <TableRow>
@@ -85,8 +97,8 @@ const MaterialsTable = () => {
                 </TableCell>
               </TableRow>
             ))
-          ) : materials?.length > 0 ? (
-            materials?.map((material) => (
+          ) : filteredMaterials?.length > 0 ? (
+            filteredMaterials?.map((material) => (
               <TableRow
                 key={material?._id}
                 onClick={() => onRowClick(material?.matGUID)}

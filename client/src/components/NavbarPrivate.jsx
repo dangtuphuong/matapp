@@ -45,11 +45,18 @@ const Navbar = () => {
   const handleLogout = () => {
     localStorage.removeItem("access_token");
     localStorage.removeItem("username");
+    localStorage.removeItem("first_login");
     navigate("/login");
   };
 
   return (
-    <AppBar position="static" className="navbar-root" elevation={0}>
+    <AppBar
+      position="static"
+      sx={{
+        backgroundColor: "#1a1a1a",
+        zIndex: (theme) => theme.zIndex.drawer + 1,
+      }}
+    >
       <Toolbar className="navbar-toolbar">
         {/* Left section: logo and title */}
         <Box component={Link} to="/home" className="navbar-logo">
