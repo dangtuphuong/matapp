@@ -22,7 +22,6 @@ import {
   updateUserInfo,
   deleteUser,
   resetUserPassword,
-  getUserProfile,
 } from "../services/user-service";
 import NavbarPrivate from "./NavbarPrivate";
 import "./styles/EditUsers.css";
@@ -40,7 +39,6 @@ const EditUsers = () => {
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [resetPasswordDialogOpen, setResetPasswordDialogOpen] = useState(false);
   const [newPassword, setNewPassword] = useState("");
-  const [adminName, setAdminName] = useState("Admin");
 
   const currentEmail = localStorage.getItem("username");
 
@@ -55,20 +53,8 @@ const EditUsers = () => {
     }
   };
 
-  // Fetch current admin profile for displaying name
-  const fetchAdminProfile = async () => {
-    try {
-      const token = localStorage.getItem("access_token");
-      const data = await getUserProfile(token);
-      setAdminName(data.firstName);
-    } catch (err) {
-      console.error("Failed to fetch profile", err);
-    }
-  };
-
   useEffect(() => {
     fetchUsers();
-    fetchAdminProfile();
   }, []);
 
   // Open edit dialog with selected user
@@ -128,7 +114,7 @@ const EditUsers = () => {
   return (
     <>
       {/* Navbar with logged-in admin's name */}
-      <NavbarPrivate username={adminName || "Admin"} />
+      <NavbarPrivate />
       <Container>
         <Typography className="edit-users-title">Manage Users</Typography>
 

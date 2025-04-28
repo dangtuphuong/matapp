@@ -24,7 +24,12 @@ const Navbar = () => {
   // Fetch user profile on initial render to update username
   useEffect(() => {
     const token = localStorage.getItem("access_token");
-    if (!token) return;
+
+    // Redirect to login if token is missing
+    if (!token) {
+      navigate("/login");
+      return;
+    }
 
     getUserProfile(token)
       .then((data) => {

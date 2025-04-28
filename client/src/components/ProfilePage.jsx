@@ -22,12 +22,6 @@ const ProfilePage = () => {
   useEffect(() => {
     const token = localStorage.getItem("access_token");
 
-    // Redirect to login if token is missing
-    if (!token) {
-      navigate("/login");
-      return;
-    }
-
     // Get profile from API
     getUserProfile(token)
       .then((data) => setProfile(data))
@@ -80,7 +74,7 @@ const ProfilePage = () => {
   return (
     <>
       {/* Private navbar with user’s first name */}
-      <NavbarPrivate username={profile?.firstName || "User"} />
+      <NavbarPrivate />
 
       <Container className="profile-container">
         {/* Profile summary card */}
