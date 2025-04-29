@@ -45,6 +45,11 @@ const Login = () => {
       localStorage.setItem("access_token", response.data.access_token);
       localStorage.setItem("username", response.data.firstName);
 
+      // Set the first_login flag if it’s not already set
+      if (!localStorage.getItem("first_login")) {
+        localStorage.setItem("first_login", "true");
+      }
+
       setLoading(false);
       setOpenSnackbar(true);
       navigate("/home");
