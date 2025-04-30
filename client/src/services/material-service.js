@@ -12,7 +12,7 @@ export const getMaterialDetail = async (matID, setMaterial) => {
     .then(response => setMaterial(response.data.material))
 }
 
-export const getAllMaterials = async ({ page, limit }) => {
+export const getAllMaterials = async ({ page, limit, searchTerm }) => {
   // Get the token from localStorage
   const token = localStorage.getItem("access_token");
 

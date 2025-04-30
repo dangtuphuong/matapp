@@ -89,14 +89,6 @@ function App() {
             </ProtectedRoute>
           }
         />
-        <Route
-          path="/material/detail/:matID"
-          element={
-            <ProtectedRoute>
-              <MaterialDetail /> 
-            </ProtectedRoute>
-          }
-        />
         {/* Public landing page (root route) */}
         <Route path="/" element={<Landing />} />
       </Routes>

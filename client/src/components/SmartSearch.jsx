@@ -30,15 +30,17 @@ const SmartSearch = () => {
     const handleSearch = async () => {
         if (model === "vector") {
             const response = await vectorSearch(query, limit, skip);
-            setSearchResult(response.data.result);
+            setSearchResult(response.data);
         } else {
             const response = await llmSearch(query);
-            setSearchResult(response.data.result);
+            const result = response.data.result.replace(/ObjectId\('([^']+)'\)/g, '"$1"').replace(/'/g, '"');
+            const arr = JSON.parse(result);
+            setSearchResult(arr.map(obj => ({ material: obj })));
         }
     }
 
     const handleClick = (matID) => {
-        navigate(`/material/detail/${matID}`)
+        navigate(`/material/${matID}`)
     }
 
     return (
@@ -55,13 +57,19 @@ const SmartSearch = () => {
                     Search
                 </button>
             </div>
-            <div className={``}>
-                <div className={`px-4 grid grid-cols-5 gap-4 space-y-2`}>
+            <div className={`py-2`}>
+                <div className={`px-6 space-y-5`}>
                     { searchResult.map((material, id) => 
-                        <div key={id} className={`flex w-40 h-40 bg-zinc-200 justify-self-center rounded-md`} onClick={() => handleClick(material.matGUID)}>
-                            <div className={`px-1 self-end truncate`}>
-                                <p className={`text-xs`}>ID: {material.matGUID}</p>
-                                <p className={`text-xs`}>Score: {parseFloat(material.score).toFixed(2)}</p>
+                        <div key={id} className={`p-2 w-full round-md border border-zinc-500 justify-self-center rounded-md hover:bg-zinc-200 hover:cursor-pointer`} onClick={() => handleClick(material.material.matGUID)}>
+                            <div className={`px-1 self-end truncate space-y-0.5`}>
+                                <p className={`text-lg`}><strong>Name:</strong> {material.material["Material Name"]}</p>
+                                <span className={`flex gap-2`}><strong>Categories:</strong> 
+                                    { material.material["Categories"].map(category => 
+                                        <p>{category};</p>
+                                    )}  
+                                </span>
+                                <p className={`truncate`}><strong>Note: </strong>{material.material["Material Notes"]}</p>
+                                <p className={`${material.score ? "" : "hidden"} text-sm`}><strong>Similar score: </strong>{material.score}</p>
                             </div>
                         </div>
                     )}

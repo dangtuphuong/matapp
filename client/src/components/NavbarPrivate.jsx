@@ -68,14 +68,14 @@ const Navbar = () => {
 
         {/* Center section: navigation links */}
         <Box className="navbar-center-links">
-          <Link to="/smart-search" className="navbar-link">
-            Smart Search
-          </Link>
           <Link to="/home" className="navbar-link">
             Home
           </Link>
           <Link to="/search" className="navbar-link">
             Search
+          </Link>
+          <Link to="/smart-search" className="navbar-link">
+            Smart Search
           </Link>
           <Link to="/aboutus" className="navbar-link">
             About Us
