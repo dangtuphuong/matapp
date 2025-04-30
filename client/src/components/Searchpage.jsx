@@ -9,6 +9,7 @@ import {
   Radio,
   FormControlLabel,
   Button,
+  Divider,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import { RichTreeView } from "@mui/x-tree-view/RichTreeView";
@@ -33,7 +34,7 @@ const convertGroupedData = (data) =>
     }))
   );
 
-const PropertyFilterItem = ({ properties, onAdd }) => {
+const PropertyFilterItem = ({ properties, onChange }) => {
   const [selectedProperty, setSelectedProperty] = useState(null);
   const [selectedUnit, setSelectedUnit] = useState(null);
   const [min, setMin] = useState("");
@@ -50,23 +51,15 @@ const PropertyFilterItem = ({ properties, onAdd }) => {
     setSelectedProperty(selectedOption);
   };
 
-  const handleAdd = () => {
-    const minValue = Number(min);
-    const maxValue = Number(max);
-
-    if (isNaN(minValue) || isNaN(maxValue)) {
-      alert("Please enter valid numeric values for min and max.");
-      return;
-    }
-
-    onAdd({
+  useEffect(() => {
+    onChange({
       category: selectedProperty?.group,
       property: selectedProperty?.label,
       ...(min !== "" && { min: Number(min) }),
       ...(max !== "" && { max: Number(max) }),
       unit: selectedUnit?.unit,
     });
-  };
+  }, [selectedProperty?.label, min, max]);
 
   return (
     <Box>
@@ -116,28 +109,21 @@ const PropertyFilterItem = ({ properties, onAdd }) => {
           </div>
         </Box>
       )}
-
-      {selectedProperty && (min || max) && (
-        <Button
-          sx={{ mt: 1 }}
-          size="small"
-          variant="outlined"
-          onClick={handleAdd}
-        >
-          Add
-        </Button>
-      )}
+      <Divider sx={{ m: "20px 0" }} />
     </Box>
   );
 };
 
 const SearchPage = () => {
-  const [searchTerm, setSearchTerm] = useState("");
   const [categories, setCategories] = useState([]);
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [properties, setProperties] = useState([]);
   const [propertyFilters, setPropertyFilters] = useState([0]);
   const [selectedProperties, setSelectedProperties] = useState([]);
+  const [searchParams, setSearchParams] = useState({
+    searchCategories: [],
+    searchProperties: [],
+  });
 
   useEffect(() => {
     getCategories()
@@ -148,10 +134,6 @@ const SearchPage = () => {
       .then((data) => setProperties(convertGroupedData(data?.properties || [])))
       .catch((err) => console.error(err));
   }, []);
-
-  const handleSearchChange = (event) => {
-    setSearchTerm(event.target.value);
-  };
 
   const handleSelectedCategoriesChange = (event, ids) => {
     setSelectedCategories(ids);
@@ -171,30 +153,23 @@ const SearchPage = () => {
     }
   };
 
+  const onUpdateSearchParams = () =>
+    setSearchParams({
+      searchCategories: selectedCategories,
+      searchProperties: selectedProperties,
+    });
+
   return (
     <div className="search-page-container">
       <NavbarPrivate />
-      <Typography align="center" variant="h4" sx={{ mt: 3, mb: 3 }}>
+      <Typography align="center" variant="h4" sx={{ mt: 3, mb: 2 }}>
         Search Materials
       </Typography>
       <Container sx={{ display: "flex" }}>
-        <Box sx={{ marginRight: "15px" }}>
-          {/* Material Name */}
-          <Box>
-            <Typography variant="h6" sx={{ m: "10px 0" }}>
-              By Material Name
-            </Typography>
-            <TextField
-              label="Material Name"
-              fullWidth
-              value={searchTerm}
-              onChange={handleSearchChange}
-            />
-          </Box>
-
+        <Box sx={{ marginRight: "15px", width: "270px", minWidth: "270px" }}>
           {/* Material Categories */}
           <Box>
-            <Typography variant="h6" sx={{ m: "10px 0" }}>
+            <Typography variant="h6" sx={{ mb: "20px" }}>
               By Categories
             </Typography>
             <RichTreeView
@@ -207,36 +182,39 @@ const SearchPage = () => {
           </Box>
 
           {/* Material Properties */}
+          <Divider sx={{ m: "20px 0" }} />
           <Box>
-            <Typography variant="h6" sx={{ m: "10px 0" }}>
+            <Typography variant="h6" sx={{ m: "20px 0" }}>
               By Properties
             </Typography>
-            {propertyFilters.map((id) => (
-              <PropertyFilterItem
-                key={id}
-                properties={properties}
-                onAdd={handleSelectedProperties}
-              />
-            ))}
+            <div>
+              {propertyFilters?.map((id) => (
+                <PropertyFilterItem
+                  key={id}
+                  properties={properties}
+                  onChange={handleSelectedProperties}
+                />
+              ))}
+            </div>
+            <Button
+              startIcon={<AddIcon />}
+              onClick={() =>
+                setPropertyFilters([
+                  ...propertyFilters,
+                  propertyFilters?.length + 1,
+                ])
+              }
+            >
+              More Property
+            </Button>
             <Box
               sx={{
                 m: "20px 0",
                 display: "flex",
-                justifyContent: "space-between",
+                justifyContent: "center",
               }}
             >
-              <Button
-                startIcon={<AddIcon />}
-                onClick={() =>
-                  setPropertyFilters([
-                    ...propertyFilters,
-                    propertyFilters?.length + 1,
-                  ])
-                }
-              >
-                More Property
-              </Button>
-              <Button variant="contained" onClick>
+              <Button variant="contained" onClick={onUpdateSearchParams}>
                 Search
               </Button>
             </Box>
@@ -244,9 +222,8 @@ const SearchPage = () => {
         </Box>
         <Box component="main" sx={{ flexGrow: 1 }}>
           <MaterialsTable
-            searchTerm={searchTerm}
-            searchCategories={selectedCategories}
-            searchProperties={selectedProperties}
+            searchCategories={searchParams?.searchCategories}
+            searchProperties={searchParams?.searchProperties}
           />
         </Box>
       </Container>

@@ -1,6 +1,8 @@
 import { useNavigate } from "react-router-dom";
 import React, { useEffect, useState, useCallback } from "react";
 import {
+  Box,
+  TextField,
   Table,
   TableBody,
   TableCell,
@@ -21,13 +23,14 @@ const headerStyle = {
   fontWeight: "bold",
 };
 
-const MaterialsTable = ({ searchTerm, searchCategories, searchProperties }) => {
+const MaterialsTable = ({ searchCategories, searchProperties }) => {
   const navigate = useNavigate();
   const [isLoading, setLoading] = useState(false);
   const [materials, setMaterials] = useState([]);
   const [totalCount, setTotalCount] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
   const [limit] = useState(10);
+  const [searchTerm, setSearchTerm] = useState("");
 
   // Fetch materials from API
   const fetchMaterials = useCallback((params) => {
@@ -70,9 +73,22 @@ const MaterialsTable = ({ searchTerm, searchCategories, searchProperties }) => {
 
   const onRowClick = (id) => navigate(`/material/${id}`);
 
+  const handleSearchChange = (event) => {
+    setSearchTerm(event.target.value);
+  };
+
   return (
     <>
-      <Table>
+      {/* Material Name */}
+      <Box sx={{ mb: 1.5 }}>
+        <TextField
+          label="Search Material Name"
+          fullWidth
+          value={searchTerm}
+          onChange={handleSearchChange}
+        />
+      </Box>
+      <Table sx={{ border: "1px solid #ccc" }}>
         <TableHead>
           <TableRow>
             <TableCell sx={headerStyle}>Name</TableCell>

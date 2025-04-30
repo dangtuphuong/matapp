@@ -6,8 +6,8 @@ export const getAllMaterials = async ({
   page,
   limit,
   searchTerm,
-  searchCategories,
-  searchProperties,
+  searchCategories = [],
+  searchProperties = [],
 }) => {
   // Get the token from localStorage
   const token = localStorage.getItem("access_token");

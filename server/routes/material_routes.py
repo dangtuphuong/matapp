@@ -16,7 +16,7 @@ def get_materials():
         limit = int(data.get("limit", 10))
         search_term = data.get("searchTerm", "")
         search_cats = data.get("searchCategories", [])
-        search_props = data.get("searchProperties", {})
+        search_props = data.get("searchProperties", [])
 
         materials, total_count = MaterialModel.get_all_materials(
             page, limit, search_term, search_cats, search_props
