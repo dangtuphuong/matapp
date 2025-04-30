@@ -1,16 +1,31 @@
 from extensions import mongo
 import re
 
+
 class MaterialModel:
     @staticmethod
-    def get_all_materials(page=1, limit=10, search_term=""):
+    def get_all_materials(page=1, limit=10, search_term="", search_cats=""):
         materials_collection = mongo.db["materials"]
 
         # Build the query
         query = {}
+        conditions = []
+
+        # Add search term condition on 'Material Name'
         if search_term:
-            # Case-insensitive search for material name
-            query["Material Name"] = {"$regex": search_term, "$options": "i"}  # 'i' for case-insensitive
+            conditions.append(
+                {"Material Name": {"$regex": search_term, "$options": "i"}}
+            )
+
+        # Parse and add categories condition
+        if search_cats:
+            category_list = [cat.strip() for cat in search_cats.split(",")]
+            if category_list:
+                conditions.append({"Categories": {"$all": category_list}})
+
+        # Combine conditions using $and if both are provided
+        if conditions:
+            query = {"$and": conditions}
 
         # Pagination Logic
         skip = (page - 1) * limit
@@ -36,18 +51,13 @@ class MaterialModel:
             material["_id"] = str(material["_id"])
 
         return material
-    
+
     @staticmethod
     def search_material(name_query):
         materials_collection = mongo.db["materials"]
 
         # Case-insensitive regex search
-        query = {
-            "Material Name": {
-                "$regex": re.escape(name_query),
-                "$options": "i"
-            }
-        }
+        query = {"Material Name": {"$regex": re.escape(name_query), "$options": "i"}}
 
         results = list(materials_collection.find(query))
         return results
@@ -60,25 +70,27 @@ class MaterialModel:
         # Filter by categories
         if categories:
             query.append({"Categories": {"$in": categories}})
-        
+
         # Add parsed_properties conditions
         for cond in property_conditions:
-            section = cond["section"]        # e.g., "Physical Properties"
-            name = cond["name"]              # e.g., "Density"
-            value = cond["value"]            # e.g., 2.5
-            operator = cond["operator"]      # e.g., "gte"
+            section = cond["section"]  # e.g., "Physical Properties"
+            name = cond["name"]  # e.g., "Density"
+            value = cond["value"]  # e.g., 2.5
+            operator = cond["operator"]  # e.g., "gte"
             unit_system = cond["unit_system"]  # e.g., "metric"
 
             op_map = {
-                'lt': '$lt',
-                'lte': '$lte',
-                'eq': '$eq',
-                'gte': '$gte',
-                'gt': '$gt'
+                "lt": "$lt",
+                "lte": "$lte",
+                "eq": "$eq",
+                "gte": "$gte",
+                "gt": "$gt",
             }
 
             property_query = {
-                f"parsed_properties.{section}.{name}.{unit_system}.min": {op_map[operator]: value}
+                f"parsed_properties.{section}.{name}.{unit_system}.min": {
+                    op_map[operator]: value
+                }
             }
             query.append(property_query)
 

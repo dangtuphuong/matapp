@@ -21,7 +21,7 @@ const headerStyle = {
   fontWeight: "bold",
 };
 
-const MaterialsTable = ({ searchTerm }) => {
+const MaterialsTable = ({ searchTerm, searchCategories }) => {
   const navigate = useNavigate();
   const [isLoading, setLoading] = useState(false);
   const [materials, setMaterials] = useState([]);
@@ -30,9 +30,9 @@ const MaterialsTable = ({ searchTerm }) => {
   const [limit] = useState(10);
 
   // Fetch materials from API
-  const fetchMaterials = useCallback(({ page, limit, searchTerm }) => {
+  const fetchMaterials = useCallback((params) => {
     setLoading(true);
-    return getAllMaterials({ page, limit, searchTerm })
+    return getAllMaterials(params)
       .then((data) => {
         setMaterials(data.materials);
         setTotalCount(data.total_count);
@@ -51,13 +51,18 @@ const MaterialsTable = ({ searchTerm }) => {
   // Load data on component mount and page change
   useEffect(() => {
     const delayDebounce = setTimeout(() => {
-      fetchMaterials({ page: currentPage, limit, searchTerm });
+      fetchMaterials({
+        page: currentPage,
+        limit,
+        searchTerm,
+        searchCategories,
+      });
     }, 300);
 
     return () => {
       clearTimeout(delayDebounce);
     };
-  }, [currentPage, searchTerm, limit]);
+  }, [currentPage, searchTerm, limit, searchCategories]);
 
   // Calculate total pages
   const totalPages = Math.ceil(totalCount / limit);
