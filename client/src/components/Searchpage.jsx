@@ -60,7 +60,8 @@ const PropertyFilterItem = ({ properties, onAdd }) => {
     }
 
     onAdd({
-      name: selectedProperty?.label,
+      category: selectedProperty?.group,
+      property: selectedProperty?.label,
       ...(min !== "" && { min: Number(min) }),
       ...(max !== "" && { max: Number(max) }),
       unit: selectedUnit?.unit,
