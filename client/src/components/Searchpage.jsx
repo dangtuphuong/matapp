@@ -171,8 +171,6 @@ const SearchPage = () => {
     }
   };
 
-  console.log(selectedProperties);
-
   return (
     <div className="search-page-container">
       <NavbarPrivate />
