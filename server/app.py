@@ -3,6 +3,9 @@ from extensions import mongo, jwt, bcrypt, cors
 from config import Config
 from routes.user_routes import user_bp
 from routes.material_routes import material_bp
+from routes.category_routes import category_bp
+from routes.property_routes import property_bp
+
 from routes.machine_learning.vectorSearch import vt_bp
 from routes.machine_learning.llmSearch import ml_bp
 
@@ -21,6 +24,8 @@ def create_app():
     app.register_blueprint(material_bp, url_prefix="/api")
     app.register_blueprint(vt_bp, url_prefix="/api")
     app.register_blueprint(ml_bp, url_prefix="/api")
+    app.register_blueprint(category_bp, url_prefix="/api")
+    app.register_blueprint(property_bp, url_prefix="/api")
 
     # Test DB connection
     with app.app_context():

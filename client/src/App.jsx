@@ -10,6 +10,7 @@ import Landing from "./components/LandingPage";
 import Profile from "./components/ProfilePage";
 import EditUsers from "./components/EditUsers";
 import Material from "./components/MaterialPage";
+import Search from "./components/SearchPage";
 import SmartSearch from "./components/SmartSearch"
 
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -69,7 +70,7 @@ function App() {
           path="/search"
           element={
             <ProtectedRoute>
-              <SearchPage />
+              <Search />
             </ProtectedRoute>
           }
         />
