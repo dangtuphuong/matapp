@@ -4,30 +4,51 @@ import re
 
 class MaterialModel:
     @staticmethod
-    def get_all_materials(page=1, limit=10, search_term="", search_cats=""):
+    def get_all_materials(
+        page=1, limit=10, search_term="", search_cats=[], search_properties=[]
+    ):
         materials_collection = mongo.db["materials"]
-
-        # Build the query
         query = {}
         conditions = []
 
-        # Add search term condition on 'Material Name'
+        # Search term
         if search_term:
             conditions.append(
                 {"Material Name": {"$regex": search_term, "$options": "i"}}
             )
 
-        # Parse and add categories condition
+        # Categories
         if search_cats:
-            category_list = [cat.strip() for cat in search_cats.split(",")]
+            category_list = [cat.strip() for cat in search_cats]
             if category_list:
                 conditions.append({"Categories": {"$all": category_list}})
 
-        # Combine conditions using $and if both are provided
+        # Property filters
+        for prop in search_properties:
+            prop_name = prop.get("name")
+            min_val = prop.get("min")
+            max_val = prop.get("max")
+
+            if not prop_name:
+                continue
+
+            # Assume we only search within Metric values for simplicity
+            path = f"parsed_properties.Mechanical Properties.{prop_name}.0.metric.min.$numberDouble"
+
+            range_condition = {}
+            if isinstance(min_val, (int, float)):
+                range_condition["$gte"] = str(min_val)
+            if isinstance(max_val, (int, float)):
+                range_condition["$lte"] = str(max_val)
+
+            if range_condition:
+                conditions.append({path: range_condition})
+
+        # Combine all conditions
         if conditions:
             query = {"$and": conditions}
 
-        # Pagination Logic
+        # Pagination
         skip = (page - 1) * limit
         materials = materials_collection.find(query).skip(skip).limit(limit)
 
@@ -36,7 +57,6 @@ class MaterialModel:
             material["_id"] = str(material["_id"])
             materials_list.append(material)
 
-        # Get the total count of materials that match the query
         total_count = materials_collection.count_documents(query)
 
         return materials_list, total_count

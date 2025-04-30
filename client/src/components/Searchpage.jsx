@@ -236,7 +236,8 @@ const SearchPage = () => {
         <Box component="main" sx={{ flexGrow: 1 }}>
           <MaterialsTable
             searchTerm={searchTerm}
-            searchCategories={selectedCategories?.join(",")}
+            searchCategories={selectedCategories}
+            searchProperties={selectedProperties}
           />
         </Box>
       </Container>

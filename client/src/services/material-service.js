@@ -7,6 +7,7 @@ export const getAllMaterials = async ({
   limit,
   searchTerm,
   searchCategories,
+  searchProperties,
 }) => {
   // Get the token from localStorage
   const token = localStorage.getItem("access_token");
@@ -17,13 +18,26 @@ export const getAllMaterials = async ({
   }
 
   try {
-    const response = await axios.get(`${API_URL}/materials`, {
-      headers: { Authorization: `Bearer ${token}` },
-      params: { page, limit, searchTerm, searchCategories },
-    });
+    const response = await axios.post(
+      `${API_URL}/materials`,
+      {
+        page,
+        limit,
+        searchTerm,
+        searchCategories,
+        searchProperties,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
     return response.data;
   } catch (error) {
-    console.error("Error fetching material:", error);
+    console.error("Error fetching materials:", error);
     throw error;
   }
 };

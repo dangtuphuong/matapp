@@ -21,7 +21,7 @@ const headerStyle = {
   fontWeight: "bold",
 };
 
-const MaterialsTable = ({ searchTerm, searchCategories }) => {
+const MaterialsTable = ({ searchTerm, searchCategories, searchProperties }) => {
   const navigate = useNavigate();
   const [isLoading, setLoading] = useState(false);
   const [materials, setMaterials] = useState([]);
@@ -56,13 +56,14 @@ const MaterialsTable = ({ searchTerm, searchCategories }) => {
         limit,
         searchTerm,
         searchCategories,
+        searchProperties,
       });
     }, 300);
 
     return () => {
       clearTimeout(delayDebounce);
     };
-  }, [currentPage, searchTerm, limit, searchCategories]);
+  }, [currentPage, searchTerm, limit, searchCategories, searchProperties]);
 
   // Calculate total pages
   const totalPages = Math.ceil(totalCount / limit);
