@@ -15,6 +15,8 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import PublicRoute from "./components/PublicRoute";
 import SessionTimeout from "./components/SessionTimeout";
 import SearchPage from "./components/SearchPage";
+import AboutUs from "./components/AboutUs";
+import FlexibleRoute from "./components/FlexibleRoute";
 
 function App() {
   return (
@@ -35,6 +37,14 @@ function App() {
             <PublicRoute>
               <Register />
             </PublicRoute>
+          }
+        />
+        <Route
+          path="/aboutus"
+          element={
+            <FlexibleRoute>
+              <AboutUs />
+            </FlexibleRoute>
           }
         />
 
