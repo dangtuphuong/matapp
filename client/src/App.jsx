@@ -10,11 +10,11 @@ import Landing from "./components/LandingPage";
 import Profile from "./components/ProfilePage";
 import EditUsers from "./components/EditUsers";
 import Material from "./components/MaterialPage";
+import Search from "./components/SearchPage";
 
 import ProtectedRoute from "./components/ProtectedRoute";
 import PublicRoute from "./components/PublicRoute";
 import SessionTimeout from "./components/SessionTimeout";
-import SearchPage from "./components/SearchPage";
 
 function App() {
   return (
@@ -67,7 +67,7 @@ function App() {
           path="/search"
           element={
             <ProtectedRoute>
-              <SearchPage />
+              <Search />
             </ProtectedRoute>
           }
         />

@@ -1,0 +1,18 @@
+from flask import Blueprint, request, jsonify
+from flask_jwt_extended import jwt_required
+from models.category_model import CategoryModel
+
+category_bp = Blueprint("category_routes", __name__)
+
+
+# Route to fetch all categories, with JWT token check
+@category_bp.route("/categories", methods=["GET"])
+@jwt_required()
+def get_categories():
+    try:
+        categories = CategoryModel.get_categories()
+
+        return (jsonify({"categories": categories}), 200)
+    except Exception as e:
+        print(e)
+        return jsonify({"error": "Server error"}), 500

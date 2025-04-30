@@ -37,7 +37,7 @@ const Pagination = ({
         onClick={() => handlePageChange(currentPage - 1)}
         disabled={currentPage === 1 || isLoading}
       >
-        Previous
+        Prev
       </Button>
 
       <TextField
