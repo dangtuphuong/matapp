@@ -1,28 +1,33 @@
 import React, { useState, useEffect } from "react";
 import {
   Typography,
-  List,
-  ListItem,
   Box,
   Checkbox,
   FormControlLabel,
   TextField,
   Container,
 } from "@mui/material";
+import { RichTreeView } from "@mui/x-tree-view/RichTreeView";
 
 import { getCategories } from "../services/material-service";
+import NavbarPrivate from "./NavbarPrivate";
 import MaterialsTable from "./MaterialsTable";
 
-// import "./styles/navbar.css";
-// import "./styles/Home.css";
+const convertTreeData = (data) =>
+  data?.map(({ name, children }) => ({
+    id: name,
+    label: name,
+    ...(children && { children: convertTreeData(children) }),
+  }));
 
 const SearchPage = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [categories, setCategories] = useState([]);
+  const [selectedCategories, setSelectedCategories] = useState([]);
 
   useEffect(() => {
     getCategories()
-      .then((data) => setCategories(data.categories))
+      .then((data) => setCategories(convertTreeData(data?.categories || [])))
       .catch((err) => console.error(err));
   }, []);
 
@@ -30,15 +35,21 @@ const SearchPage = () => {
     setSearchTerm(event.target.value);
   };
 
+  console.log(selectedCategories);
+
+  const handleSelectedCategoriesChange = (event, ids) => {
+    setSelectedCategories(ids);
+  };
+
   return (
     <div className="search-page-container">
       <NavbarPrivate />
       <Typography align="center" variant="h4" sx={{ mt: 3, mb: 3 }}>
-        Search
+        Search Materials
       </Typography>
       <Container sx={{ display: "flex" }}>
         {/* Search Bar */}
-        <Box sx={{ marginRight: "20px" }}>
+        <Box sx={{ marginRight: "15px" }}>
           <Box>
             <TextField
               label="Search Materials"
@@ -51,16 +62,13 @@ const SearchPage = () => {
 
           {/* Material Type Filter */}
           <Box>
-            <List>
-              {categories?.map((cat) => (
-                <ListItem key={cat._id} button="true" sx={{ px: 2.5 }}>
-                  <FormControlLabel
-                    control={<Checkbox name={cat?.name} sx={{}} />}
-                    label={cat?.name}
-                  />
-                </ListItem>
-              ))}
-            </List>
+            <RichTreeView
+              multiSelect
+              checkboxSelection
+              items={categories}
+              selectedItems={selectedCategories}
+              onSelectedItemsChange={handleSelectedCategoriesChange}
+            />
           </Box>
         </Box>
         <Box component="main" sx={{ flexGrow: 1 }}>
