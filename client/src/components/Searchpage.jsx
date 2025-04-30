@@ -158,7 +158,17 @@ const SearchPage = () => {
   };
 
   const handleSelectedProperties = (prop) => {
-    setSelectedProperties([...selectedProperties, prop]);
+    const existingIndex = selectedProperties?.findIndex(
+      ({ property }) => property === prop?.property
+    );
+
+    if (existingIndex !== -1) {
+      const updatedProperties = [...selectedProperties];
+      updatedProperties[existingIndex] = prop;
+      setSelectedProperties(updatedProperties);
+    } else {
+      setSelectedProperties([...selectedProperties, prop]);
+    }
   };
 
   console.log(selectedProperties);
