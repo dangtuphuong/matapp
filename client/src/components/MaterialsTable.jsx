@@ -50,7 +50,13 @@ const MaterialsTable = ({ searchTerm }) => {
 
   // Load data on component mount and page change
   useEffect(() => {
-    fetchMaterials({ page: currentPage, limit, searchTerm });
+    const delayDebounce = setTimeout(() => {
+      fetchMaterials({ page: currentPage, limit, searchTerm });
+    }, 300);
+
+    return () => {
+      clearTimeout(delayDebounce);
+    };
   }, [currentPage, searchTerm, limit]);
 
   // Calculate total pages
