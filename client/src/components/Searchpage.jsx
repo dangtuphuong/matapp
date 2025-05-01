@@ -39,6 +39,9 @@ const PropertyFilterItem = ({ properties, onChange }) => {
   const [selectedUnit, setSelectedUnit] = useState(null);
   const [min, setMin] = useState("");
   const [max, setMax] = useState("");
+  const [textVal, setTextVal] = useState("");
+
+  const isTextValProp = selectedProperty?.group === "Descriptive Properties";
 
   const onChangeUnit = (e) => {
     const selectedUnit = selectedProperty?.units?.find(
@@ -49,17 +52,29 @@ const PropertyFilterItem = ({ properties, onChange }) => {
 
   const onSelectProperty = (event, selectedOption) => {
     setSelectedProperty(selectedOption);
+    setMin("");
+    setMax("");
+    setTextVal("");
+    setSelectedUnit(null);
   };
 
   useEffect(() => {
     onChange({
-      category: selectedProperty?.group,
+      group: selectedProperty?.group,
       property: selectedProperty?.label,
       ...(min !== "" && { min: Number(min) }),
       ...(max !== "" && { max: Number(max) }),
+      ...(isTextValProp && textVal !== "" && { text_value: textVal }),
       unit: selectedUnit?.unit,
     });
-  }, [selectedProperty?.label, min, max]);
+  }, [
+    selectedProperty?.label,
+    min,
+    max,
+    selectedUnit?.unit,
+    textVal,
+    isTextValProp,
+  ]);
 
   return (
     <Box>
@@ -71,44 +86,55 @@ const PropertyFilterItem = ({ properties, onChange }) => {
         onChange={onSelectProperty}
       />
 
-      {selectedProperty && (
-        <Box sx={{ m: "10px 0" }}>
-          <RadioGroup
-            sx={{ mb: 1 }}
-            row
-            value={selectedUnit?.unit ?? ""}
-            onChange={onChangeUnit}
-          >
-            {selectedProperty?.units?.map((u) => (
-              <FormControlLabel
-                key={u.unit}
-                value={u.unit}
-                control={<Radio />}
-                label={u.unit}
+      {selectedProperty &&
+        (isTextValProp ? (
+          <Box sx={{ m: "10px 0" }}>
+            <TextField
+              fullWidth
+              size="small"
+              label="Descriptive Value"
+              value={textVal}
+              onChange={(e) => setTextVal(e?.target?.value)}
+            />
+          </Box>
+        ) : (
+          <Box sx={{ m: "10px 0" }}>
+            <RadioGroup
+              sx={{ mb: 1 }}
+              row
+              value={selectedUnit?.unit ?? ""}
+              onChange={onChangeUnit}
+            >
+              {selectedProperty?.units?.map((u) => (
+                <FormControlLabel
+                  key={u.unit}
+                  value={u.unit}
+                  control={<Radio />}
+                  label={u.unit}
+                />
+              ))}
+            </RadioGroup>
+            <div style={{ display: "flex" }}>
+              <TextField
+                sx={{ marginRight: "10px" }}
+                size="small"
+                label="Min"
+                value={min}
+                onChange={(e) => setMin(e?.target?.value)}
+                helperText={selectedUnit?.min}
+                error={isNaN(Number(min))}
               />
-            ))}
-          </RadioGroup>
-          <div style={{ display: "flex" }}>
-            <TextField
-              sx={{ marginRight: "10px" }}
-              size="small"
-              label="Min"
-              value={min}
-              onChange={(e) => setMin(e?.target?.value)}
-              helperText={selectedUnit?.min}
-              error={isNaN(Number(min))}
-            />
-            <TextField
-              size="small"
-              label="Max"
-              value={max}
-              onChange={(e) => setMax(e?.target?.value)}
-              helperText={selectedUnit?.max}
-              error={isNaN(Number(max))}
-            />
-          </div>
-        </Box>
-      )}
+              <TextField
+                size="small"
+                label="Max"
+                value={max}
+                onChange={(e) => setMax(e?.target?.value)}
+                helperText={selectedUnit?.max}
+                error={isNaN(Number(max))}
+              />
+            </div>
+          </Box>
+        ))}
       <Divider sx={{ m: "20px 0" }} />
     </Box>
   );
