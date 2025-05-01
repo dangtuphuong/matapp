@@ -12,6 +12,7 @@ import {
   InputLabel,
   Card,
   Skeleton,
+  Snackbar,
 } from "@mui/material";
 
 import NavbarPrivate from "./NavbarPrivate";
@@ -37,9 +38,10 @@ const SmartSearch = () => {
   const [limit, setLimit] = useState(10);
   const [query, setQuery] = useState("");
   const [searchResult, setSearchResult] = useState([]);
+  const [showEmptyErr, setShowEmptyErr] = useState(false);
 
   const handleSearch = async () => {
-    if (!query) return;
+    if (!query) return setSearchResult([]);
     setLoading(true);
     if (model === "vector") {
       const response = await vectorSearch(query, limit, skip);
@@ -55,8 +57,21 @@ const SmartSearch = () => {
     setLoading(false);
   };
 
+  const onSearch = () => {
+    if (!query) {
+      // Show error messages
+      return setShowEmptyErr(true);
+    }
+    handleSearch();
+  };
+
   const handleClick = (matID) => {
     navigate(`/material/${matID}`);
+  };
+
+  const onChangeQuery = (e) => {
+    setQuery(e.target.value);
+    setSkip(0);
   };
 
   useEffect(() => {
@@ -87,31 +102,24 @@ const SmartSearch = () => {
           <TextField
             size="small"
             label="Search Query"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
+            sx={{ m: "0 10px", flex: 1 }}
             placeholder="Enter what you want to search for here"
             variant="outlined"
-            sx={{ m: "0 10px", flex: 1 }}
+            value={query}
+            onChange={onChangeQuery}
+            onKeyDown={(e) => {
+              if (e?.key === "Enter") {
+                onSearch();
+              }
+            }}
           />
 
-          <Button variant="contained" disabled={!query} onClick={handleSearch}>
+          <Button variant="contained" onClick={onSearch}>
             Search
           </Button>
         </Box>
-        {searchResult?.result?.length > 0 && (
-          <Box align="right" px={6} mt={1}>
-            <Button
-              onClick={() => setSkip(Math.max(0, skip - limit))}
-              disabled={skip <= 0 || isLoading}
-            >
-              Prev
-            </Button>
-            <Button onClick={() => setSkip(skip + limit)} disabled={isLoading}>
-              Next
-            </Button>
-          </Box>
-        )}
-        <Box px={6} display="flex" flexDirection="column" gap={2} mt={2}>
+
+        <Box px={6} display="flex" flexDirection="column" gap={2} mt={4}>
           {isLoading ? (
             <LoadingCards />
           ) : (
@@ -158,8 +166,29 @@ const SmartSearch = () => {
             ))
           )}
         </Box>
+        {searchResult?.length > 0 && (
+          <Box align="center" px={6} m={2}>
+            <Button
+              onClick={() => setSkip(Math.max(0, skip - limit))}
+              disabled={skip <= 0 || isLoading}
+            >
+              Prev
+            </Button>
+            <Button onClick={() => setSkip(skip + limit)} disabled={isLoading}>
+              Next
+            </Button>
+          </Box>
+        )}
         <br />
       </Container>
+
+      {/* Snackbar to show error messages */}
+      <Snackbar
+        open={showEmptyErr}
+        autoHideDuration={5000}
+        onClose={() => setShowEmptyErr(false)}
+        message="Please enter a search query."
+      />
     </div>
   );
 };
