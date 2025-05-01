@@ -135,7 +135,6 @@ const PropertyFilterItem = ({ properties, onChange }) => {
             </div>
           </Box>
         ))}
-      <Divider sx={{ m: "20px 0" }} />
     </Box>
   );
 };
@@ -214,15 +213,25 @@ const SearchPage = () => {
               By Properties
             </Typography>
             <div>
-              {propertyFilters?.map((id) => (
-                <PropertyFilterItem
-                  key={id}
-                  properties={properties}
-                  onChange={handleSelectedProperties}
-                />
+              {propertyFilters?.map((id, index) => (
+                <>
+                  <PropertyFilterItem
+                    key={id}
+                    properties={properties}
+                    onChange={handleSelectedProperties}
+                  />
+                  {index < propertyFilters.length - 1 && (
+                    <Divider
+                      sx={{ m: "20px 0", color: "#bdbdbd", fontSize: 12 }}
+                    >
+                      and
+                    </Divider>
+                  )}
+                </>
               ))}
             </div>
             <Button
+              sx={{ m: "10px 0" }}
               startIcon={<AddIcon />}
               onClick={() =>
                 setPropertyFilters([
@@ -235,7 +244,7 @@ const SearchPage = () => {
             </Button>
             <Box
               sx={{
-                m: "20px 0",
+                m: 2,
                 display: "flex",
                 justifyContent: "center",
               }}
