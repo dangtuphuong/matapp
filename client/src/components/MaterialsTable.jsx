@@ -14,9 +14,6 @@ import {
 import { getAllMaterials } from "../services/material-service";
 import Pagination from "./Pagination";
 
-import "./styles/navbar.css";
-import "./styles/Home.css";
-
 const headerStyle = {
   backgroundColor: "#424242",
   color: "white",

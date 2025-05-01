@@ -91,6 +91,7 @@ const SmartSearch = () => {
 
           <TextField
             size="small"
+            label="Search Query"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Enter what you want to search for here"
@@ -145,6 +146,7 @@ const SmartSearch = () => {
             </Card>
           ))}
         </Box>
+        <br />
       </Container>
     </div>
   );
