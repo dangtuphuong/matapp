@@ -40,19 +40,19 @@ const SmartSearch = () => {
   const [searchResult, setSearchResult] = useState([]);
   const [showEmptyErr, setShowEmptyErr] = useState(false);
 
+  const hasPagination = model === "vector";
+
   const handleSearch = async () => {
     if (!query) return setSearchResult([]);
     setLoading(true);
     if (model === "vector") {
       const response = await vectorSearch(query, limit, skip);
-      setSearchResult(response.data);
+      setSearchResult(
+        response?.data?.map((i) => ({ ...(i ?? {}), ...(i?.material ?? {}) }))
+      );
     } else {
       const response = await llmSearch(query);
-      const result = response.data.result
-        .replace(/ObjectId\('([^']+)'\)/g, '"$1"')
-        .replace(/'/g, '"');
-      const arr = JSON.parse(result);
-      setSearchResult(arr.map((obj) => ({ material: obj })));
+      setSearchResult(response?.data?.result || []);
     }
     setLoading(false);
   };
@@ -135,19 +135,23 @@ const SmartSearch = () => {
                     borderColor: "#424242",
                   },
                 }}
-                onClick={() => handleClick(material.material.matGUID)}
+                onClick={() => handleClick(material?.matGUID)}
               >
                 <Typography variant="h6" noWrap sx={{ fontWeight: 600, mb: 1 }}>
-                  {material?.material["Material Name"]}
+                  {material?.["Material Name"] || material?._id}
                 </Typography>
 
-                <Typography variant="body1">
-                  Categories: {material?.material["Categories"]?.join(", ")}
-                </Typography>
+                {material?.["Categories"]?.length > 0 && (
+                  <Typography variant="body1">
+                    Categories: {material?.["Categories"]?.join(", ")}
+                  </Typography>
+                )}
 
-                <Typography variant="body1" noWrap>
-                  Notes: {material?.material["Material Notes"]}
-                </Typography>
+                {material?.["Material Notes"] && (
+                  <Typography variant="body1" noWrap>
+                    Notes: {material?.["Material Notes"]}
+                  </Typography>
+                )}
 
                 {material?.score && (
                   <Typography
@@ -166,7 +170,7 @@ const SmartSearch = () => {
             ))
           )}
         </Box>
-        {searchResult?.length > 0 && (
+        {hasPagination && searchResult?.length > 0 && (
           <Box align="center" px={6} m={2}>
             <Button
               onClick={() => setSkip(Math.max(0, skip - limit))}
