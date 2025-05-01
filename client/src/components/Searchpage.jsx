@@ -34,7 +34,7 @@ const convertGroupedData = (data) =>
     }))
   );
 
-const PropertyFilterItem = ({ properties, onChange }) => {
+const PropertyFilterItem = ({ id, properties, onChange }) => {
   const [selectedProperty, setSelectedProperty] = useState(null);
   const [selectedUnit, setSelectedUnit] = useState(null);
   const [min, setMin] = useState("");
@@ -60,6 +60,7 @@ const PropertyFilterItem = ({ properties, onChange }) => {
 
   useEffect(() => {
     onChange({
+      id,
       group: selectedProperty?.group,
       property: selectedProperty?.label,
       ...(min !== "" && { min: Number(min) }),
@@ -68,6 +69,7 @@ const PropertyFilterItem = ({ properties, onChange }) => {
       unit: selectedUnit?.unit,
     });
   }, [
+    id,
     selectedProperty?.label,
     min,
     max,
@@ -80,6 +82,7 @@ const PropertyFilterItem = ({ properties, onChange }) => {
     <Box>
       <Autocomplete
         fullWidth
+        size="small"
         options={properties}
         groupBy={(option) => option?.group}
         renderInput={(p) => <TextField {...p} label="Property" />}
@@ -143,8 +146,9 @@ const SearchPage = () => {
   const [categories, setCategories] = useState([]);
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [properties, setProperties] = useState([]);
-  const [propertyFilters, setPropertyFilters] = useState([0]);
-  const [selectedProperties, setSelectedProperties] = useState([]);
+  const [selectedProperties, setSelectedProperties] = useState([
+    { id: Math.random().toString(36).substring(2, 10) },
+  ]);
   const [searchParams, setSearchParams] = useState({
     searchCategories: [],
     searchProperties: [],
@@ -165,16 +169,14 @@ const SearchPage = () => {
   };
 
   const handleSelectedProperties = (prop) => {
-    const existingIndex = selectedProperties?.findIndex(
-      ({ property }) => property === prop?.property
+    const index = selectedProperties?.findIndex(
+      (item) => item?.id === prop?.id
     );
 
-    if (existingIndex !== -1) {
+    if (index !== -1) {
       const updatedProperties = [...selectedProperties];
-      updatedProperties[existingIndex] = prop;
+      updatedProperties[index] = prop;
       setSelectedProperties(updatedProperties);
-    } else {
-      setSelectedProperties([...selectedProperties, prop]);
     }
   };
 
@@ -213,14 +215,15 @@ const SearchPage = () => {
               By Properties
             </Typography>
             <div>
-              {propertyFilters?.map((id, index) => (
+              {selectedProperties?.map((item, index) => (
                 <>
                   <PropertyFilterItem
-                    key={id}
+                    key={item?.id}
+                    id={item?.id}
                     properties={properties}
                     onChange={handleSelectedProperties}
                   />
-                  {index < propertyFilters.length - 1 && (
+                  {index < selectedProperties.length - 1 && (
                     <Divider
                       sx={{ m: "20px 0", color: "#bdbdbd", fontSize: 12 }}
                     >
@@ -234,9 +237,9 @@ const SearchPage = () => {
               sx={{ m: "10px 0" }}
               startIcon={<AddIcon />}
               onClick={() =>
-                setPropertyFilters([
-                  ...propertyFilters,
-                  propertyFilters?.length + 1,
+                setSelectedProperties([
+                  ...selectedProperties,
+                  { id: Math.random().toString(36).substring(2, 10) },
                 ])
               }
             >
