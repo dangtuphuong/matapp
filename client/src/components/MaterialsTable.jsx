@@ -82,6 +82,7 @@ const MaterialsTable = ({ searchCategories, searchProperties }) => {
       {/* Material Name */}
       <Box sx={{ mb: 1.5 }}>
         <TextField
+          size="small"
           label="Search Material Name"
           fullWidth
           value={searchTerm}
