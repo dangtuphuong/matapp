@@ -25,13 +25,24 @@ class MaterialModel:
 
         # Property filters
         for prop in searchProperties:
-            prop_type = prop.get("category")
+            prop_type = prop.get("group")
             prop_name = prop.get("property")
             target_unit = prop.get("unit")
             min_val = prop.get("min")
             max_val = prop.get("max")
+            text_val = prop.get("text_value")
 
             if not prop_name or not prop_type:
+                continue
+
+            if text_val and prop_type == "Descriptive Properties":
+                conditions.append(
+                    {
+                        f"parsed_properties.{prop_type}.{prop_name}": {
+                            "$elemMatch": {"$regex": text_val, "$options": "i"}
+                        }
+                    }
+                )
                 continue
 
             # Build the property condition

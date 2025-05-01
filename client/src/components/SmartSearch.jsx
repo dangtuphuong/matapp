@@ -11,46 +11,38 @@ import {
   FormControl,
   InputLabel,
   Card,
-  CardContent,
+  Skeleton,
+  Snackbar,
 } from "@mui/material";
 
 import NavbarPrivate from "./NavbarPrivate";
 
 import { vectorSearch, llmSearch } from "../services/smart-search-service";
 
+const LoadingCards = () =>
+  Array.from({ length: 3 }, (_, i) => (
+    <Skeleton
+      key={i}
+      variant="rectangular"
+      sx={{ borderRadius: 1 }}
+      height={118}
+    />
+  ));
+
 const SmartSearch = () => {
   const navigate = useNavigate();
 
-  const [model, setModel] = useState(
-    JSON.parse(sessionStorage.getItem("SmartSearchParams"))?.model || "vector"
-  );
-  const [skip, setSkip] = useState(
-    JSON.parse(sessionStorage.getItem("SmartSearchParams"))?.skip || 0
-  );
-  const [limit, setLimit] = useState(
-    JSON.parse(sessionStorage.getItem("SmartSearchParams"))?.limit || 10
-  );
-  const [query, setQuery] = useState(
-    JSON.parse(sessionStorage.getItem("SmartSearchParams"))?.query || ""
-  );
-  const [searchResult, setSearchResult] = useState(
-    JSON.parse(sessionStorage.getItem("SmartSearchParams"))?.searchResult || []
-  );
-
-  useEffect(() => {
-    sessionStorage.setItem(
-      "SmartSearchParams",
-      JSON.stringify({
-        model,
-        skip,
-        limit,
-        query,
-        searchResult,
-      })
-    );
-  }, [model, skip, limit, query, searchResult]);
+  const [isLoading, setLoading] = useState(false);
+  const [model, setModel] = useState("vector");
+  const [skip, setSkip] = useState(0);
+  const [limit, setLimit] = useState(10);
+  const [query, setQuery] = useState("");
+  const [searchResult, setSearchResult] = useState([]);
+  const [showEmptyErr, setShowEmptyErr] = useState(false);
 
   const handleSearch = async () => {
+    if (!query) return setSearchResult([]);
+    setLoading(true);
     if (model === "vector") {
       const response = await vectorSearch(query, limit, skip);
       setSearchResult(response.data);
@@ -62,11 +54,29 @@ const SmartSearch = () => {
       const arr = JSON.parse(result);
       setSearchResult(arr.map((obj) => ({ material: obj })));
     }
+    setLoading(false);
+  };
+
+  const onSearch = () => {
+    if (!query) {
+      // Show error messages
+      return setShowEmptyErr(true);
+    }
+    handleSearch();
   };
 
   const handleClick = (matID) => {
     navigate(`/material/${matID}`);
   };
+
+  const onChangeQuery = (e) => {
+    setQuery(e.target.value);
+    setSkip(0);
+  };
+
+  useEffect(() => {
+    handleSearch();
+  }, [skip]);
 
   return (
     <div className="smart-search-page-container">
@@ -91,61 +101,94 @@ const SmartSearch = () => {
 
           <TextField
             size="small"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
+            label="Search Query"
+            sx={{ m: "0 10px", flex: 1 }}
             placeholder="Enter what you want to search for here"
             variant="outlined"
-            sx={{ m: "0 10px", flex: 1 }}
+            value={query}
+            onChange={onChangeQuery}
+            onKeyDown={(e) => {
+              if (e?.key === "Enter") {
+                onSearch();
+              }
+            }}
           />
 
-          <Button variant="contained" sx={{}} onClick={handleSearch}>
+          <Button variant="contained" onClick={onSearch}>
             Search
           </Button>
         </Box>
-        <Box px={6} display="flex" flexDirection="column" gap={2} mt={2}>
-          {searchResult.map((material, id) => (
-            <Card
-              key={id}
-              variant="outlined"
-              sx={{
-                p: "15px 30px",
-                cursor: "pointer",
-                "&:hover": {
-                  backgroundColor: "#f5fbff",
-                  borderColor: "#424242",
-                },
-              }}
-              onClick={() => handleClick(material.material.matGUID)}
-            >
-              <Typography variant="h6" noWrap sx={{ fontWeight: 600 }}>
-                {material?.material["Material Name"]}
-              </Typography>
 
-              <Typography variant="body1">
-                Categories: {material?.material["Categories"]?.join(", ")}
-              </Typography>
-
-              <Typography variant="body1" noWrap>
-                Notes: {material?.material["Material Notes"]}
-              </Typography>
-
-              {material?.score && (
-                <Typography
-                  variant="body2"
-                  sx={{
-                    mt: 1,
-                    textAlign: "right",
-                    fontStyle: "italic",
-                    color: "#757575",
-                  }}
-                >
-                  Similar score: {material.score}
+        <Box px={6} display="flex" flexDirection="column" gap={2} mt={4}>
+          {isLoading ? (
+            <LoadingCards />
+          ) : (
+            searchResult.map((material, id) => (
+              <Card
+                key={id}
+                variant="outlined"
+                sx={{
+                  p: "15px 30px",
+                  cursor: "pointer",
+                  "&:hover": {
+                    backgroundColor: "#f5fbff",
+                    borderColor: "#424242",
+                  },
+                }}
+                onClick={() => handleClick(material.material.matGUID)}
+              >
+                <Typography variant="h6" noWrap sx={{ fontWeight: 600, mb: 1 }}>
+                  {material?.material["Material Name"]}
                 </Typography>
-              )}
-            </Card>
-          ))}
+
+                <Typography variant="body1">
+                  Categories: {material?.material["Categories"]?.join(", ")}
+                </Typography>
+
+                <Typography variant="body1" noWrap>
+                  Notes: {material?.material["Material Notes"]}
+                </Typography>
+
+                {material?.score && (
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      mt: 1,
+                      textAlign: "right",
+                      fontStyle: "italic",
+                      color: "#757575",
+                    }}
+                  >
+                    Similarity Score: {material.score}
+                  </Typography>
+                )}
+              </Card>
+            ))
+          )}
         </Box>
+        {searchResult?.length > 0 && (
+          <Box align="center" px={6} m={2}>
+            <Button
+              onClick={() => setSkip(Math.max(0, skip - limit))}
+              disabled={skip <= 0 || isLoading}
+            >
+              Prev
+            </Button>
+            <Button onClick={() => setSkip(skip + limit)} disabled={isLoading}>
+              Next
+            </Button>
+          </Box>
+        )}
+        <br />
       </Container>
+
+      {/* Snackbar to show error messages */}
+      <Snackbar
+        open={showEmptyErr}
+        autoHideDuration={5000}
+        onClose={() => setShowEmptyErr(false)}
+        message="Please enter a search query."
+      />
     </div>
   );
 };
