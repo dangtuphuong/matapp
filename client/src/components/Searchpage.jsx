@@ -216,7 +216,7 @@ const SearchPage = () => {
             </Typography>
             <div>
               {selectedProperties?.map((item, index) => (
-                <>
+                <React.Fragment key={item?.id}>
                   <PropertyFilterItem
                     key={item?.id}
                     id={item?.id}
@@ -230,7 +230,7 @@ const SearchPage = () => {
                       and
                     </Divider>
                   )}
-                </>
+                </React.Fragment>
               ))}
             </div>
             <Button
