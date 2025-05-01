@@ -15,7 +15,7 @@ const ProtectedRoute = ({ children }) => {
   return (
     <>
       {/* Auto-logout after 15 minutes of inactivity */}
-      <SessionTimeout timeout={15 * 60 * 1000} />
+      <SessionTimeout timeout={60 * 60 * 1000} />
 
       {/* Render the protected content */}
       {children}

@@ -1,0 +1,593 @@
+{
+    "Material Name": "string",
+    "Categories": [
+        "string" // Array of Categories of that material (like Plastic, Ceramic)
+    ],
+    "Vendors": "string",
+    "Properties": {
+        "Physical Properties": {
+            "Density": [
+                {
+                    "Metric": "string"
+                }
+            ],
+            "Moisture Absorption at Equilibrium": [
+                {
+                    "Metric": "string"
+                }
+            ],
+            "Water Absorption": [
+                {
+                    "Metric": "string"
+                }
+            ],
+            "Water Absorption at Saturation": [
+                {
+                    "Metric": "string"
+                }
+            ],
+            "Linear Mold Shrinkage": [
+                {
+                    "Metric": "string"
+                }
+            ],
+            "Melt Flow": [
+                {
+                    "Metric": "string"
+                }
+            ],
+            "Oxygen Transmission": [
+                {
+                    "Metric": "string"
+                }
+            ],
+            "Moisture Vapor Transmission": [
+                {
+                    "Metric": "string"
+                }
+            ]
+        },
+        "Thermal Properties": {
+            "Melting Point": [
+                {
+                    "Metric": "string"
+                }
+            ],
+            "CTE, linear": [
+                {
+                    "Metric": "string"
+                }
+            ],
+            "Maximum Service Temperature, Air": [
+                {
+                    "Metric": "string"
+                }
+            ],
+            "Thermal Conductivity": [
+                {
+                    "Metric": "string"
+                }
+            ],
+            "Minimum Service Temperature, Air": [
+                {
+                    "Metric": "string"
+                }
+            ],
+            "Flammability, UL94": [
+                {
+                    "Metric": "string"
+                }
+            ],
+            "Specific Heat Capacity": [
+                {
+                    "Metric": "string"
+                }
+            ],
+            "Heat of Fusion": [
+                {
+                    "Metric": "string"
+                }
+            ],
+            "Maximum Service Temperature, Inert": [
+                {
+                    "Metric": "string"
+                }
+            ],
+            "Solidus": [
+                {
+                    "Metric": "string"
+                }
+            ],
+            "CTE, linear, Transverse to Flow": [
+                {
+                    "Metric": "string"
+                }
+            ],
+            "Liquidus": [
+                {
+                    "Metric": "string"
+                }
+            ],
+            "Glass Transition Temp, Tg": [
+                {
+                    "Metric": "string"
+                }
+            ],
+            "Heat Distortion Temperature": [
+                {
+                    "Metric": "string"
+                }
+            ],
+            "UL RTI, Electrical": [
+                {
+                    "Metric": "string"
+                }
+            ],
+            "UL RTI, Mechanical with Impact": [
+                {
+                    "Metric": "string"
+                }
+            ],
+            "UL RTI, Mechanical without Impact": [
+                {
+                    "Metric": "string"
+                }
+            ],
+            "Oxygen Index": [
+                {
+                    "Metric": "string"
+                }
+            ],
+            "Vicat Softening Point": [
+                {
+                    "Metric": "string"
+                }
+            ],
+            "Ring & Ball Softening Point": [
+                {
+                    "Metric": "string"
+                }
+            ],
+            "Glow Wire Test": [
+                {
+                    "Metric": "string"
+                }
+            ],
+            "Hot Ball Pressure Test": [
+                {
+                    "Metric": "string"
+                }
+            ],
+            "Deflection Temperature at 8.0 MPa": [
+                {
+                    "Metric": "string"
+                }
+            ]
+        },
+        "Descriptive Properties": {
+            "Coefficient of Friction": [
+                {
+                    "Metric": "string"
+                }
+            ],
+            "Electrical Resistivity": [
+                {
+                    "Metric": "string"
+                }
+            ],
+            "Fracture Toughness": [
+                {
+                    "Metric": "string"
+                }
+            ],
+            "Water Absorption": [
+                {
+                    "Metric": "string"
+                }
+            ],
+            "Gloss": [
+                {
+                    "Metric": "string"
+                }
+            ],
+            "Hardness, Shore A": [
+                {
+                    "Metric": "string"
+                }
+            ],
+            "Heat of Fusion": [
+                {
+                    "Metric": "string"
+                }
+            ],
+            "Thermal Conductivity": [
+                {
+                    "Metric": "string"
+                }
+            ],
+            "Tear Strength": [
+                {
+                    "Metric": "string"
+                }
+            ],
+            "Melt Temperature": [
+                {
+                    "Metric": "string"
+                }
+            ],
+            "Arc Resistance": [
+                {
+                    "Metric": "string"
+                }
+            ],
+            "Moisture Absorption at Equilibrium": [
+                {
+                    "Metric": "string"
+                }
+            ]
+        },
+        "Optical Properties": {
+            "Refractive Index": [
+                {
+                    "Metric": "string"
+                }
+            ],
+            "Transmission, Visible": [
+                {
+                    "Metric": "string"
+                }
+            ],
+            "Haze": [
+                {
+                    "Metric": "string"
+                }
+            ],
+            "Gloss": [
+                {
+                    "Metric": "string"
+                }
+            ]
+        },
+        "Mechanical Properties": {
+            "Hardness, Shore A": [
+                {
+                    "Metric": "string"
+                }
+            ],
+            "Hardness, Knoop": [
+                {
+                    "Metric": "string"
+                }
+            ],
+            "Modulus of Elasticity": [
+                {
+                    "Metric": "string"
+                }
+            ],
+            "Poissons Ratio": [
+                {
+                    "Metric": "string"
+                }
+            ],
+            "Compressive Yield Strength": [
+                {
+                    "Metric": "string"
+                }
+            ],
+            "Tear Strength": [
+                {
+                    "Metric": "string"
+                }
+            ],
+            "Hardness, Vickers": [
+                {
+                    "Metric": "string"
+                }
+            ],
+            "Fracture Toughness": [
+                {
+                    "Metric": "string"
+                }
+            ],
+            "Elongation at Yield": [
+                {
+                    "Metric": "string"
+                }
+            ],
+            "Shear Modulus": [
+                {
+                    "Metric": "string"
+                }
+            ],
+            "Hardness, Rockwell R": [
+                {
+                    "Metric": "string"
+                }
+            ],
+            "Hardness, Shore D": [
+                {
+                    "Metric": "string"
+                }
+            ],
+            "Tensile Strength at Break": [
+                {
+                    "Metric": "string"
+                }
+            ],
+            "Compressive Modulus": [
+                {
+                    "Metric": "string"
+                }
+            ],
+            "Shear Strength": [
+                {
+                    "Metric": "string"
+                }
+            ],
+            "Hardness, Rockwell A": [
+                {
+                    "Metric": "string"
+                }
+            ],
+            "Elongation at Break": [
+                {
+                    "Metric": "string"
+                }
+            ],
+            "Tensile Modulus": [
+                {
+                    "Metric": "string"
+                }
+            ],
+            "Coefficient of Friction": [
+                {
+                    "Metric": "string"
+                }
+            ],
+            "Hardness, Rockwell C": [
+                {
+                    "Metric": "string"
+                }
+            ],
+            "Hardness, Brinell": [
+                {
+                    "Metric": "string"
+                }
+            ],
+            "Tensile Strength, Yield": [
+                {
+                    "Metric": "string"
+                }
+            ],
+            "Flexural Modulus": [
+                {
+                    "Metric": "string"
+                }
+            ],
+            "Izod Impact, Notched": [
+                {
+                    "Metric": "string"
+                }
+            ],
+            "Charpy Impact Unnotched": [
+                {
+                    "Metric": "string"
+                }
+            ],
+            "Charpy Impact, Notched": [
+                {
+                    "Metric": "string"
+                }
+            ],
+            "Hardness, Barcol": [
+                {
+                    "Metric": "string"
+                }
+            ],
+            "Flexural Yield Strength": [
+                {
+                    "Metric": "string"
+                }
+            ],
+            "Charpy Impact": [
+                {
+                    "Metric": "string"
+                }
+            ],
+            "Fatigue Strength": [
+                {
+                    "Metric": "string"
+                }
+            ],
+            "Izod Impact, Unnotched": [
+                {
+                    "Metric": "string"
+                }
+            ],
+            "Hardness, Rockwell B": [
+                {
+                    "Metric": "string"
+                }
+            ],
+            "Film Elongation at Break, MD": [
+                {
+                    "Metric": "string"
+                }
+            ],
+            "Film Elongation at Break, TD": [
+                {
+                    "Metric": "string"
+                }
+            ],
+            "Film Tensile Strength at Break, MD": [
+                {
+                    "Metric": "string"
+                }
+            ],
+            "Film Tensile Strength at Break, TD": [
+                {
+                    "Metric": "string"
+                }
+            ],
+            "Hardness, Rockwell M": [
+                {
+                    "Metric": "string"
+                }
+            ],
+            "Flexural Stiffness": [
+                {
+                    "Metric": "string"
+                }
+            ],
+            "Hardness, Rockwell E": [
+                {
+                    "Metric": "string"
+                }
+            ],
+            "Gardner Impact": [
+                {
+                    "Metric": "string"
+                }
+            ],
+            "Rupture Strength": [
+                {
+                    "Metric": "string"
+                }
+            ],
+            "Izod Impact": [
+                {
+                    "Metric": "string"
+                }
+            ],
+            "Secant Modulus": [
+                {
+                    "Metric": "string"
+                }
+            ],
+            "Film Tensile Strength at Yield, MD": [
+                {
+                    "Metric": "string"
+                }
+            ],
+            "Film Tensile Strength at Yield, TD": [
+                {
+                    "Metric": "string"
+                }
+            ],
+            "1% Secant Modulus, MD": [
+                {
+                    "Metric": "string"
+                }
+            ],
+            "1% Secant Modulus, TD": [
+                {
+                    "Metric": "string"
+                }
+            ],
+            "Film Elongation at Yield, MD": [
+                {
+                    "Metric": "string"
+                }
+            ],
+            "Film Elongation at Yield, TD": [
+                {
+                    "Metric": "string"
+                }
+            ],
+            "2% Secant Modulus": [
+                {
+                    "Metric": "string"
+                }
+            ],
+            "1% Secant Modulus": [
+                {
+                    "Metric": "string"
+                }
+            ],
+            "Stiffness Modulus": [
+                {
+                    "Metric": "string"
+                }
+            ]
+        },
+        "Component Elements Properties": {},
+        "Electrical Properties": {
+            "Dielectric Strength": [
+                {
+                    "Metric": "string"
+                }
+            ],
+            "Electrical Resistivity": [
+                {
+                    "Metric": "string"
+                }
+            ],
+            "Dielectric Constant": [
+                {
+                    "Metric": "string"
+                }
+            ],
+            "Dissipation Factor": [
+                {
+                    "Metric": "string"
+                }
+            ],
+            "Arc Resistance": [
+                {
+                    "Metric": "string"
+                }
+            ],
+            "Magnetic Permeability": [
+                {
+                    "Metric": "string"
+                }
+            ],
+            "Surface Resistance": [
+                {
+                    "Metric": "string"
+                }
+            ],
+            "Comparative Tracking Index": [
+                {
+                    "Metric": "string"
+                }
+            ]
+        },
+        "Processing Properties": {
+            "Cure Time": [
+                {
+                    "Metric": "string"
+                }
+            ],
+            "Tack-Free Time": [
+                {
+                    "Metric": "string"
+                }
+            ],
+            "Processing Temperature": [
+                {
+                    "Metric": "string"
+                }
+            ],
+            "Drying Temperature": [
+                {
+                    "Metric": "string"
+                }
+            ],
+            "Mold Temperature": [
+                {
+                    "Metric": "string"
+                }
+            ],
+            "Melt Temperature": [
+                {
+                    "Metric": "string"
+                }
+            ]
+        },
+        "Chemical Properties": {},
+        "Compliance Properties": {},
+        "Chemical Resistance Properties": {},
+        "Magnetic Properties": {}
+    }
+}
