@@ -25,6 +25,19 @@ def llm_search():
 
         print(pipeline)
 
+        # Ensure pipeline is a list
+        if not isinstance(pipeline, list):
+            raise ValueError("Pipeline must be a list")
+
+        # Check if $limit already exists
+        has_limit = any(
+            "$limit" in stage for stage in pipeline if isinstance(stage, dict)
+        )
+
+        # Add a limit stage if not present
+        if not has_limit:
+            pipeline.append({"$limit": 20})
+
         results = mongo.db.materials.aggregate(pipeline)
         result_json = []
 
