@@ -1,14 +1,14 @@
 from flask import Blueprint, jsonify, request
 from flask_jwt_extended import jwt_required
-from routes.machine_learning.deepseekModel import get_answer
+from routes.machine_learning.geminiModel import get_answer
 from extensions import mongo
 import json
 import ast
 
-deepseek_bp = Blueprint("deepseek_bp", __name__)
+gemini_bp = Blueprint("gemini_bp", __name__)
 
 
-@deepseek_bp.route("/deepseek_search", methods=["POST"])
+@gemini_bp.route("/gemini_search", methods=["POST"])
 @jwt_required()
 def llm_search():
     try:
@@ -20,7 +20,7 @@ def llm_search():
         if not user_query:
             return jsonify({"error": "Query parameter is required"}), 400
 
-        # Get MongoDB pipeline from DeepSeek
+        # Get MongoDB pipeline from Gemini
         pipeline_str = get_answer(user_query)
         if not pipeline_str:
             return jsonify({"error": "Failed to generate query"}), 500
@@ -59,5 +59,5 @@ def llm_search():
         return jsonify({"result": result_json}), 200
 
     except Exception as e:
-        print(f"Error in deepseek_search: {str(e)}")
+        print(f"Error in gemini_search: {str(e)}")
         return jsonify({"error": "Internal server error"}), 500

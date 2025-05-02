@@ -9,6 +9,7 @@ from routes.property_routes import property_bp
 from routes.machine_learning.vectorSearch import vt_bp
 from routes.machine_learning.llmSearch import ml_bp
 from routes.machine_learning.deepseekSearch import deepseek_bp
+from routes.machine_learning.geminiSearch import gemini_bp
 
 
 def create_app():
@@ -29,6 +30,7 @@ def create_app():
     app.register_blueprint(category_bp, url_prefix="/api")
     app.register_blueprint(property_bp, url_prefix="/api")
     app.register_blueprint(deepseek_bp, url_prefix="/api")
+    app.register_blueprint(gemini_bp, url_prefix="/api")
 
     # Test DB connection
     with app.app_context():

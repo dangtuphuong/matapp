@@ -21,12 +21,14 @@ import {
   vectorSearch,
   llmSearch,
   deepseekSearch,
+  geminiSearch,
 } from "../services/smart-search-service";
 
 const MODELS = {
   VECTOR: "vector",
   LLM: "llm",
   DEEPSEEK: "deepseek",
+  GEMINI: "gemini",
 };
 
 const LoadingCards = () =>
@@ -65,6 +67,9 @@ const SmartSearch = () => {
       setSearchResult(response?.data?.result || []);
     } else if (model === MODELS.DEEPSEEK) {
       const response = await deepseekSearch(query);
+      setSearchResult(response?.data?.result || []);
+    } else if (model === MODELS.GEMINI) {
+      const response = await geminiSearch(query);
       setSearchResult(response?.data?.result || []);
     }
     setLoading(false);
@@ -110,6 +115,7 @@ const SmartSearch = () => {
               <MenuItem value={MODELS.VECTOR}>Vector Search</MenuItem>
               <MenuItem value={MODELS.LLM}>OpenAI</MenuItem>
               <MenuItem value={MODELS.DEEPSEEK}>DeepSeek</MenuItem>
+              <MenuItem value={MODELS.GEMINI}>Gemini</MenuItem>
             </Select>
           </FormControl>
 

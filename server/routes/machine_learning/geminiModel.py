@@ -1,27 +1,19 @@
 import os
 from dotenv import load_dotenv
-from langchain_huggingface import HuggingFaceEmbeddings
-from langchain_openai import ChatOpenAI
-from langchain_core.prompts import ChatPromptTemplate
-from langchain_core.prompts import FewShotChatMessagePromptTemplate
+from langchain_google_genai import ChatGoogleGenerativeAI, GoogleGenerativeAIEmbeddings
+from langchain_core.prompts import ChatPromptTemplate, FewShotChatMessagePromptTemplate
 from langchain_community.vectorstores import FAISS
 from langchain_core.example_selectors import SemanticSimilarityExampleSelector
-from langchain.chains import LLMChain
-from langchain.prompts import (
-    ChatPromptTemplate,
-    SystemMessagePromptTemplate,
-    HumanMessagePromptTemplate,
-)
 
 # Load environment variables
 load_dotenv()
 
-# ================= DeepSeek API Configuration =================
-DEEPSEEK_API_KEY = os.getenv("DEEPSEEK_API_KEY")
-DEEPSEEK_API_BASE = "https://api.deepseek.com/v1"
-DEEPSEEK_MODEL = "deepseek-chat"
 
-# ================= Example Data =================
+# ================= Gemini Configuration =================
+GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
+GEMINI_MODEL = "gemini-2.5-pro-exp-03-25"
+
+# ================= Example Data (Same as Before) =================
 example_data = [
     {
         "user_query": "Top 3 best electricity resistance material",
@@ -50,18 +42,18 @@ with open(schema_path, "r", encoding="utf-8") as input_file:
     structure = input_file.read()
 
 # ================= Initialize Models =================
-# Using HuggingFace embeddings since DeepSeek embeddings aren't directly available in LangChain
-embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-mpnet-base-v2")
-
-# DeepSeek LLM (OpenAI-compatible)
-llm = ChatOpenAI(
-    model=DEEPSEEK_MODEL,
-    temperature=0,
-    openai_api_key=DEEPSEEK_API_KEY,
-    openai_api_base=DEEPSEEK_API_BASE,
+embeddings = GoogleGenerativeAIEmbeddings(
+    model="models/embedding-001", google_api_key=os.getenv("GOOGLE_API_KEY")
 )
 
-# ================= Few-Shot Setup (Unchanged) =================
+llm = ChatGoogleGenerativeAI(
+    model=GEMINI_MODEL,
+    temperature=0,
+    google_api_key=os.getenv("GOOGLE_API_KEY"),
+    convert_system_message_to_human=True,
+)
+
+# ================= Few-Shot Setup =================
 example_selector = SemanticSimilarityExampleSelector.from_examples(
     example_data, embeddings, FAISS, k=4, input_keys=["user_query"]
 )
@@ -88,20 +80,16 @@ def get_prompt(user_query):
         {user_query}
         please take reference from below attached example while answering the query
     """
+
     return instruction_prompt
 
 
 def get_answer(user_query):
     instruction_prompt = get_prompt(user_query)
 
-    system_msg = SystemMessagePromptTemplate.from_template(instruction_prompt)
-    human_msg = HumanMessagePromptTemplate.from_template("{user_query}")
-
-    chat_prompt = ChatPromptTemplate.from_messages(
-        [system_msg, few_shot_prompt, human_msg]
+    prompt = ChatPromptTemplate.from_messages(
+        [("human", instruction_prompt), few_shot_prompt, ("human", "{user_query}")]
     )
 
-    chain = LLMChain(llm=llm, prompt=chat_prompt)
-    answer = chain.run(user_query=user_query)
-
-    return answer
+    chain = prompt | llm
+    return chain.invoke({"user_query": user_query}).content

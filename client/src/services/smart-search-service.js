@@ -28,3 +28,12 @@ export const deepseekSearch = async (query) => {
       },
     });
 }
+
+export const geminiSearch = async (query) => {
+  const token = localStorage.getItem("access_token");
+  return await axios.post(`${API_URL}/gemini_search`, { query }, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+}
