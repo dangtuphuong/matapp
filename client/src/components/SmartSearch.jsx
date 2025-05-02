@@ -43,6 +43,16 @@ const SmartSearch = () => {
         navigate(`/material/${matID}`)
     }
 
+    const handleNextPage = () => {
+        setSkip(skip => skip + limit)
+        handleSearch()
+    }
+
+    const handlePreviousPage = () => {
+        setSkip(skip => Math.max(0, skip - limit))
+        handleSearch()
+    }
+
     return (
         <div className={`space-y-4`}>
             <Navbar username={username}></Navbar>
@@ -60,19 +70,36 @@ const SmartSearch = () => {
             <div className={`py-2`}>
                 <div className={`px-6 space-y-5`}>
                     { searchResult.map((material, id) => 
-                        <div key={id} className={`p-2 w-full round-md border border-zinc-500 justify-self-center rounded-md hover:bg-zinc-200 hover:cursor-pointer`} onClick={() => handleClick(material.material.matGUID)}>
-                            <div className={`px-1 self-end truncate space-y-0.5`}>
-                                <p className={`text-lg`}><strong>Name:</strong> {material.material["Material Name"]}</p>
-                                <span className={`flex gap-2`}><strong>Categories:</strong> 
-                                    { material.material["Categories"].map(category => 
-                                        <p>{category};</p>
-                                    )}  
-                                </span>
-                                <p className={`truncate`}><strong>Note: </strong>{material.material["Material Notes"]}</p>
-                                <p className={`${material.score ? "" : "hidden"} text-sm`}><strong>Similar score: </strong>{material.score}</p>
+                        <div>
+                            <div key={id} className={`p-2 w-full round-md border border-zinc-500 justify-self-center rounded-md hover:bg-zinc-200 hover:cursor-pointer`} onClick={() => handleClick(material.material.matGUID)}>
+                                <div className={`px-1 self-end truncate space-y-0.5`}>
+                                    <p className={`text-lg`}><strong>Name:</strong> {material.material["Material Name"]}</p>
+                                    <span className={`flex gap-2`}><strong>Categories:</strong> 
+                                        { material.material["Categories"].map(category => 
+                                            <p>{category};</p>
+                                        )}  
+                                    </span>
+                                    <p className={`truncate`}><strong>Note: </strong>{material.material["Material Notes"]}</p>
+                                    <p className={`${material.score ? "" : "hidden"} text-sm`}><strong>Similar score: </strong>{material.score}</p>
+                                </div>
                             </div>
                         </div>
                     )}
+                    { searchResult && model === "vector" && 
+                        <div className={`flex justify-center gap-2`}>
+                            <button className={`${skip > 0 ? '' : 'hidden'} hover:cursor-pointer hover:bg-zinc-100`} onClick={handlePreviousPage} >
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={`w-6 h-6`}>
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
+                                </svg>
+                            </button>
+                            <input className={`px-2 py-1 w-10 border border-zinc-500 rounded-md`} value={skip / limit + 1}/>
+                            <button className={`hover:cursor-pointer hover:bg-zinc-100`} onClick={handleNextPage}>
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={`w-6 h-6`}>
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+                                </svg>
+                            </button>
+                        </div>
+                    }
                 </div>
             </div>
         </div>
