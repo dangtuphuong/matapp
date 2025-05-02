@@ -34,11 +34,14 @@ const convertGroupedData = (data) =>
     }))
   );
 
-const PropertyFilterItem = ({ properties, onChange }) => {
+const PropertyFilterItem = ({ id, properties, onChange }) => {
   const [selectedProperty, setSelectedProperty] = useState(null);
   const [selectedUnit, setSelectedUnit] = useState(null);
   const [min, setMin] = useState("");
   const [max, setMax] = useState("");
+  const [textVal, setTextVal] = useState("");
+
+  const isTextValProp = selectedProperty?.group === "Descriptive Properties";
 
   const onChangeUnit = (e) => {
     const selectedUnit = selectedProperty?.units?.find(
@@ -49,67 +52,92 @@ const PropertyFilterItem = ({ properties, onChange }) => {
 
   const onSelectProperty = (event, selectedOption) => {
     setSelectedProperty(selectedOption);
+    setMin("");
+    setMax("");
+    setTextVal("");
+    setSelectedUnit(null);
   };
 
   useEffect(() => {
     onChange({
-      category: selectedProperty?.group,
+      id,
+      group: selectedProperty?.group,
       property: selectedProperty?.label,
       ...(min !== "" && { min: Number(min) }),
       ...(max !== "" && { max: Number(max) }),
+      ...(isTextValProp && textVal !== "" && { text_value: textVal }),
       unit: selectedUnit?.unit,
     });
-  }, [selectedProperty?.label, min, max]);
+  }, [
+    id,
+    selectedProperty?.label,
+    min,
+    max,
+    selectedUnit?.unit,
+    textVal,
+    isTextValProp,
+  ]);
 
   return (
     <Box>
       <Autocomplete
         fullWidth
+        size="small"
         options={properties}
         groupBy={(option) => option?.group}
         renderInput={(p) => <TextField {...p} label="Property" />}
         onChange={onSelectProperty}
       />
 
-      {selectedProperty && (
-        <Box sx={{ m: "10px 0" }}>
-          <RadioGroup
-            sx={{ mb: 1 }}
-            row
-            value={selectedUnit?.unit ?? ""}
-            onChange={onChangeUnit}
-          >
-            {selectedProperty?.units?.map((u) => (
-              <FormControlLabel
-                key={u.unit}
-                value={u.unit}
-                control={<Radio />}
-                label={u.unit}
+      {selectedProperty &&
+        (isTextValProp ? (
+          <Box sx={{ m: "10px 0" }}>
+            <TextField
+              fullWidth
+              size="small"
+              label="Descriptive Value"
+              value={textVal}
+              onChange={(e) => setTextVal(e?.target?.value)}
+            />
+          </Box>
+        ) : (
+          <Box sx={{ m: "10px 0" }}>
+            <RadioGroup
+              sx={{ mb: 1 }}
+              row
+              value={selectedUnit?.unit ?? ""}
+              onChange={onChangeUnit}
+            >
+              {selectedProperty?.units?.map((u) => (
+                <FormControlLabel
+                  key={u.unit}
+                  value={u.unit}
+                  control={<Radio />}
+                  label={u.unit}
+                />
+              ))}
+            </RadioGroup>
+            <div style={{ display: "flex" }}>
+              <TextField
+                sx={{ marginRight: "10px" }}
+                size="small"
+                label="Min"
+                value={min}
+                onChange={(e) => setMin(e?.target?.value)}
+                helperText={selectedUnit?.min}
+                error={isNaN(Number(min))}
               />
-            ))}
-          </RadioGroup>
-          <div style={{ display: "flex" }}>
-            <TextField
-              sx={{ marginRight: "10px" }}
-              size="small"
-              label="Min"
-              value={min}
-              onChange={(e) => setMin(e?.target?.value)}
-              helperText={selectedUnit?.min}
-              error={isNaN(Number(min))}
-            />
-            <TextField
-              size="small"
-              label="Max"
-              value={max}
-              onChange={(e) => setMax(e?.target?.value)}
-              helperText={selectedUnit?.max}
-              error={isNaN(Number(max))}
-            />
-          </div>
-        </Box>
-      )}
-      <Divider sx={{ m: "20px 0" }} />
+              <TextField
+                size="small"
+                label="Max"
+                value={max}
+                onChange={(e) => setMax(e?.target?.value)}
+                helperText={selectedUnit?.max}
+                error={isNaN(Number(max))}
+              />
+            </div>
+          </Box>
+        ))}
     </Box>
   );
 };
@@ -118,8 +146,9 @@ const SearchPage = () => {
   const [categories, setCategories] = useState([]);
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [properties, setProperties] = useState([]);
-  const [propertyFilters, setPropertyFilters] = useState([0]);
-  const [selectedProperties, setSelectedProperties] = useState([]);
+  const [selectedProperties, setSelectedProperties] = useState([
+    { id: Math.random().toString(36).substring(2, 10) },
+  ]);
   const [searchParams, setSearchParams] = useState({
     searchCategories: [],
     searchProperties: [],
@@ -140,16 +169,14 @@ const SearchPage = () => {
   };
 
   const handleSelectedProperties = (prop) => {
-    const existingIndex = selectedProperties?.findIndex(
-      ({ property }) => property === prop?.property
+    const index = selectedProperties?.findIndex(
+      (item) => item?.id === prop?.id
     );
 
-    if (existingIndex !== -1) {
+    if (index !== -1) {
       const updatedProperties = [...selectedProperties];
-      updatedProperties[existingIndex] = prop;
+      updatedProperties[index] = prop;
       setSelectedProperties(updatedProperties);
-    } else {
-      setSelectedProperties([...selectedProperties, prop]);
     }
   };
 
@@ -188,20 +215,31 @@ const SearchPage = () => {
               By Properties
             </Typography>
             <div>
-              {propertyFilters?.map((id) => (
-                <PropertyFilterItem
-                  key={id}
-                  properties={properties}
-                  onChange={handleSelectedProperties}
-                />
+              {selectedProperties?.map((item, index) => (
+                <React.Fragment key={item?.id}>
+                  <PropertyFilterItem
+                    key={item?.id}
+                    id={item?.id}
+                    properties={properties}
+                    onChange={handleSelectedProperties}
+                  />
+                  {index < selectedProperties.length - 1 && (
+                    <Divider
+                      sx={{ m: "20px 0", color: "#bdbdbd", fontSize: 12 }}
+                    >
+                      and
+                    </Divider>
+                  )}
+                </React.Fragment>
               ))}
             </div>
             <Button
+              sx={{ m: "10px 0" }}
               startIcon={<AddIcon />}
               onClick={() =>
-                setPropertyFilters([
-                  ...propertyFilters,
-                  propertyFilters?.length + 1,
+                setSelectedProperties([
+                  ...selectedProperties,
+                  { id: Math.random().toString(36).substring(2, 10) },
                 ])
               }
             >
@@ -209,7 +247,7 @@ const SearchPage = () => {
             </Button>
             <Box
               sx={{
-                m: "20px 0",
+                m: 2,
                 display: "flex",
                 justifyContent: "center",
               }}

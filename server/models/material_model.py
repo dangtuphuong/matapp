@@ -5,196 +5,154 @@ import re
 class MaterialModel:
     @staticmethod
     def get_all_materials(
-        page=1, limit=10, searchTerm="", searchCategories=[], searchProperties=[]
+        page=1, limit=10, searchTerm="", searchCategories=None, searchProperties=None
     ):
         materials_collection = mongo.db["materials"]
-        query = {}
+        searchCategories = searchCategories or []
+        searchProperties = searchProperties or []
         conditions = []
 
-        # Search term
+        # Helper: Builds unit-based numeric range conditions
+        def build_range_conditions(unit_key, unit_name, min_val, max_val):
+            conds = []
+
+            if unit_name:
+                conds.append({f"{unit_key}.unit": unit_name})
+
+            if min_val is not None:
+                min_val = float(min_val)
+                conds.append(
+                    {
+                        "$or": [
+                            {
+                                "$and": [
+                                    {"%s.type" % unit_key: "absolute"},
+                                    {f"{unit_key}.min": {"$gte": min_val}},
+                                ]
+                            },
+                            {
+                                "$and": [
+                                    {"%s.type" % unit_key: "range"},
+                                    {f"{unit_key}.min": {"$lte": min_val}},
+                                    {f"{unit_key}.max": {"$gte": min_val}},
+                                ]
+                            },
+                            {
+                                "$and": [
+                                    {"%s.type" % unit_key: "range"},
+                                    {f"{unit_key}.min": {"$lte": min_val}},
+                                    {f"{unit_key}.max": {"$exists": False}},
+                                ]
+                            },
+                        ]
+                    }
+                )
+
+            if max_val is not None:
+                max_val = float(max_val)
+                conds.append(
+                    {
+                        "$or": [
+                            {
+                                "$and": [
+                                    {"%s.type" % unit_key: "absolute"},
+                                    {f"{unit_key}.max": {"$lte": max_val}},
+                                ]
+                            },
+                            {
+                                "$and": [
+                                    {"%s.type" % unit_key: "range"},
+                                    {f"{unit_key}.min": {"$lte": max_val}},
+                                    {f"{unit_key}.max": {"$gte": max_val}},
+                                ]
+                            },
+                            {
+                                "$and": [
+                                    {"%s.type" % unit_key: "range"},
+                                    {f"{unit_key}.max": {"$gte": max_val}},
+                                    {f"{unit_key}.min": {"$exists": False}},
+                                ]
+                            },
+                        ]
+                    }
+                )
+
+            return conds
+
+        # Text search
         if searchTerm:
             conditions.append(
                 {"Material Name": {"$regex": searchTerm, "$options": "i"}}
             )
 
-        # Categories
-        if searchCategories:
-            category_list = [cat.strip() for cat in searchCategories if cat.strip()]
-            if category_list:
-                conditions.append({"Categories": {"$all": category_list}})
+        # Category filtering
+        filtered_categories = [cat.strip() for cat in searchCategories if cat.strip()]
+        if filtered_categories:
+            conditions.append({"Categories": {"$all": filtered_categories}})
 
-        # Property filters
+        # Property filtering
         for prop in searchProperties:
-            prop_type = prop.get("category")
+            prop_type = prop.get("group")
             prop_name = prop.get("property")
             target_unit = prop.get("unit")
             min_val = prop.get("min")
             max_val = prop.get("max")
+            text_val = prop.get("text_value")
 
             if not prop_name or not prop_type:
                 continue
 
-            # Build the property condition
-            prop_conditions = []
+            field_path = f"parsed_properties.{prop_type}.{prop_name}"
+
+            if text_val and prop_type == "Descriptive Properties":
+                conditions.append(
+                    {field_path: {"$elemMatch": {"$regex": text_val, "$options": "i"}}}
+                )
+                continue
 
             try:
-                # Handle metric system
-                metric_conditions = []
-                if target_unit:
-                    metric_conditions.append({"metric.unit": target_unit})
+                metric = build_range_conditions("metric", target_unit, min_val, max_val)
+                english = build_range_conditions(
+                    "english", target_unit, min_val, max_val
+                )
 
-                if min_val is not None:
-                    min_val = float(min_val)
-                    min_conditions = [
-                        # Absolute value ≥ min_val
-                        {
-                            "$and": [
-                                {"metric.type": "absolute"},
-                                {"metric.min": {"$gte": min_val}},
-                            ]
-                        },
-                        # Range includes min_val (min ≤ min_val ≤ max)
-                        {
-                            "$and": [
-                                {"metric.type": "range"},
-                                {"metric.min": {"$lte": min_val}},
-                                {"metric.max": {"$gte": min_val}},
-                            ]
-                        },
-                        # Open-ended range with min ≤ min_val
-                        {
-                            "$and": [
-                                {"metric.type": "range"},
-                                {"metric.min": {"$lte": min_val}},
-                                {"metric.max": {"$exists": False}},
-                            ]
-                        },
-                    ]
-                    metric_conditions.append({"$or": min_conditions})
+                sub_conditions = []
+                if metric:
+                    sub_conditions.append({"$and": metric})
+                if english:
+                    sub_conditions.append({"$and": english})
 
-                if max_val is not None:
-                    max_val = float(max_val)
-                    max_conditions = [
-                        # Absolute value ≤ max_val
-                        {
-                            "$and": [
-                                {"metric.type": "absolute"},
-                                {"metric.max": {"$lte": max_val}},
-                            ]
-                        },
-                        # Range includes max_val (min ≤ max_val ≤ max)
-                        {
-                            "$and": [
-                                {"metric.type": "range"},
-                                {"metric.min": {"$lte": max_val}},
-                                {"metric.max": {"$gte": max_val}},
-                            ]
-                        },
-                        # Open-ended range with max ≥ max_val
-                        {
-                            "$and": [
-                                {"metric.type": "range"},
-                                {"metric.max": {"$gte": max_val}},
-                                {"metric.min": {"$exists": False}},
-                            ]
-                        },
-                    ]
-                    metric_conditions.append({"$or": max_conditions})
-
-                if metric_conditions:
-                    prop_conditions.append({"$and": metric_conditions})
-
-                # Handle english system (same logic as metric)
-                english_conditions = []
-                if target_unit:
-                    english_conditions.append({"english.unit": target_unit})
-
-                if min_val is not None:
-                    min_val = float(min_val)
-                    min_conditions = [
-                        {
-                            "$and": [
-                                {"english.type": "absolute"},
-                                {"english.min": {"$gte": min_val}},
-                            ]
-                        },
-                        {
-                            "$and": [
-                                {"english.type": "range"},
-                                {"english.min": {"$lte": min_val}},
-                                {"english.max": {"$gte": min_val}},
-                            ]
-                        },
-                        {
-                            "$and": [
-                                {"english.type": "range"},
-                                {"english.min": {"$lte": min_val}},
-                                {"english.max": {"$exists": False}},
-                            ]
-                        },
-                    ]
-                    english_conditions.append({"$or": min_conditions})
-
-                if max_val is not None:
-                    max_val = float(max_val)
-                    max_conditions = [
-                        {
-                            "$and": [
-                                {"english.type": "absolute"},
-                                {"english.max": {"$lte": max_val}},
-                            ]
-                        },
-                        {
-                            "$and": [
-                                {"english.type": "range"},
-                                {"english.min": {"$lte": max_val}},
-                                {"english.max": {"$gte": max_val}},
-                            ]
-                        },
-                        {
-                            "$and": [
-                                {"english.type": "range"},
-                                {"english.max": {"$gte": max_val}},
-                                {"english.min": {"$exists": False}},
-                            ]
-                        },
-                    ]
-                    english_conditions.append({"$or": max_conditions})
-
-                if english_conditions:
-                    prop_conditions.append({"$and": english_conditions})
-
-                if prop_conditions:
+                if sub_conditions:
                     conditions.append(
                         {
-                            f"parsed_properties.{prop_type}.{prop_name}": {
+                            field_path: {
                                 "$elemMatch": (
-                                    {"$or": prop_conditions}
-                                    if len(prop_conditions) > 1
-                                    else prop_conditions[0]
+                                    {"$or": sub_conditions}
+                                    if len(sub_conditions) > 1
+                                    else sub_conditions[0]
                                 )
                             }
                         }
                     )
-
             except (ValueError, TypeError):
                 continue
 
-        # Combine all conditions
-        if conditions:
-            query = {"$and": conditions} if len(conditions) > 1 else conditions[0]
+        # Final query assembly
+        query = (
+            {"$and": conditions}
+            if len(conditions) > 1
+            else (conditions[0] if conditions else {})
+        )
 
-        # Pagination
         skip = (page - 1) * limit
-        materials = materials_collection.find(query).skip(skip).limit(limit)
+        materials_cursor = materials_collection.find(query).skip(skip).limit(limit)
 
         materials_list = []
-        for material in materials:
+        for material in materials_cursor:
             material["_id"] = str(material["_id"])
             materials_list.append(material)
 
         total_count = materials_collection.count_documents(query)
-
         return materials_list, total_count
 
     @staticmethod

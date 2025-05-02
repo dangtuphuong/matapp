@@ -3,6 +3,7 @@
     "Categories": [
         "string" // Array of Categories of that material (like Plastic, Ceramic)
     ],
+    "Material Notes": "string",
     "Vendors": "string",
     "Properties": {
         "Physical Properties": {
