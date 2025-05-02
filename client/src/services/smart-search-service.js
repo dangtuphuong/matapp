@@ -19,3 +19,12 @@ export const llmSearch = async (query, limit, skip) => {
       },
     });
 }
+
+export const deepseekSearch = async (query) => {
+  const token = localStorage.getItem("access_token");
+  return await axios.post(`${API_URL}/deepseek_search`, { query }, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+}

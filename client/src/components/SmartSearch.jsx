@@ -17,7 +17,17 @@ import {
 
 import NavbarPrivate from "./NavbarPrivate";
 
-import { vectorSearch, llmSearch } from "../services/smart-search-service";
+import {
+  vectorSearch,
+  llmSearch,
+  deepseekSearch,
+} from "../services/smart-search-service";
+
+const MODELS = {
+  VECTOR: "vector",
+  LLM: "llm",
+  DEEPSEEK: "deepseek",
+};
 
 const LoadingCards = () =>
   Array.from({ length: 3 }, (_, i) => (
@@ -33,25 +43,28 @@ const SmartSearch = () => {
   const navigate = useNavigate();
 
   const [isLoading, setLoading] = useState(false);
-  const [model, setModel] = useState("vector");
+  const [model, setModel] = useState(MODELS.VECTOR);
   const [skip, setSkip] = useState(0);
   const [limit, setLimit] = useState(10);
   const [query, setQuery] = useState("");
   const [searchResult, setSearchResult] = useState([]);
   const [showEmptyErr, setShowEmptyErr] = useState(false);
 
-  const hasPagination = model === "vector";
+  const hasPagination = model === MODELS.VECTOR;
 
   const handleSearch = async () => {
     if (!query) return setSearchResult([]);
     setLoading(true);
-    if (model === "vector") {
+    if (model === MODELS.VECTOR) {
       const response = await vectorSearch(query, limit, skip);
       setSearchResult(
         response?.data?.map((i) => ({ ...(i ?? {}), ...(i?.material ?? {}) }))
       );
-    } else {
+    } else if (model === MODELS.LLM) {
       const response = await llmSearch(query);
+      setSearchResult(response?.data?.result || []);
+    } else if (model === MODELS.DEEPSEEK) {
+      const response = await deepseekSearch(query);
       setSearchResult(response?.data?.result || []);
     }
     setLoading(false);
@@ -94,8 +107,9 @@ const SmartSearch = () => {
               value={model}
               onChange={(e) => setModel(e?.target?.value)}
             >
-              <MenuItem value="vector">Vector Search</MenuItem>
-              <MenuItem value="llm">OpenAI</MenuItem>
+              <MenuItem value={MODELS.VECTOR}>Vector Search</MenuItem>
+              <MenuItem value={MODELS.LLM}>OpenAI</MenuItem>
+              <MenuItem value={MODELS.DEEPSEEK}>DeepSeek</MenuItem>
             </Select>
           </FormControl>
 
