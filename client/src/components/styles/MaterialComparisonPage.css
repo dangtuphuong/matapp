@@ -1,0 +1,22 @@
+/* --- Material Comparison Page --- */
+.compare-container {
+    padding: 40px 0;
+  }
+  
+  .select-row {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    margin-bottom: 32px;
+    flex-wrap: wrap;
+  }
+  
+  .chart-wrapper {
+    max-width: 700px;
+    margin: 0 auto;
+  }
+
+  .compare-header {
+    text-align: center;
+    
+  }

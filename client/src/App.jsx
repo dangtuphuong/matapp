@@ -12,6 +12,8 @@ import EditUsers from "./components/EditUsers";
 import Material from "./components/MaterialPage";
 import Search from "./components/SearchPage";
 import SmartSearch from "./components/SmartSearch";
+import ComparisonPage from "./components/MaterialComparisonPage";
+import AboutUs from "./components/AboutUsPage";
 
 import ProtectedRoute from "./components/ProtectedRoute";
 import PublicRoute from "./components/PublicRoute";
@@ -39,7 +41,7 @@ function App() {
             </PublicRoute>
           }
         />
-
+        
         {/* Protected routes (require login) */}
         <Route
           path="/home"
@@ -87,6 +89,22 @@ function App() {
             <ProtectedRoute>
               <SmartSearch />
             </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/compare"
+          element={
+          <ProtectedRoute>
+            <ComparisonPage />
+          </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/aboutus"
+          element={
+          <ProtectedRoute>
+            <AboutUs />
+          </ProtectedRoute>
           }
         />
         {/* Public landing page (root route) */}

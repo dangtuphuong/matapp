@@ -13,6 +13,13 @@ import logo from "../img/onlylogo.png";
 import { getUserProfile } from "../services/user-service";
 import "./styles/Navbar.css";
 
+//Import icons
+import HomeIcon from "@mui/icons-material/Home";
+import SearchIcon from "@mui/icons-material/Search";
+import PsychologyAltIcon from "@mui/icons-material/PsychologyAlt"; // Smart Search
+import CompareArrowsIcon from "@mui/icons-material/CompareArrows";
+import InfoIcon from "@mui/icons-material/Info";
+
 const Navbar = () => {
   const navigate = useNavigate();
 
@@ -69,15 +76,23 @@ const Navbar = () => {
         {/* Center section: navigation links */}
         <Box className="navbar-center-links">
           <Link to="/home" className="navbar-link">
+            <HomeIcon fontSize="small" style={{ marginRight: "6px" }} />
             Home
           </Link>
           <Link to="/search" className="navbar-link">
+            <SearchIcon fontSize="small" style={{ marginRight: "6px" }} />
             Search
           </Link>
           <Link to="/smart-search" className="navbar-link">
+            <PsychologyAltIcon fontSize="small" style={{ marginRight: "6px" }} />
             Smart Search
           </Link>
+          <Link to="/compare" className="navbar-link">
+            <CompareArrowsIcon fontSize="small" style={{ marginRight: "6px" }} />
+            Compare
+          </Link>
           <Link to="/aboutus" className="navbar-link">
+            <InfoIcon fontSize="small" style={{ marginRight: "6px" }} />
             About Us
           </Link>
         </Box>
