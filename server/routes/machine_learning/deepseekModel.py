@@ -15,6 +15,7 @@ from langchain.prompts import (
 
 # Load environment variables
 load_dotenv()
+os.environ["TOKENIZERS_PARALLELISM"] = "false"
 
 # ================= DeepSeek API Configuration =================
 DEEPSEEK_API_KEY = os.getenv("DEEPSEEK_API_KEY")

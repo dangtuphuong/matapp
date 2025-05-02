@@ -1,12 +1,12 @@
 import os
 from dotenv import load_dotenv
-from langchain.embeddings import OpenAIEmbeddings
+from langchain_openai import OpenAIEmbeddings
 from langchain_openai import ChatOpenAI
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.prompts import FewShotChatMessagePromptTemplate
 from langchain_community.vectorstores import FAISS
 from langchain_core.example_selectors import SemanticSimilarityExampleSelector
-from langchain import LLMChain
+from langchain.chains import LLMChain
 from langchain.prompts import (
     ChatPromptTemplate,
     SystemMessagePromptTemplate,
