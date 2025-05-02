@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import NavbarPrivate from "./NavbarPrivate";
 import {
   Container,
   Typography,
@@ -7,34 +6,87 @@ import {
   Button,
   Paper,
   Avatar,
+  TextField,
+  List,
+  ListItem,
+  ListItemText,
+  IconButton,
 } from "@mui/material";
-import { AccountCircle, Download, Group } from "@mui/icons-material";
+import {
+  AccountCircle,
+  Download,
+  Group,
+  OpenInNew,
+} from "@mui/icons-material";
 import { getUserProfile } from "../services/user-service";
 import { useNavigate } from "react-router-dom";
-import "./styles/Profile.css";
+import NavbarPrivate from "./NavbarPrivate";
 import { ROLES, ROLE_LABELS } from "../constants";
+import "./styles/Profile.css";
 
 const ProfilePage = () => {
   const [profile, setProfile] = useState(null);
+  const [isEditing, setIsEditing] = useState(false);
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
   const navigate = useNavigate();
 
   // Fetch user profile on mount
   useEffect(() => {
     const token = localStorage.getItem("access_token");
 
-    // Get profile from API
     getUserProfile(token)
-      .then((data) => setProfile(data))
+      .then((data) => {
+        setProfile(data);
+        setName(`${data.firstName} ${data.lastName}`);
+        setEmail(data.email);
+      })
       .catch((err) => {
         console.error("Profile fetch failed", err);
         navigate("/login");
       });
   }, [navigate]);
 
+  // Dummy bookmarks for demonstration
+  const dummyBookmarks = [
+    { title: "Material 1", date: "05/04/2023" },
+    { title: "Material 2", date: "05/04/2023" },
+    { title: "Material 3", date: "05/04/2023" },
+    { title: "Material 4", date: "05/04/2023" },
+  ];
+
+  // Save updated name/email to backend
+  const handleSave = async () => {
+    try {
+      const token = localStorage.getItem("access_token");
+      const [firstName, ...lastNameParts] = name.trim().split(" ");
+      const lastName = lastNameParts.join(" ") || "";
+      await fetch("/api/profile/update", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ firstName, lastName, email }),
+      });
+
+      // Update UI
+      setProfile((prev) => ({
+        ...prev,
+        firstName,
+        lastName,
+        email,
+      }));
+      setIsEditing(false);
+    } catch (err) {
+      console.error("Profile update failed:", err);
+    }
+  };
+
   // Conditionally render role-based action buttons
   const renderRoleButtons = (role) => {
     switch (role) {
-      case ROLES.NORMAL_USER: // Role 1
+      case ROLES.NORMAL_USER:
         return (
           <Button
             variant="contained"
@@ -45,13 +97,13 @@ const ProfilePage = () => {
             Go Premium
           </Button>
         );
-      case ROLES.PREMIUM_USER: // Role 2
+      case ROLES.PREMIUM_USER:
         return (
           <Button variant="outlined" startIcon={<Download />}>
             Export Data
           </Button>
         );
-      case ROLES.ADMIN: // Role 0
+      case ROLES.ADMIN:
         return (
           <>
             <Button
@@ -73,58 +125,119 @@ const ProfilePage = () => {
 
   return (
     <>
-      {/* Private navbar with user’s first name */}
+      {/* Top Navbar */}
       <NavbarPrivate />
 
-      <Container className="profile-container">
-        {/* Profile summary card */}
-        <Paper elevation={2} className="profile-card">
-          <Avatar className="profile-avatar">
-            <AccountCircle sx={{ fontSize: 80 }} />
-          </Avatar>
+      <main className="profile-main">
+        {/* Left Sidebar */}
+        <div className="profile-sidebar">
+          <div className="profile-avatar-wrapper">
+            <Avatar className="profile-avatar">
+              <AccountCircle sx={{ fontSize: 80 }} />
+            </Avatar>
+          </div>
+          <h2 className="sidebar-name">{profile?.firstName || "Test User"}</h2>
+          <p className="sidebar-email">{profile?.email || "user@example.com"}</p>
+        </div>
 
-          <Typography variant="h6" className="profile-name">
-            {profile?.firstName || "John Smith"}
-          </Typography>
+        {/* Main Content */}
+        <div className="profile-content">
+          {/* Profile Section */}
+          <section className="profile-section">
+            <h3 className="section-title">Profile</h3>
+            <form className="profile-form">
+              <TextField
+                fullWidth
+                label="Name"
+                margin="normal"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                InputProps={{
+                  readOnly: !isEditing,
+                }}
+              />
+              <TextField
+                fullWidth
+                label="Email"
+                margin="normal"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                InputProps={{
+                  readOnly: !isEditing,
+                }}
+              />
+              <TextField
+                fullWidth
+                label="Date of Birth"
+                margin="normal"
+                defaultValue={profile?.dateOfBirth}
+                key={profile?.dateOfBirth}
+                InputProps={{
+                  readOnly: true,
+                }}
+              />
+              <TextField
+                fullWidth
+                label="Gender"
+                margin="normal"
+                defaultValue={profile?.gender}
+                key={profile?.gender}
+                InputProps={{
+                  readOnly: true,
+                }}
+              />
+              <TextField
+                fullWidth
+                label="Role"
+                margin="normal"
+                defaultValue={ROLE_LABELS[profile?.role] || "Unknown"}
+                key={profile?.role}
+                InputProps={{
+                  readOnly: true,
+                }}
+              />
 
-          {/* Display profile details */}
-          <Box className="profile-info-box">
-            <Typography variant="body1">
-              <strong>Full Name:</strong> {profile?.firstName}{" "}
-              {profile?.lastName}
-            </Typography>
-            <Typography variant="body1">
-              <strong>Email:</strong> {profile?.email}
-            </Typography>
-            <Typography variant="body1">
-              <strong>Gender:</strong> {profile?.gender}
-            </Typography>
-            <Typography variant="body1">
-              <strong>Date of Birth:</strong> {profile?.dateOfBirth}
-            </Typography>
-            <Typography variant="body1">
-              <strong>Role:</strong> {ROLE_LABELS[profile?.role] || "Unknown"}
-            </Typography>
-          </Box>
+              <div className="profile-buttons">
+                {!isEditing ? (
+                  <Button variant="contained" onClick={() => setIsEditing(true)}>
+                    Update Profile
+                  </Button>
+                ) : (
+                  <>
+                    <Button variant="contained" onClick={handleSave}>
+                      Save
+                    </Button>
+                    <Button variant="outlined" onClick={() => setIsEditing(false)}>
+                      Cancel
+                    </Button>
+                  </>
+                )}
+                {renderRoleButtons(profile?.role)}
+              </div>
+            </form>
+          </section>
 
-          {/* Display action buttons based on role */}
-          <Box className="profile-buttons">
-            {renderRoleButtons(profile?.role)}
-          </Box>
-        </Paper>
-
-        {/* Section for user-specific stats (can be expanded) */}
-        <Box className="profile-stats-section">
-          <Typography variant="h6" className="profile-stats-title">
-            My Stats
-          </Typography>
-          <Box className="profile-stats-grid">
-            <Paper className="stat-card">Stat 01</Paper>
-            <Paper className="stat-card">Stat 02</Paper>
-            <Paper className="stat-card">Stat 03</Paper>
-          </Box>
-        </Box>
-      </Container>
+          {/* Bookmarks Section */}
+          <section className="bookmarks-section">
+            <h3 className="section-title">Bookmarks</h3>
+            <div className="bookmarks-list">
+              {dummyBookmarks.map((bookmark, index) => (
+                <div key={index} className="bookmark-item">
+                  <span className="bookmark-title">{bookmark.title}</span>
+                  <div className="bookmark-actions">
+                    <span className="bookmark-date">Saved on {bookmark.date}</span>
+                    <div className="bookmark-buttons">
+                      <IconButton>
+                        <OpenInNew fontSize="small" />
+                      </IconButton>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+        </div>
+      </main>
     </>
   );
 };

@@ -10,6 +10,8 @@ import Landing from "./components/LandingPage";
 import Profile from "./components/ProfilePage";
 import EditUsers from "./components/EditUsers";
 import Material from "./components/MaterialPage";
+import Search from "./components/SearchPage";
+import SmartSearch from "./components/SmartSearch";
 
 import ProtectedRoute from "./components/ProtectedRoute";
 import PublicRoute from "./components/PublicRoute";
@@ -17,6 +19,7 @@ import SessionTimeout from "./components/SessionTimeout";
 import SearchPage from "./components/SearchPage";
 import AboutUs from "./components/AboutUs";
 import FlexibleRoute from "./components/FlexibleRoute";
+import MaterialDetail from "./components/MaterialDetail";
 
 function App() {
   return (
@@ -77,7 +80,7 @@ function App() {
           path="/search"
           element={
             <ProtectedRoute>
-              <SearchPage />
+              <Search />
             </ProtectedRoute>
           }
         />
@@ -89,7 +92,14 @@ function App() {
             </ProtectedRoute>
           }
         />
-
+        <Route
+          path="/smart-search"
+          element={
+            <ProtectedRoute>
+              <SmartSearch />
+            </ProtectedRoute>
+          }
+        />
         {/* Public landing page (root route) */}
         <Route path="/" element={<Landing />} />
       </Routes>

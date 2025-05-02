@@ -36,13 +36,13 @@ const itemWrapperStyle = {
 const itemStyle = {
   fontWeight: 600,
   marginRight: "10px",
-  minWidth: "150px",
+  minWidth: "170px",
 };
 
 const iconStyle = {
   fontSize: 20,
   color: "#505050",
-  marginRight: "5px",
+  marginRight: "10px",
 };
 
 const MaterialPage = () => {
@@ -181,6 +181,7 @@ const MaterialPage = () => {
           )}
         </TableContainer>
       </Container>
+      <br />
     </div>
   );
 };

@@ -6,17 +6,22 @@ material_bp = Blueprint("material_routes", __name__)
 
 
 # Route to fetch all materials, with JWT token check
-@material_bp.route("/materials", methods=["GET"])
+@material_bp.route("/materials", methods=["POST"])
 @jwt_required()
 def get_materials():
     try:
-        page = int(request.args.get("page", 1))
-        limit = int(request.args.get("limit", 10))
-        search_term = request.args.get("searchTerm", "")  # Get search term from query string
+        data = request.get_json() or {}
 
-        materials, total_count = MaterialModel.get_all_materials(page, limit, search_term)
+        page = int(data.get("page", 1))
+        limit = int(data.get("limit", 10))
+        search_term = data.get("searchTerm", "")
+        search_cats = data.get("searchCategories", [])
+        search_props = data.get("searchProperties", [])
 
-        # Calculate total pages
+        materials, total_count = MaterialModel.get_all_materials(
+            page, limit, search_term, search_cats, search_props
+        )
+
         total_pages = (total_count + limit - 1) // limit
 
         return (
@@ -31,7 +36,7 @@ def get_materials():
             200,
         )
     except Exception as e:
-        print(e)
+        print("Error in get_materials:", e)
         return jsonify({"error": "Server error"}), 500
 
 

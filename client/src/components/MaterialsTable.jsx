@@ -1,21 +1,18 @@
 import { useNavigate } from "react-router-dom";
 import React, { useEffect, useState, useCallback } from "react";
 import {
-  Button,
+  Box,
+  TextField,
   Table,
   TableBody,
   TableCell,
   TableHead,
   TableRow,
-  Typography,
   Skeleton,
 } from "@mui/material";
 
 import { getAllMaterials } from "../services/material-service";
 import Pagination from "./Pagination";
-
-import "./styles/navbar.css";
-import "./styles/Home.css";
 
 const headerStyle = {
   backgroundColor: "#424242",
@@ -23,23 +20,22 @@ const headerStyle = {
   fontWeight: "bold",
 };
 
-const MaterialsTable = ({ searchTerm }) => {
+const MaterialsTable = ({ searchCategories, searchProperties }) => {
   const navigate = useNavigate();
   const [isLoading, setLoading] = useState(false);
   const [materials, setMaterials] = useState([]);
-  const [filteredMaterials, setFilteredMaterials] = useState([]); // Filtered based on search
   const [totalCount, setTotalCount] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
-  const [limit] = useState(10);
+  const [limit, setLimit] = useState(10);
+  const [searchTerm, setSearchTerm] = useState("");
 
   // Fetch materials from API
-  const fetchMaterials = useCallback(({ page, limit, searchTerm }) => {
+  const fetchMaterials = useCallback((params) => {
     setLoading(true);
-    return getAllMaterials({ page, limit, searchTerm }) // Make sure to pass searchTerm to the API call
+    return getAllMaterials(params)
       .then((data) => {
-        setMaterials(data.materials); // Set all materials at once
-        setFilteredMaterials(data.materials); // Set the filtered materials
-        setTotalCount(data.total_count); // Set the total count (you can adjust this based on how you want to count)
+        setMaterials(data.materials);
+        setTotalCount(data.total_count);
       })
       .catch((err) => console.error(err))
       .finally(() => setLoading(false));
@@ -54,31 +50,43 @@ const MaterialsTable = ({ searchTerm }) => {
 
   // Load data on component mount and page change
   useEffect(() => {
-    fetchMaterials({ page: currentPage, limit, searchTerm });
-  }, [currentPage, searchTerm]);
+    const delayDebounce = setTimeout(() => {
+      fetchMaterials({
+        page: currentPage,
+        limit,
+        searchTerm,
+        searchCategories,
+        searchProperties,
+      });
+    }, 300);
 
-  // Update filteredMaterials whenever materials or searchTerm changes
-  useEffect(() => {
-    if (searchTerm) {
-      const filtered = materials.filter((material) =>
-        material["Material Name"]
-          .toLowerCase()
-          .includes(searchTerm.toLowerCase())
-      );
-      setFilteredMaterials(filtered); // Set filtered materials
-    } else {
-      setFilteredMaterials(materials); // If no searchTerm, show all materials
-    }
-  }, [searchTerm, materials]);
+    return () => {
+      clearTimeout(delayDebounce);
+    };
+  }, [currentPage, searchTerm, limit, searchCategories, searchProperties]);
 
   // Calculate total pages
   const totalPages = Math.ceil(totalCount / limit);
 
   const onRowClick = (id) => navigate(`/material/${id}`);
 
+  const handleSearchChange = (event) => {
+    setSearchTerm(event.target.value);
+  };
+
   return (
     <>
-      <Table>
+      {/* Material Name */}
+      <Box sx={{ mb: 1.5 }}>
+        <TextField
+          size="small"
+          label="Search Material Name"
+          fullWidth
+          value={searchTerm}
+          onChange={handleSearchChange}
+        />
+      </Box>
+      <Table sx={{ border: "1px solid #ccc" }}>
         <TableHead>
           <TableRow>
             <TableCell sx={headerStyle}>Name</TableCell>
@@ -97,8 +105,8 @@ const MaterialsTable = ({ searchTerm }) => {
                 </TableCell>
               </TableRow>
             ))
-          ) : filteredMaterials?.length > 0 ? (
-            filteredMaterials?.map((material) => (
+          ) : materials?.length > 0 ? (
+            materials?.map((material) => (
               <TableRow
                 key={material?._id}
                 onClick={() => onRowClick(material?.matGUID)}
@@ -118,6 +126,8 @@ const MaterialsTable = ({ searchTerm }) => {
 
       {totalPages > 0 && (
         <Pagination
+          limit={limit}
+          handleLimitChange={setLimit}
           currentPage={currentPage}
           totalPages={totalPages}
           handlePageChange={handlePageChange}
