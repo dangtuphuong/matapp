@@ -14,11 +14,11 @@ import Search from "./components/SearchPage";
 import SmartSearch from "./components/SmartSearch";
 import ComparisonPage from "./components/MaterialComparisonPage";
 import AboutUs from "./components/AboutUsPage";
+import UploadPage from "./components/UploadPage";
 
 import ProtectedRoute from "./components/ProtectedRoute";
 import PublicRoute from "./components/PublicRoute";
 import SessionTimeout from "./components/SessionTimeout";
-import MaterialDetail from "./components/MaterialDetail";
 
 function App() {
   return (
@@ -41,7 +41,7 @@ function App() {
             </PublicRoute>
           }
         />
-        
+
         {/* Protected routes (require login) */}
         <Route
           path="/home"
@@ -94,17 +94,25 @@ function App() {
         <Route
           path="/compare"
           element={
-          <ProtectedRoute>
-            <ComparisonPage />
-          </ProtectedRoute>
+            <ProtectedRoute>
+              <ComparisonPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/upload"
+          element={
+            <ProtectedRoute>
+              <UploadPage />
+            </ProtectedRoute>
           }
         />
         <Route
           path="/aboutus"
           element={
-          <ProtectedRoute>
-            <AboutUs />
-          </ProtectedRoute>
+            <ProtectedRoute>
+              <AboutUs />
+            </ProtectedRoute>
           }
         />
         {/* Public landing page (root route) */}

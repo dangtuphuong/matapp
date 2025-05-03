@@ -18,6 +18,7 @@ import HomeIcon from "@mui/icons-material/Home";
 import SearchIcon from "@mui/icons-material/Search";
 import PsychologyAltIcon from "@mui/icons-material/PsychologyAlt"; // Smart Search
 import CompareArrowsIcon from "@mui/icons-material/CompareArrows";
+import UploadIcon from "@mui/icons-material/Upload";
 import InfoIcon from "@mui/icons-material/Info";
 
 const Navbar = () => {
@@ -76,23 +77,33 @@ const Navbar = () => {
         {/* Center section: navigation links */}
         <Box className="navbar-center-links">
           <Link to="/home" className="navbar-link">
-            <HomeIcon fontSize="small" style={{ marginRight: "6px" }} />
+            <HomeIcon fontSize="small" style={{ marginRight: "5px" }} />
             Home
           </Link>
           <Link to="/search" className="navbar-link">
-            <SearchIcon fontSize="small" style={{ marginRight: "6px" }} />
+            <SearchIcon fontSize="small" style={{ marginRight: "5px" }} />
             Search
           </Link>
           <Link to="/smart-search" className="navbar-link">
-            <PsychologyAltIcon fontSize="small" style={{ marginRight: "6px" }} />
+            <PsychologyAltIcon
+              fontSize="small"
+              style={{ marginRight: "5px" }}
+            />
             Smart Search
           </Link>
           <Link to="/compare" className="navbar-link">
-            <CompareArrowsIcon fontSize="small" style={{ marginRight: "6px" }} />
+            <CompareArrowsIcon
+              fontSize="small"
+              style={{ marginRight: "5px" }}
+            />
             Compare
           </Link>
+          <Link to="/upload" className="navbar-link">
+            <UploadIcon fontSize="small" style={{ marginRight: "5px" }} />
+            Upload
+          </Link>
           <Link to="/aboutus" className="navbar-link">
-            <InfoIcon fontSize="small" style={{ marginRight: "6px" }} />
+            <InfoIcon fontSize="small" style={{ marginRight: "5px" }} />
             About Us
           </Link>
         </Box>

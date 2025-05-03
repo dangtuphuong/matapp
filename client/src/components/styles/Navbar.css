@@ -95,7 +95,7 @@
 
 .navbar-center-links {
   display: flex;
-  gap: 8%;
+  gap: 50px;
   flex: 1;
   justify-content: center;
   align-items: center;
