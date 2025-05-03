@@ -1,0 +1,35 @@
+{
+  "Material Name": "string",
+  "Categories": ["string"],
+  "Material Notes": "string",
+  "Key Words": "string",
+  "Vendors": "string",
+  "Properties": {
+    "Physical Properties": {
+      "Density": [
+        {
+          "Metric": "string",
+          "English": "string",
+          "Comments": ""
+        }
+      ],
+      "Molecular Weight": [
+        {
+          "Metric": "string",
+          "English": "string",
+          "Comments": ""
+        },
+        {
+          "Metric": "string",
+          "English": "string",
+          "Comments": ""
+        }
+      ]
+    },
+    "Descriptive Properties": {
+      "Form": ["string", "string"],
+      "Purity": ["string"],
+      "Typical Impurities": ["string"]
+    }
+  }
+}
