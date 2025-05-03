@@ -12,14 +12,13 @@ import EditUsers from "./components/EditUsers";
 import Material from "./components/MaterialPage";
 import Search from "./components/SearchPage";
 import SmartSearch from "./components/SmartSearch";
+import ComparisonPage from "./components/MaterialComparisonPage";
+import AboutUs from "./components/AboutUsPage";
+import UploadPage from "./components/UploadPage";
 
 import ProtectedRoute from "./components/ProtectedRoute";
 import PublicRoute from "./components/PublicRoute";
 import SessionTimeout from "./components/SessionTimeout";
-import SearchPage from "./components/SearchPage";
-import AboutUs from "./components/AboutUs";
-import FlexibleRoute from "./components/FlexibleRoute";
-import MaterialDetail from "./components/MaterialDetail";
 
 function App() {
   return (
@@ -97,6 +96,30 @@ function App() {
           element={
             <ProtectedRoute>
               <SmartSearch />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/compare"
+          element={
+            <ProtectedRoute>
+              <ComparisonPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/upload"
+          element={
+            <ProtectedRoute>
+              <UploadPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/aboutus"
+          element={
+            <ProtectedRoute>
+              <AboutUs />
             </ProtectedRoute>
           }
         />

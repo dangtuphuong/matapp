@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useParams } from "react-router-dom";
 import {
   Container,
@@ -17,9 +17,11 @@ import PrecisionManufacturingIcon from "@mui/icons-material/PrecisionManufacturi
 import EditNoteIcon from "@mui/icons-material/EditNote";
 import KeyIcon from "@mui/icons-material/Key";
 
-import { getMaterialByMatGUID } from "../services/material-service";
-
 import NavbarPrivate from "./NavbarPrivate";
+import { getMaterialByMatGUID } from "../services/material-service";
+import { exportElementToPDF } from "../utils/pdfExporter";
+import { exportPropertiesToCSV } from "../utils/csvExporter";
+import "./styles/MaterialPage.css";
 
 const headerStyle = {
   backgroundColor: "#424242",
@@ -48,6 +50,7 @@ const iconStyle = {
 const MaterialPage = () => {
   const { matGUID } = useParams();
   const [material, setMaterial] = useState(null);
+  const contentRef = useRef();
 
   useEffect(() => {
     getMaterialByMatGUID(matGUID)
@@ -55,131 +58,175 @@ const MaterialPage = () => {
       .catch((err) => console.error(err));
   }, [matGUID]);
 
+  const handleDownloadPDF = () => {
+    if (contentRef.current) {
+      exportElementToPDF(
+        contentRef.current,
+        `${material?.["Material Name"] || "material"}.pdf`
+      );
+    }
+  };
+
   return (
     <div>
       <NavbarPrivate />
       <Container className="mat-container">
-        <Typography align="center" variant="h4" sx={{ mt: 3, mb: 3 }}>
-          {material?.["Material Name"]}
-        </Typography>
-        <Card
-          sx={{
-            mb: 2,
-            boxShadow: "none",
-            border: "1px solid #ccc",
-            padding: "10px",
-          }}
-        >
-          <div style={itemWrapperStyle}>
-            <span style={itemStyle}>
-              <CategoryIcon sx={iconStyle} />
-              Categories
-            </span>
-            {material?.["Categories"]?.join(", ")}
-          </div>
-          {material?.["Key Words"] && (
+        
+        <div ref={contentRef}>
+          <Typography align="center" variant="h4" sx={{ mt: 3, mb: 3 }}>
+            {material?.["Material Name"]}
+          </Typography>
+          <Card
+            sx={{
+              mb: 2,
+              boxShadow: "none",
+              border: "1px solid #ccc",
+              padding: "10px",
+            }}
+          >
             <div style={itemWrapperStyle}>
               <span style={itemStyle}>
-                <KeyIcon sx={iconStyle} />
-                Key Words
+                <CategoryIcon sx={iconStyle} />
+                Categories
               </span>
-              {material?.["Key Words"]}
+              {material?.["Categories"]?.join(", ")}
             </div>
-          )}
-          {material?.["Material Notes"] && (
+            {material?.["Key Words"] && (
+              <div style={itemWrapperStyle}>
+                <span style={itemStyle}>
+                  <KeyIcon sx={iconStyle} />
+                  Key Words
+                </span>
+                {material?.["Key Words"]}
+              </div>
+            )}
+            {material?.["Material Notes"] && (
+              <div style={itemWrapperStyle}>
+                <span style={itemStyle}>
+                  <EditNoteIcon sx={iconStyle} />
+                  Material Notes
+                </span>
+                {material?.["Material Notes"]}
+              </div>
+            )}
             <div style={itemWrapperStyle}>
               <span style={itemStyle}>
-                <EditNoteIcon sx={iconStyle} />
-                Material Notes
+                <PrecisionManufacturingIcon sx={iconStyle} />
+                Vendors
               </span>
-              {material?.["Material Notes"]}
+              {material?.["Vendors"] ||
+                "No vendors are listed for this material"}
             </div>
-          )}
-          <div style={itemWrapperStyle}>
-            <span style={itemStyle}>
-              <PrecisionManufacturingIcon sx={iconStyle} />
-              Vendors
-            </span>
-            {material?.["Vendors"] || "No vendors are listed for this material"}
+          </Card>
+
+          <Typography sx={{ fontWeight: 600, margin: "20px 0" }} variant="h6">
+            Properties
+          </Typography>
+
+          <TableContainer component={Paper}>
+            {Object.entries(material?.["Properties"] ?? {}).map(
+              ([key, items]) =>
+                key !== "Descriptive Properties" ? (
+                  <Table
+                    sx={{ minWidth: 650 }}
+                    aria-label="table"
+                    key={key}
+                  >
+                    <TableHead>
+                      <TableRow>
+                        <TableCell sx={{ ...headerStyle, width: "25%" }}>
+                          {key}
+                        </TableCell>
+                        <TableCell
+                          sx={{ ...headerStyle, width: "28%" }}
+                          align="right"
+                        >
+                          Metric
+                        </TableCell>
+                        <TableCell
+                          sx={{ ...headerStyle, width: "28%" }}
+                          align="right"
+                        >
+                          English
+                        </TableCell>
+                        <TableCell sx={headerStyle} align="right">
+                          Comments
+                        </TableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {Object.entries(items).map(([property, values]) =>
+                        values.map((value, index) => (
+                          <TableRow key={`${property}-${index}`}>
+                            {index === 0 && (
+                              <TableCell rowSpan={values.length}>
+                                {property}
+                              </TableCell>
+                            )}
+                            <TableCell align="right">
+                              {value.Metric}
+                            </TableCell>
+                            <TableCell align="right">
+                              {value.English}
+                            </TableCell>
+                            <TableCell align="right">
+                              {value.Comments}
+                            </TableCell>
+                          </TableRow>
+                        ))
+                      )}
+                    </TableBody>
+                  </Table>
+                ) : (
+                  <Table
+                    sx={{ minWidth: 650 }}
+                    aria-label="descriptive"
+                    key={key}
+                  >
+                    <TableHead>
+                      <TableRow>
+                        <TableCell sx={headerStyle}>{key}</TableCell>
+                        <TableCell sx={headerStyle} align="right">
+                          Value
+                        </TableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {Object.entries(items).map(([property, values]) =>
+                        values.map((value, index) => (
+                          <TableRow key={`${property}-${index}`}>
+                            {index === 0 && (
+                              <TableCell rowSpan={values.length}>
+                                {property}
+                              </TableCell>
+                            )}
+                            <TableCell align="right">{value}</TableCell>
+                          </TableRow>
+                        ))
+                      )}
+                    </TableBody>
+                  </Table>
+                )
+            )}
+          </TableContainer>
+        </div>
+        
+        {/* Download buttons for PDF and CSV */}
+        {material && (
+          <div style={{ textAlign: "right", marginTop: "20px" }}>
+            <button onClick={handleDownloadPDF} className="pdf-button">
+              Download PDF
+            </button>
+            <button
+              onClick={() => exportPropertiesToCSV(material)}
+              className="pdf-button"
+              style={{ marginLeft: "10px" }}
+            >
+              Download CSV
+            </button>
           </div>
-        </Card>
-        <Typography sx={{ fontWeight: 600, margin: "20px 0" }} variant="h6">
-          Properties
-        </Typography>
-        <TableContainer component={Paper}>
-          {Object.entries(material?.["Properties"] ?? {}).map(([key, items]) =>
-            key !== "Descriptive Properties" ? (
-              <Table sx={{ minWidth: 650 }} aria-label="simple table" key={key}>
-                <TableHead>
-                  <TableRow>
-                    <TableCell sx={{ ...headerStyle, width: "25%" }}>
-                      {key}
-                    </TableCell>
-                    <TableCell
-                      sx={{ ...headerStyle, width: "28%" }}
-                      align="right"
-                    >
-                      Metric
-                    </TableCell>
-                    <TableCell
-                      sx={{ ...headerStyle, width: "28%" }}
-                      align="right"
-                    >
-                      English
-                    </TableCell>
-                    <TableCell sx={headerStyle} align="right">
-                      Comments
-                    </TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {Object.entries(items).map(([property, values]) =>
-                    values.map((value, index) => (
-                      <TableRow key={`${property}-${index}`}>
-                        {index === 0 && (
-                          <TableCell
-                            rowSpan={values.length}
-                            sx={{ alignContent: "flex-start" }}
-                          >
-                            {property}
-                          </TableCell>
-                        )}
-                        <TableCell align="right">{value.Metric}</TableCell>
-                        <TableCell align="right">{value.English}</TableCell>
-                        <TableCell align="right">{value.Comments}</TableCell>
-                      </TableRow>
-                    ))
-                  )}
-                </TableBody>
-              </Table>
-            ) : (
-              <Table sx={{ minWidth: 650 }} aria-label="simple table" key={key}>
-                <TableHead>
-                  <TableRow>
-                    <TableCell sx={headerStyle}>{key}</TableCell>
-                    <TableCell sx={headerStyle} align="right">
-                      Value
-                    </TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {Object.entries(items).map(([property, values]) =>
-                    values.map((value, index) => (
-                      <TableRow key={`${property}-${index}`}>
-                        {index === 0 && (
-                          <TableCell rowSpan={values.length}>
-                            {property}
-                          </TableCell>
-                        )}
-                        <TableCell align="right">{value}</TableCell>
-                      </TableRow>
-                    ))
-                  )}
-                </TableBody>
-              </Table>
-            )
-          )}
-        </TableContainer>
+        )}
+        
       </Container>
       <br />
     </div>
@@ -187,3 +234,5 @@ const MaterialPage = () => {
 };
 
 export default MaterialPage;
+
+
