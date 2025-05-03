@@ -1,4 +1,5 @@
 import os
+import openai
 from dotenv import load_dotenv
 from langchain_openai import OpenAIEmbeddings
 from langchain_openai import ChatOpenAI
@@ -31,11 +32,11 @@ with open(schema_path, "r", encoding="utf-8") as input_file:
 load_dotenv()
 
 # Set your OpenAI API key
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
-embedding_model = OpenAIEmbeddings(openai_api_key=OPENAI_API_KEY)
+openai.api_key = os.getenv("OPENAI_API_KEY")
+embedding_model = OpenAIEmbeddings(openai_api_key=openai.api_key)
 
-llm = ChatOpenAI(temperature=0, model="gpt-4.1-mini", openai_api_key=OPENAI_API_KEY)
-embeddings = OpenAIEmbeddings(model="text-embedding-3-small", openai_api_key=OPENAI_API_KEY)
+llm = ChatOpenAI(temperature=0, model="gpt-4.1-mini", openai_api_key=openai.api_key)
+embeddings = OpenAIEmbeddings(model="text-embedding-3-small", openai_api_key=openai.api_key)
 
 example_selector = SemanticSimilarityExampleSelector.from_examples(
         example_data,
