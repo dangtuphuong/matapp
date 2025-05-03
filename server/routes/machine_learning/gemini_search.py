@@ -2,7 +2,7 @@ from flask import Blueprint, jsonify, request
 from flask_jwt_extended import jwt_required
 
 from services.machine_learning.gemini_model import get_answer
-from models.material_model import aggregate_materials
+from models.material_model import MaterialModel
 from utils.llm import clean_and_parse_pipeline
 
 gemini_bp = Blueprint("gemini_bp", __name__)
@@ -38,7 +38,7 @@ def gemini_search():
         if not any("$limit" in stage for stage in pipeline if isinstance(stage, dict)):
             pipeline.append({"$limit": 10})
 
-        results = aggregate_materials(pipeline)
+        results = MaterialModel.aggregate_materials(pipeline)
 
         return jsonify({"result": results}), 200
 

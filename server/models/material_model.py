@@ -1,5 +1,4 @@
 from extensions import mongo
-import re
 
 
 class MaterialModel:
