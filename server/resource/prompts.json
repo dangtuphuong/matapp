@@ -9,7 +9,7 @@
   },
   {
     "user_query": "What are the weakest ceramic materials?",
-    "mongo_query": "[{\"$match\": {\"Categories\": {\"$in\": [\"Ceramic\"]}}}, {\"$project\": {\"matGUID\": 1, \"Material Name\": 1, \"Categories\": 1, \"Material Notes\": 1, \"Compressive Strength\": {\"$min\": {\"$map\": {\"input\": {\"$filter\": {\"input\": \"$parsed_properties.Mechanical Properties.Compressive Strength.units\", \"as\": \"item\", \"cond\": {\"$ne\": [\"$$item.min\", null]}}}, \"as\": \"item\", \"in\": \"$$item.min\"}}}}}, {\"$sort\": {\"Compressive Strength\": 1}}]"
+    "mongo_query": "[{\"$match\": {\"Categories\": {\"$in\": [\"Ceramic\"]}}}, {\"$project\": {\"matGUID\": 1, \"Material Name\": 1, \"Categories\": 1, \"Material Notes\": 1, \"Compressive Strength\": {\"$min\": {\"$map\": {\"input\": \"$parsed_properties.Mechanical Properties.Compressive Strength.units\", \"as\": \"item\", \"in\": \"$$item.min\"}}}}}, {\"$sort\": {\"Compressive Strength\": 1}}]"
   },
   {
     "user_query": "What are the Ceramic materials with max service temp above 1600°C",
@@ -17,6 +17,6 @@
   },
   {
     "user_query": "Find materials with Flexural Modulus between 100 and 500 GPa",
-    "mongo_query": "[{\"$match\": {\"parsed_properties.Mechanical Properties.Flexural Modulus.units\": {\"$elemMatch\": {\"unit\": \"GPa\", \"$or\": [{\"$and\": [{\"min\": {\"$ne\": null}}, {\"min\": {\"$gte\": 100}}, {\"min\": {\"$lte\": 500}}]}, {\"$and\": [{\"max\": {\"$ne\": null}}, {\"max\": {\"$gte\": 100}}, {\"max\": {\"$lte\": 500}}]}, {\"$and\": [{\"min\": {\"$ne\": null}}, {\"max\": {\"$ne\": null}}, {\"min\": {\"$lte\": 100}}, {\"max\": {\"$gte\": 500}}]}]}}}}, {\"$project\": {\"matGUID\": 1, \"Material Name\": 1, \"Categories\": 1, \"Material Notes\": 1, \"Flexural Modulus (GPa)\": {\"$filter\": {\"input\": \"$parsed_properties.Mechanical Properties.Flexural Modulus.units\", \"as\": \"fm\", \"cond\": {\"$and\": [ {\"$eq\": [\"$$fm.unit\", \"GPa\"]}, {\"$or\": [ {\"$and\": [ {\"$ne\": [\"$$fm.min\", null]}, {\"$gte\": [\"$$fm.min\", 100]}, {\"$lte\": [\"$$fm.min\", 500]} ]}, {\"$and\": [ {\"$ne\": [\"$$fm.max\", null]}, {\"$gte\": [\"$$fm.max\", 100]}, {\"$lte\": [\"$$fm.max\", 500]} ]}, {\"$and\": [ {\"$ne\": [\"$$fm.min\", null]}, {\"$ne\": [\"$$fm.max\", null]}, {\"$lte\": [\"$$fm.min\", 100]}, {\"$gte\": [\"$$fm.max\", 500]} ]} ]} ]}}}}, {\"$sort\": {\"Flexural Modulus (GPa).min\": 1}}]"
+    "mongo_query": "[{\"$match\": {\"parsed_properties.Mechanical Properties.Flexural Modulus.units\": {\"$elemMatch\": {\"unit\": \"GPa\", \"$or\": [{\"$and\": [{\"min\": {\"$gte\": 100}}, {\"min\": {\"$lte\": 500}}]}, {\"$and\": [{\"max\": {\"$gte\": 100}}, {\"max\": {\"$lte\": 500}}]}, {\"$and\": [{\"min\": {\"$lte\": 100}}, {\"max\": {\"$gte\": 500}}]}]}}}}, {\"$project\": {\"matGUID\": 1, \"Material Name\": 1, \"Categories\": 1, \"Material Notes\": 1, \"Flexural Modulus (GPa)\": {\"$filter\": {\"input\": \"$parsed_properties.Mechanical Properties.Flexural Modulus.units\", \"as\": \"fm\", \"cond\": {\"$and\": [{\"$eq\": [\"$$fm.unit\", \"GPa\"]}, {\"$or\": [{\"$and\": [{\"$gte\": [\"$$fm.min\", 100]}, {\"$lte\": [\"$$fm.min\", 500]}]}, {\"$and\": [{\"$gte\": [\"$$fm.max\", 100]}, {\"$lte\": [\"$$fm.max\", 500]}]}, {\"$and\": [{\"$lte\": [\"$$fm.min\", 100]}, {\"$gte\": [\"$$fm.max\", 500]}]}]}}}}, {\"$sort\": {\"Flexural Modulus (GPa).min\": 1}}]"
   }
 ]
