@@ -4,6 +4,7 @@ from routes.machine_learning.deepseekModel import get_answer
 from extensions import mongo
 import json
 import ast
+import re
 
 deepseek_bp = Blueprint("deepseek_bp", __name__)
 
@@ -28,7 +29,13 @@ def llm_search():
         print(f"Generated pipeline string: {pipeline_str}")
 
         # Clean the pipeline string (remove markdown code blocks)
-        cleaned_str = pipeline_str.replace("```json", "").replace("```", "").strip()
+        # cleaned_str = pipeline_str.replace("```json", "").replace("```", "").strip()
+        match = re.search(r"```json\s*(.*?)\s*```", pipeline_str, re.DOTALL)
+
+        if match:
+            cleaned_str = match.group(1)
+        else:
+            cleaned_str = pipeline_str.replace("```json", "").replace("```", "").strip()
 
         # Parse the pipeline (handle both JSON string and Python literal)
         try:
