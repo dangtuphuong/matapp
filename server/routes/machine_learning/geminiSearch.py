@@ -47,7 +47,7 @@ def llm_search():
 
         # Add a limit stage if not present
         if not has_limit:
-            pipeline.append({"$limit": 20})
+            pipeline.append({"$limit": 10})
 
         results = mongo.db.materials.aggregate(pipeline)
         result_json = []

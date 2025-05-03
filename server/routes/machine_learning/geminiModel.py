@@ -13,31 +13,32 @@ load_dotenv()
 GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
 GEMINI_MODEL = "gemini-2.5-pro-exp-03-25"
 
-# ================= Example Data (Same as Before) =================
+# ================= Example Data =================
 example_data = [
     {
         "user_query": "Top 3 best electricity resistance material",
-        "mongo_query": '[{"$project": {"matGUID": 1,"Material Name": 1,"Categories": 1,"Material Notes": 1,"Electrical Resistance": {"$arrayElemAt": ["$parsed_properties.Electrical Properties.Dielectric Strength.metric.max", 0]}}},{"$sort": {"Electrical Resistance": -1}},{"$limit": 3}]',
+        "mongo_query": '[{"$project": {"matGUID": 1, "Material Name": 1, "Categories": 1, "Material Notes": 1, "Electrical Resistance": {"$arrayElemAt": ["$parsed_properties.Electrical Properties.Electrical Resistivity.metric.max", 0]}}}, {"$sort": {"Electrical Resistance": -1}}, {"$limit": 3}]',
     },
     {
         "user_query": "What are the strongest ceramic material",
-        "mongo_query": '[{"$match": {Categories: {"$all": ["Ceramic"]}}},{"$project": {"matGUI": 1,"Material Name": 1, "Categories": 1,"Material Notes": 1,"Tensile Strength (Metric)": { "$max": "$parsed_properties.Mechanical Properties.Tensile Strength, Ultimate.metric.max"},"Tensile Strength (English)": {"$max": "$parsed_properties.Mechanical Properties.Tensile Strength, Ultimate.english.max"}}},{"$sort": {"Tensile Strength (Metric)": -1,"Tensile Strength (English)": -1}}]',
+        "mongo_query": '[{"$match": {"Categories": {"$in": ["Ceramic"]}}}, {"$project": {"matGUID": 1, "Material Name": 1, "Categories": 1, "Material Notes": 1, "Compressive Strength": {"$max": {"$map": { "input": "$parsed_properties.Mechanical Properties.Compressive Strength", "as": "item", "in": "$$item.metric.max" }}}}}, {"$sort": {"Compressive Strength": -1}}]',
     },
     {
-        "user_query": "What are the material with the tensile strength bigger than 1235MPa",
-        "mongo_query": '{"$project": {"Material Name": 1,"matGUID": 1,"Categories": 1,"Material Notes": 1,"parsed_properties.Mechanical Properties.Tensile Strength.metric.max": 1}},{"$match": {"parsed_properties.Mechanical Properties.Tensile Strength.metric.max": { "$gt": 1235 }}}',
+        "user_query": "What are the material with the compressive strength bigger than 50MPa",
+        "mongo_query": '[{"$project": {"matGUID": 1, "Material Name": 1, "Categories": 1, "Material Notes": 1, "Compressive Strength": {"$max": {"$map": { "input": "$parsed_properties.Mechanical Properties.Compressive Strength", "as": "item", "in": "$$item.metric.max" }}}}}, {"$match": {"Compressive Strength": {"$gt": 50}}}]',
     },
     {
-        "user_query": "What are the Metal material with the tensile strength bigger than 179100 psi",
-        "mongo_query": '[{"$match": {"Categories": "Metal","parsed_properties.Mechanical Properties.Tensile Strength, Yield.english.max": { "$gt": 179100 }}},{"$project": {"matGUID": 1,"Material Name": 1,"Categories": 1,"Material Notes": 1,"parsed_properties.Mechanical Properties.Tensile Strength, Yield.english": 1}}]',
+        "user_query": "What are the Ceramic materials with max service temp above 1600°C",
+        "mongo_query": '[{"$match": {"Categories": {"$in": ["Ceramic"]}}}, {"$project": {"matGUID": 1, "Material Name": 1, "Categories": 1, "Material Notes": 1, "Max Service Temp": {"$max": {"$map": { "input": "$parsed_properties.Thermal Properties.Maximum Service Temperature, Air", "as": "item", "in": "$$item.metric.max" }}}}}, {"$match": {"Max Service Temp": {"$gt": 1600}}}]',
     },
 ]
+
 
 # ================= Load Schema =================
 script_dir = os.path.dirname(os.path.abspath(__file__))
 sub_folder_root = os.path.dirname(script_dir)
 project_root = os.path.dirname(sub_folder_root)
-schema_path = os.path.join(project_root, "resource", "schema.txt")
+schema_path = os.path.join(project_root, "resource", "schema.json")
 with open(schema_path, "r", encoding="utf-8") as input_file:
     structure = input_file.read()
 
