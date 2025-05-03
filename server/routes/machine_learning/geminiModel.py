@@ -17,7 +17,7 @@ GEMINI_MODEL = "gemini-2.5-pro-exp-03-25"
 
 # ================= Load Example Data =================
 example_data = []
-with open("resource/example_prompts.json", "r", encoding="utf-8") as f:
+with open("resource/prompts.json", "r", encoding="utf-8") as f:
     example_data = json.load(f)
 
 

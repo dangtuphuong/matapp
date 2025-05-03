@@ -25,7 +25,7 @@ DEEPSEEK_MODEL = "deepseek-chat"
 
 # ================= Load Example Data =================
 example_data = []
-with open("resource/example_prompts.json", "r", encoding="utf-8") as f:
+with open("resource/prompts.json", "r", encoding="utf-8") as f:
     example_data = json.load(f)
 
 # ================= Load Schema =================
