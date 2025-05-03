@@ -32,7 +32,7 @@ with open(schema_path, "r", encoding="utf-8") as input_file:
 load_dotenv()
 
 # Set your OpenAI API key
-openai.api_key = os.getenv("OPENAI_API_KEY")
+openai.api_key = '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'
 embedding_model = OpenAIEmbeddings(openai_api_key=openai.api_key)
 
 llm = ChatOpenAI(temperature=0, model="gpt-4.1-mini", openai_api_key=openai.api_key)
