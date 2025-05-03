@@ -8,8 +8,8 @@ from routes.property_routes import property_bp
 
 from routes.machine_learning.vectorSearch import vt_bp
 from routes.machine_learning.llmSearch import ml_bp
-from routes.machine_learning.deepseekSearch import deepseek_bp
-from routes.machine_learning.geminiSearch import gemini_bp
+from routes.machine_learning.deepseek_search import deepseek_bp
+from routes.machine_learning.gemini_search import gemini_bp
 
 
 def create_app():

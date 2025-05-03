@@ -165,3 +165,15 @@ class MaterialModel:
             material["_id"] = str(material["_id"])
 
         return material
+
+    @staticmethod
+    def aggregate_materials(pipeline):
+        materials_collection = mongo.db["materials"]
+        cursor = materials_collection.aggregate(pipeline)
+
+        results = []
+        for doc in cursor:
+            doc["_id"] = str(doc["_id"])
+            results.append(doc)
+
+        return results
