@@ -1,22 +1,26 @@
 [
   {
-    "user_query": "Top 3 best electricity resistance materials",
-    "mongo_query": "[{\"$project\": {\"matGUID\": 1, \"Material Name\": 1, \"Categories\": 1, \"Material Notes\": 1, \"Electrical Resistance\": {\"$max\": {\"$map\": {\"input\": \"$parsed_properties.Electrical Properties.Electrical Resistivity.units\", \"as\": \"item\", \"in\": \"$$item.max\"}}}}}, {\"$sort\": {\"Electrical Resistance\": -1}}, {\"$limit\": 3}]"
+    "user_query": "Top 3 materials with highest density",
+    "mongo_query": "[{\"$match\": {\"parsed_properties.Physical Properties.Density\": {\"$exists\": true, \"$ne\": []}}}, {\"$project\": {\"matGUID\": 1, \"Material Name\": 1, \"Categories\": 1, \"Material Notes\": 1, \"Density\": {\"$max\": {\"$map\": {\"input\": \"$parsed_properties.Physical Properties.Density\", \"as\": \"item\", \"in\": \"$item.metric.max\"}}}}}, {\"$match\": {\"Density\": {\"$exists\": true, \"$ne\": null}}}, {\"$sort\": {\"Density\": -1}}, {\"$limit\": 3}]"
   },
   {
-    "user_query": "What are the strongest ceramic materials",
-    "mongo_query": "[{\"$match\": {\"Categories\": {\"$in\": [\"Ceramic\"]}}}, {\"$project\": {\"matGUID\": 1, \"Material Name\": 1, \"Categories\": 1, \"Material Notes\": 1, \"Compressive Strength\": {\"$max\": {\"$map\": { \"input\": \"$parsed_properties.Mechanical Properties.Compressive Strength.units\", \"as\": \"item\", \"in\": \"$$item.max\" }}}}}, {\"$sort\": {\"Compressive Strength\": -1}}]"
+    "user_query": "Top 5 materials with lowest density",
+    "mongo_query": "[{\"$match\": {\"parsed_properties.Physical Properties.Density\": {\"$exists\": true, \"$ne\": []}}}, {\"$project\": {\"matGUID\": 1, \"Material Name\": 1, \"Categories\": 1, \"Material Notes\": 1, \"Density\": {\"$min\": {\"$map\": {\"input\": \"$parsed_properties.Physical Properties.Density\", \"as\": \"item\", \"in\": {\"$cond\": {\"if\": {\"$and\": [{\"$gt\": [\"$item.metric.min\", 0]}, {\"$ne\": [\"$item.metric.min\", null]}]}, \"then\": \"$item.metric.min\", \"else\": \"$item.metric.max\"}}}}}}}, {\"$match\": {\"Density\": {\"$exists\": true, \"$ne\": null, \"$gt\": 0}}}, {\"$sort\": {\"Density\": 1}}, {\"$limit\": 5}]"
   },
   {
-    "user_query": "What are the weakest ceramic materials?",
-    "mongo_query": "[{\"$match\": {\"Categories\": {\"$in\": [\"Ceramic\"]}}}, {\"$project\": {\"matGUID\": 1, \"Material Name\": 1, \"Categories\": 1, \"Material Notes\": 1, \"Compressive Strength\": {\"$min\": {\"$map\": {\"input\": \"$parsed_properties.Mechanical Properties.Compressive Strength.units\", \"as\": \"item\", \"in\": \"$$item.min\"}}}}}, {\"$sort\": {\"Compressive Strength\": 1}}]"
+    "user_query": "What are the strongest ceramic materials based on hardness",
+    "mongo_query": "[{\"$match\": {\"Categories\": {\"$in\": [\"Ceramic\"]}, \"parsed_properties.Mechanical Properties.Hardness, Rockwell C\": {\"$exists\": true, \"$ne\": []}}}, {\"$project\": {\"matGUID\": 1, \"Material Name\": 1, \"Categories\": 1, \"Material Notes\": 1, \"Hardness\": {\"$max\": {\"$map\": {\"input\": \"$parsed_properties.Mechanical Properties.Hardness, Rockwell C\", \"as\": \"item\", \"in\": \"$item.metric.max\"}}}}}, {\"$match\": {\"Hardness\": {\"$exists\": true, \"$ne\": null}}}, {\"$sort\": {\"Hardness\": -1}}, {\"$limit\": 10}]"
   },
   {
-    "user_query": "What are the Ceramic materials with max service temp above 1600°C",
-    "mongo_query": "[{\"$match\": {\"Categories\": {\"$in\": [\"Ceramic\"]}}}, {\"$project\": {\"matGUID\": 1, \"Material Name\": 1, \"Categories\": 1, \"Material Notes\": 1, \"Max Service Temp\": {\"$max\": {\"$map\": { \"input\": \"$parsed_properties.Thermal Properties.Maximum Service Temperature, Air.units\", \"as\": \"item\", \"in\": \"$$item.max\" }}}}}, {\"$match\": {\"Max Service Temp\": {\"$gt\": 1600}}}]"
+    "user_query": "What are the materials with max service temperature above 500°C",
+    "mongo_query": "[{\"$match\": {\"parsed_properties.Thermal Properties.Maximum Service Temperature, Air\": {\"$exists\": true, \"$ne\": []}}}, {\"$project\": {\"matGUID\": 1, \"Material Name\": 1, \"Categories\": 1, \"Material Notes\": 1, \"Max_Service_Temp\": {\"$max\": {\"$map\": {\"input\": \"$parsed_properties.Thermal Properties.Maximum Service Temperature, Air\", \"as\": \"item\", \"in\": \"$item.metric.max\"}}}}}, {\"$match\": {\"Max_Service_Temp\": {\"$gt\": 500}}}, {\"$sort\": {\"Max_Service_Temp\": -1}}]"
   },
   {
-    "user_query": "Find materials with Flexural Modulus between 100 and 500 GPa",
-    "mongo_query": "[{\"$match\": {\"parsed_properties.Mechanical Properties.Flexural Modulus.units\": {\"$elemMatch\": {\"unit\": \"GPa\", \"$or\": [{\"$and\": [{\"min\": {\"$gte\": 100}}, {\"min\": {\"$lte\": 500}}]}, {\"$and\": [{\"max\": {\"$gte\": 100}}, {\"max\": {\"$lte\": 500}}]}, {\"$and\": [{\"min\": {\"$lte\": 100}}, {\"max\": {\"$gte\": 500}}]}]}}}}, {\"$project\": {\"matGUID\": 1, \"Material Name\": 1, \"Categories\": 1, \"Material Notes\": 1, \"Flexural Modulus (GPa)\": {\"$filter\": {\"input\": \"$parsed_properties.Mechanical Properties.Flexural Modulus.units\", \"as\": \"fm\", \"cond\": {\"$and\": [{\"$eq\": [\"$$fm.unit\", \"GPa\"]}, {\"$or\": [{\"$and\": [{\"$gte\": [\"$$fm.min\", 100]}, {\"$lte\": [\"$$fm.min\", 500]}]}, {\"$and\": [{\"$gte\": [\"$$fm.max\", 100]}, {\"$lte\": [\"$$fm.max\", 500]}]}, {\"$and\": [{\"$lte\": [\"$$fm.min\", 100]}, {\"$gte\": [\"$$fm.max\", 500]}]}]}}}}, {\"$sort\": {\"Flexural Modulus (GPa).min\": 1}}]"
+    "user_query": "Find materials with density between 5 and 10 g/cc",
+    "mongo_query": "[{\"$match\": {\"parsed_properties.Physical Properties.Density\": {\"$exists\": true, \"$ne\": []}}}, {\"$project\": {\"matGUID\": 1, \"Material Name\": 1, \"Categories\": 1, \"Material Notes\": 1, \"Density_Range\": {\"$map\": {\"input\": \"$parsed_properties.Physical Properties.Density\", \"as\": \"d\", \"in\": {\"min\": \"$d.metric.min\", \"max\": \"$d.metric.max\", \"unit\": \"$d.metric.unit\"}}}}}, {\"$match\": {\"$or\": [{\"$and\": [{\"Density_Range.min\": {\"$gte\": 5}}, {\"Density_Range.min\": {\"$lte\": 10}}]}, {\"$and\": [{\"Density_Range.max\": {\"$gte\": 5}}, {\"Density_Range.max\": {\"$lte\": 10}}]}, {\"$and\": [{\"Density_Range.min\": {\"$lte\": 5}}, {\"Density_Range.max\": {\"$gte\": 10}}]}]}}, {\"$sort\": {\"Density_Range.min\": 1}}]"
+  },
+  {
+    "user_query": "Find materials with specific carbide volume percentage",
+    "mongo_query": "[{\"$match\": {\"parsed_properties.Descriptive Properties.Carbide (Vol. %)\": {\"$exists\": true, \"$ne\": []}}}, {\"$project\": {\"matGUID\": 1, \"Material Name\": 1, \"Categories\": 1, \"Material Notes\": 1, \"Carbide_Volume\": {\"$arrayElemAt\": [\"$parsed_properties.Descriptive Properties.Carbide (Vol. %)\", 0]}}}, {\"$sort\": {\"Carbide_Volume\": -1}}]"
   }
 ]
