@@ -22,7 +22,7 @@ const headerStyle = {
 
 const MaterialsTable = ({ searchCategories, searchProperties }) => {
   const navigate = useNavigate();
-  const [isLoading, setLoading] = useState(false);
+  const [isLoading, setLoading] = useState(true);
   const [materials, setMaterials] = useState([]);
   const [totalCount, setTotalCount] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);

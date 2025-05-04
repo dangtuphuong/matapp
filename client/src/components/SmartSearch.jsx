@@ -116,7 +116,7 @@ const SmartSearch = () => {
               <MenuItem value={MODELS.VECTOR}>Vector Search</MenuItem>
               <MenuItem value={MODELS.LLM}>OpenAI</MenuItem>
               <MenuItem value={MODELS.DEEPSEEK}>DeepSeek</MenuItem>
-              <MenuItem value={MODELS.GEMINI}>Gemini</MenuItem>
+              <MenuItem value={MODELS.GEMINI}>Google Gemini</MenuItem>
             </Select>
           </FormControl>
 
