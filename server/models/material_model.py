@@ -2,6 +2,7 @@ from extensions import mongo
 import json
 from datetime import datetime, timezone
 from bson import ObjectId
+from services.upload.parse_service import parse_properties
 
 
 class MaterialModel:
@@ -188,23 +189,32 @@ class MaterialModel:
         materials_collection = mongo.db["materials"]
 
         try:
+            file.stream.seek(0)
             json_data = json.load(file.stream)
 
             # Generate a new ObjectId for matGUID
             mat_guid = ObjectId()
+
+            # Parse properties
+            properties = json_data.get("Properties", {})
+            parsed = parse_properties(properties)
 
             # Create the document to insert
             document = {
                 "_id": mat_guid,
                 "matGUID": str(mat_guid),
                 **json_data,
+                "parsed_properties": parsed,
                 "upload_date": datetime.now(timezone.utc),
             }
 
             # Insert into MongoDB
             inserted = materials_collection.insert_one(document)
 
-            return {"inserted_id": inserted.inserted_id, "matGUID": document.matGUID}
+            return {
+                "inserted_id": str(inserted.inserted_id),
+                "matGUID": document["matGUID"],
+            }
 
         except json.JSONDecodeError as e:
             raise ValueError(f"Invalid JSON file: {str(e)}")
