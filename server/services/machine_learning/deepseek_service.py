@@ -1,7 +1,7 @@
 import os
 import json
 from dotenv import load_dotenv
-from langchain_huggingface import HuggingFaceEmbeddings
+from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_openai import ChatOpenAI
 from langchain_core.prompts import (
     ChatPromptTemplate,
@@ -33,8 +33,7 @@ structure = ""
 with open("resource/schema.json", "r", encoding="utf-8") as input_file:
     structure = input_file.read()
 
-# ================= Initialize Models =================
-# Using HuggingFace embeddings since DeepSeek embeddings aren't directly available in LangChain
+# ================= Initialize DeepSeek LLM =================
 embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-mpnet-base-v2")
 
 # DeepSeek LLM (OpenAI-compatible)
@@ -45,7 +44,7 @@ llm = ChatOpenAI(
     openai_api_base=DEEPSEEK_API_BASE,
 )
 
-# ================= Few-Shot Setup (Unchanged) =================
+# ================= Few-Shot Setup =================
 example_selector = SemanticSimilarityExampleSelector.from_examples(
     example_data, embeddings, FAISS, k=4, input_keys=["user_query"]
 )
