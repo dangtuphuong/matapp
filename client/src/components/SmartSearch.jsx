@@ -33,18 +33,19 @@ const MODELS = {
 
 const LoadingCards = () =>
   Array.from({ length: 3 }, (_, i) => (
-    <Skeleton
-      key={i}
-      variant="rectangular"
-      sx={{ borderRadius: 1 }}
-      height={118}
-    />
+    <Card key={i} variant="outlined" sx={{ p: "15px 30px" }}>
+      <Skeleton sx={{ borderRadius: 1, width: "80%" }} height={30} />
+      <Skeleton variant="rectangular" sx={{ borderRadius: 1 }} height={60} />
+      <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
+        <Skeleton width="30%" height={28} sx={{ borderRadius: 1 }} />
+      </Box>
+    </Card>
   ));
 
 const SmartSearch = () => {
   const navigate = useNavigate();
 
-  const [isLoading, setLoading] = useState(false);
+  const [isLoading, setLoading] = useState(true);
   const [model, setModel] = useState(MODELS.VECTOR);
   const [skip, setSkip] = useState(0);
   const [limit, setLimit] = useState(10);
