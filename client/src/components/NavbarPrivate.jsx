@@ -14,12 +14,12 @@ import { getUserProfile } from "../services/user-service";
 import "./styles/Navbar.css";
 
 //Import icons
-import HomeIcon from "@mui/icons-material/Home";
+import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined';
 import SearchIcon from "@mui/icons-material/Search";
-import PsychologyAltIcon from "@mui/icons-material/PsychologyAlt"; // Smart Search
+import TroubleshootIcon from '@mui/icons-material/Troubleshoot';
 import CompareArrowsIcon from "@mui/icons-material/CompareArrows";
-import UploadIcon from "@mui/icons-material/Upload";
-import InfoIcon from "@mui/icons-material/Info";
+import FileUploadOutlinedIcon from '@mui/icons-material/FileUploadOutlined';
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 
 const Navbar = () => {
   const navigate = useNavigate();
@@ -77,7 +77,7 @@ const Navbar = () => {
         {/* Center section: navigation links */}
         <Box className="navbar-center-links">
           <Link to="/home" className="navbar-link">
-            <HomeIcon fontSize="small" style={{ marginRight: "5px" }} />
+            <HomeOutlinedIcon fontSize="small" style={{ marginRight: "5px" }} />
             Home
           </Link>
           <Link to="/search" className="navbar-link">
@@ -85,7 +85,7 @@ const Navbar = () => {
             Search
           </Link>
           <Link to="/smart-search" className="navbar-link">
-            <PsychologyAltIcon
+            <TroubleshootIcon
               fontSize="small"
               style={{ marginRight: "5px" }}
             />
@@ -99,11 +99,11 @@ const Navbar = () => {
             Compare
           </Link>
           <Link to="/upload" className="navbar-link">
-            <UploadIcon fontSize="small" style={{ marginRight: "5px" }} />
+            <FileUploadOutlinedIcon fontSize="small" style={{ marginRight: "5px" }} />
             Upload
           </Link>
           <Link to="/aboutus" className="navbar-link">
-            <InfoIcon fontSize="small" style={{ marginRight: "5px" }} />
+            <InfoOutlinedIcon fontSize="small" style={{ marginRight: "5px" }} />
             About Us
           </Link>
         </Box>

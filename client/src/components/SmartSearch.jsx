@@ -45,7 +45,7 @@ const LoadingCards = () =>
 const SmartSearch = () => {
   const navigate = useNavigate();
 
-  const [isLoading, setLoading] = useState(true);
+  const [isLoading, setLoading] = useState(false);
   const [model, setModel] = useState(MODELS.VECTOR);
   const [skip, setSkip] = useState(0);
   const [limit, setLimit] = useState(10);
