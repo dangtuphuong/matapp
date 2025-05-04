@@ -19,8 +19,8 @@ import NavbarPrivate from "./NavbarPrivate";
 import MaterialsTable from "./MaterialsTable";
 
 const convertTreeData = (data) =>
-  data?.map(({ name, children }) => ({
-    id: name,
+  data?.map(({ name, children }, index) => ({
+    id: `${name}-${index}`,
     label: name,
     ...(children && { children: convertTreeData(children) }),
   }));
@@ -30,7 +30,12 @@ const convertGroupedData = (data) =>
     propGroup.properties.map((p) => ({
       label: p?.name,
       group: propGroup?.name,
-      units: p?.units,
+      units: p?.units?.reduce((unique_items, unit) => {
+        if (!unique_items.some((u) => u?.unit === unit?.unit)) {
+          unique_items.push(unit);
+        }
+        return unique_items;
+      }, []),
     }))
   );
 

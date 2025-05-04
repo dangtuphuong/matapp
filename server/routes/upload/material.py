@@ -19,7 +19,7 @@ def upload_file():
         )
 
         return (
-            jsonify({"message": "File uploaded successfully", **upload_result}),
+            jsonify({**upload_result}),
             200,
         )
 

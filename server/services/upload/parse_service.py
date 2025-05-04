@@ -120,10 +120,6 @@ def parse_properties(properties):
     try:
         parsed_properties = clean_material_properties(properties)
 
-        # Update property filters
-
-        # Update categories
-
         return parsed_properties
     except Exception as e:
         print(f"Error parsing upload material: {e}")

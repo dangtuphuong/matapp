@@ -3,6 +3,8 @@ import json
 from datetime import datetime, timezone
 from bson import ObjectId
 from services.upload.parse_service import parse_properties
+from services.upload.update_service import update_categories_collection
+from services.upload.update_filters_service import update_property_filters_collection
 
 
 class MaterialModel:
@@ -192,12 +194,46 @@ class MaterialModel:
             file.stream.seek(0)
             json_data = json.load(file.stream)
 
+            # Check for existing material by matGUID
+            if "matGUID" in json_data:
+                existing = materials_collection.find_one(
+                    {"matGUID": json_data["matGUID"]}
+                )
+                if existing:
+                    return {
+                        "status": "exists",
+                        "message": "Material with this matGUID already exists",
+                        "existing_id": str(existing["_id"]),
+                        "matGUID": json_data["matGUID"],
+                    }
+
+            # Check by material name if present
+            if "Material Name" in json_data:
+                existing = materials_collection.find_one(
+                    {"Material Name": json_data["Material Name"]}
+                )
+                if existing:
+                    return {
+                        "status": "exists",
+                        "message": "Material with this name already exists",
+                        "existing_id": str(existing["_id"]),
+                        "Material Name": json_data["Material Name"],
+                        "matGUID": existing["matGUID"],
+                    }
+
             # Generate a new ObjectId for matGUID
             mat_guid = ObjectId()
 
             # Parse properties
             properties = json_data.get("Properties", {})
             parsed = parse_properties(properties)
+
+            # Update categories collection if needed
+            categories = json_data.get("Categories", [])
+            cat_update_result = update_categories_collection(categories)
+
+            # Update property_filters collection if needed (min, max value)
+            filters_update_result = update_property_filters_collection(properties)
 
             # Create the document to insert
             document = {
@@ -214,6 +250,10 @@ class MaterialModel:
             return {
                 "inserted_id": str(inserted.inserted_id),
                 "matGUID": document["matGUID"],
+                "categories_update": cat_update_result,
+                "prop_filter_update": filters_update_result,
+                "status": "success",
+                "message": "File uploaded successfully",
             }
 
         except json.JSONDecodeError as e:
