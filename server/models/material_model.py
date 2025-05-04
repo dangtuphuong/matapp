@@ -1,4 +1,7 @@
 from extensions import mongo
+import json
+from datetime import datetime, timezone
+from bson import ObjectId
 
 
 class MaterialModel:
@@ -176,3 +179,34 @@ class MaterialModel:
             results.append(doc)
 
         return results
+
+    @staticmethod
+    def upload_file(file):
+        if not file or file.filename == "":
+            raise ValueError("No file provided or empty filename")
+
+        materials_collection = mongo.db["materials"]
+
+        try:
+            json_data = json.load(file.stream)
+
+            # Generate a new ObjectId for matGUID
+            mat_guid = ObjectId()
+
+            # Create the document to insert
+            document = {
+                "_id": mat_guid,
+                "matGUID": str(mat_guid),
+                **json_data,
+                "upload_date": datetime.now(timezone.utc),
+            }
+
+            # Insert into MongoDB
+            inserted = materials_collection.insert_one(document)
+
+            return {"inserted_id": inserted.inserted_id, "matGUID": document.matGUID}
+
+        except json.JSONDecodeError as e:
+            raise ValueError(f"Invalid JSON file: {str(e)}")
+        except Exception as e:
+            raise e
