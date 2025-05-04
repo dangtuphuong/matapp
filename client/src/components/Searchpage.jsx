@@ -19,8 +19,8 @@ import NavbarPrivate from "./NavbarPrivate";
 import MaterialsTable from "./MaterialsTable";
 
 const convertTreeData = (data) =>
-  data?.map(({ name, children }, index) => ({
-    id: `${name}-${index}`,
+  data?.map(({ name, children }) => ({
+    id: name,
     label: name,
     ...(children && { children: convertTreeData(children) }),
   }));
