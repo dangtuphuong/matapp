@@ -1,5 +1,5 @@
+import { useNavigate } from "react-router-dom";
 import React, { useEffect, useState, useCallback } from "react";
-import { Link } from "react-router-dom";
 import {
   Box,
   TextField,
@@ -21,6 +21,7 @@ const headerStyle = {
 };
 
 const MaterialsTable = ({ searchCategories, searchProperties }) => {
+  const navigate = useNavigate();
   const [isLoading, setLoading] = useState(true);
   const [materials, setMaterials] = useState([]);
   const [totalCount, setTotalCount] = useState(0);
@@ -67,7 +68,11 @@ const MaterialsTable = ({ searchCategories, searchProperties }) => {
   // Calculate total pages
   const totalPages = Math.ceil(totalCount / limit);
 
-  const handleSearchChange = (event) => setSearchTerm(event?.target?.value);
+  const onRowClick = (id) => navigate(`/material/${id}`);
+
+  const handleSearchChange = (event) => {
+    setSearchTerm(event.target.value);
+  };
 
   return (
     <>
@@ -104,8 +109,7 @@ const MaterialsTable = ({ searchCategories, searchProperties }) => {
             materials?.map((material) => (
               <TableRow
                 key={material?._id}
-                component={Link}
-                to={`/material/${material?.matGUID}`}
+                onClick={() => onRowClick(material?.matGUID)}
                 sx={{ cursor: "pointer" }}
               >
                 <TableCell>{material?.["Material Name"]}</TableCell>
