@@ -41,14 +41,6 @@ function App() {
             </PublicRoute>
           }
         />
-        <Route
-          path="/aboutus"
-          element={
-            <FlexibleRoute>
-              <AboutUs />
-            </FlexibleRoute>
-          }
-        />
 
         {/* Protected routes (require login) */}
         <Route
