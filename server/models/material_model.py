@@ -3,8 +3,8 @@ import json
 from datetime import datetime, timezone
 from bson import ObjectId
 from services.upload.parse_service import parse_properties
-from services.upload.update_service import update_categories_collection
-from services.upload.update_filters_service import update_property_filters_collection
+from models.category_model import CategoryModel
+from models.property_model import PropertyModel
 
 
 class MaterialModel:
@@ -230,10 +230,10 @@ class MaterialModel:
 
             # Update categories collection if needed
             categories = json_data.get("Categories", [])
-            cat_update_result = update_categories_collection(categories)
+            cat_update_result = CategoryModel.upload_categories(categories)
 
             # Update property_filters collection if needed (min, max value)
-            filters_update_result = update_property_filters_collection(properties)
+            filters_update_result = PropertyModel.upload_properties(properties)
 
             # Create the document to insert
             document = {

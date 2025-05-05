@@ -1,7 +1,7 @@
 from flask import Blueprint, jsonify, request
 from flask_jwt_extended import jwt_required
 
-from services.machine_learning.gemini_model import get_answer
+from services.machine_learning.gemini_service import get_answer
 from models.material_model import MaterialModel
 from utils.llm import clean_and_parse_pipeline
 
