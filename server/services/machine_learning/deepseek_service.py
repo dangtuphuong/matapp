@@ -33,8 +33,7 @@ structure = ""
 with open("resource/schema.json", "r", encoding="utf-8") as input_file:
     structure = input_file.read()
 
-# ================= Initialize Models =================
-# Using HuggingFace embeddings since DeepSeek embeddings aren't directly available in LangChain
+# ================= Initialize DeepSeek LLM =================
 embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-mpnet-base-v2")
 
 # DeepSeek LLM (OpenAI-compatible)
@@ -45,7 +44,7 @@ llm = ChatOpenAI(
     openai_api_base=DEEPSEEK_API_BASE,
 )
 
-# ================= Few-Shot Setup (Unchanged) =================
+# ================= Few-Shot Setup =================
 example_selector = SemanticSimilarityExampleSelector.from_examples(
     example_data, embeddings, FAISS, k=4, input_keys=["user_query"]
 )
@@ -63,14 +62,27 @@ def get_prompt(user_query):
     escaped_structure = structure.replace("{", "{{").replace("}", "}}")
 
     instruction_prompt = f"""
-        You are an expert in MongoDB queries. Your primary task is to generate accurate, efficient, syntactically and emit strict JSON correct aggregation MongoDB queriese based on the provided schema.  
-        - Model: \n{str(escaped_structure)}
-        Always and only generate a valid MongoDB query, ensure it matches the user's intent and no explaination. 
-        And the only properties that need to query are matGUID and Material Name.
-        Here is the user query: 
+        You are an expert in MongoDB queries. Your task is to generate accurate, efficient, and syntactically correct MongoDB aggregation queries that strictly follow the provided schema structure.
+        
+        SCHEMA STRUCTURE:
+        ```
+        {escaped_structure}
+        ```
+        
+        REQUIREMENTS:
+        1. Generate ONLY a valid MongoDB query JSON object with no explanation text
+        2. The query must conform EXACTLY to the schema structure shown above
+        3. Only query the following properties: matGUID, Material Name, Categories, and Material Notes
+        4. Use proper MongoDB operators and syntax
+        5. Ensure the query addresses the user's intent completely
+        6. Return ONLY the query code, nothing else
+        
+        USER QUERY:
         {user_query}
-        please take reference from below attached example while answering the query
+        
+        DO NOT include any explanations in your response. Output ONLY the MongoDB query as a valid JSON object.
     """
+
     return instruction_prompt
 
 

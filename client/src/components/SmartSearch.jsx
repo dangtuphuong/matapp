@@ -33,12 +33,13 @@ const MODELS = {
 
 const LoadingCards = () =>
   Array.from({ length: 3 }, (_, i) => (
-    <Skeleton
-      key={i}
-      variant="rectangular"
-      sx={{ borderRadius: 1 }}
-      height={118}
-    />
+    <Card key={i} variant="outlined" sx={{ p: "15px 30px" }}>
+      <Skeleton sx={{ borderRadius: 1, width: "80%" }} height={30} />
+      <Skeleton variant="rectangular" sx={{ borderRadius: 1 }} height={60} />
+      <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
+        <Skeleton width="30%" height={28} sx={{ borderRadius: 1 }} />
+      </Box>
+    </Card>
   ));
 
 const SmartSearch = () => {
@@ -115,7 +116,7 @@ const SmartSearch = () => {
               <MenuItem value={MODELS.VECTOR}>Vector Search</MenuItem>
               <MenuItem value={MODELS.LLM}>OpenAI</MenuItem>
               <MenuItem value={MODELS.DEEPSEEK}>DeepSeek</MenuItem>
-              <MenuItem value={MODELS.GEMINI}>Gemini</MenuItem>
+              <MenuItem value={MODELS.GEMINI}>Google Gemini</MenuItem>
             </Select>
           </FormControl>
 

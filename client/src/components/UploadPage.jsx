@@ -1,8 +1,17 @@
 import React, { useState } from "react";
-import { Box, Button, Typography, Alert, Card, Container } from "@mui/material";
+import {
+  Box,
+  Button,
+  Typography,
+  Alert,
+  Card,
+  Container,
+  Link,
+} from "@mui/material";
 import Upload from "@mui/icons-material/Upload";
 import DownloadIcon from "@mui/icons-material/Download";
 import { styled } from "@mui/material/styles";
+import { useNavigate } from "react-router-dom";
 
 import NavbarPrivate from "./NavbarPrivate";
 import { uploadMaterial } from "../services/material-service";
@@ -27,9 +36,13 @@ const VisuallyHiddenInput = styled("input")({
 });
 
 const UploadPage = () => {
+  const navigate = useNavigate();
+
   const [file, setFile] = useState(null);
   const [previewData, setPreviewData] = useState(null);
   const [error, setError] = useState(null);
+  const [msg, setMsg] = useState(null);
+  const [uploadedID, setUploadedID] = useState(null);
   const [uploading, setUploading] = useState(false);
 
   const handleFileChange = (event) => {
@@ -46,6 +59,7 @@ const UploadPage = () => {
 
     setFile(selectedFile);
     setError(null);
+    setMsg(null);
 
     const reader = new FileReader();
     reader.onload = (e) => {
@@ -67,9 +81,18 @@ const UploadPage = () => {
 
     try {
       setUploading(true);
-      await uploadMaterial(file);
+      const result = await uploadMaterial(file);
+      console.log(result);
       setFile(null);
       setPreviewData(null);
+
+      if (result?.status === "success") {
+        setMsg(result?.message);
+      } else if (result?.status === "exists") {
+        setError(result?.message);
+      }
+
+      setUploadedID(result?.matGUID ?? null);
     } catch (error) {
       setError(error.message || "Failed to upload file");
     } finally {
@@ -103,6 +126,36 @@ const UploadPage = () => {
       </Typography>
       <Container>
         <Box sx={{ maxWidth: 800, mx: "auto", p: 3 }}>
+          {error && (
+            <Alert severity="error" sx={{ mb: 3 }}>
+              {error} -
+              {!!uploadedID && (
+                <Link
+                  sx={{ marginLeft: 1 }}
+                  component="button"
+                  onClick={() => navigate(`/material/${uploadedID}`)}
+                  underline="hover"
+                >
+                  Click here to nagivigate to the existing material
+                </Link>
+              )}
+            </Alert>
+          )}
+          {msg && (
+            <Alert sx={{ mb: 3 }}>
+              {msg} -
+              {!!uploadedID && (
+                <Link
+                  sx={{ marginLeft: 1 }}
+                  component="button"
+                  onClick={() => navigate(`/material/${uploadedID}`)}
+                  underline="hover"
+                >
+                  Click here to nagivigate to the uploaded material
+                </Link>
+              )}
+            </Alert>
+          )}
           <Card
             sx={{
               ...cardStyle,
@@ -137,12 +190,6 @@ const UploadPage = () => {
               >
                 Selected: {file.name}
               </Typography>
-            )}
-
-            {error && (
-              <Alert severity="error" sx={{ mb: 2 }}>
-                {error}
-              </Alert>
             )}
 
             {previewData && (

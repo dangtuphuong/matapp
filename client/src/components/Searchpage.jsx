@@ -30,7 +30,12 @@ const convertGroupedData = (data) =>
     propGroup.properties.map((p) => ({
       label: p?.name,
       group: propGroup?.name,
-      units: p?.units,
+      units: p?.units?.reduce((unique_items, unit) => {
+        if (!unique_items.some((u) => u?.unit === unit?.unit)) {
+          unique_items.push(unit);
+        }
+        return unique_items;
+      }, []),
     }))
   );
 
