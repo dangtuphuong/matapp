@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import {
   Typography,
   Box,
@@ -56,7 +56,7 @@ const FilterPropInfo = ({ material }) => {
     ...rest
   } = material;
 
-  return Object.entries(rest).map(([key, value]) => (
+  return Object.entries(rest || {}).map(([key, value]) => (
     <Typography
       key={key}
       variant="body2"
@@ -68,8 +68,6 @@ const FilterPropInfo = ({ material }) => {
 };
 
 const SmartSearch = () => {
-  const navigate = useNavigate();
-
   const [isLoading, setLoading] = useState(false);
   const [model, setModel] = useState(MODELS.VECTOR);
   const [skip, setSkip] = useState(0);
@@ -107,10 +105,6 @@ const SmartSearch = () => {
       return setShowEmptyErr(true);
     }
     handleSearch();
-  };
-
-  const handleClick = (matID) => {
-    navigate(`/material/${matID}`);
   };
 
   const onChangeQuery = (e) => {
@@ -173,6 +167,7 @@ const SmartSearch = () => {
               <Card
                 key={id}
                 variant="outlined"
+                component={Link}
                 sx={{
                   p: "15px 30px",
                   cursor: "pointer",
@@ -181,7 +176,7 @@ const SmartSearch = () => {
                     borderColor: "#424242",
                   },
                 }}
-                onClick={() => handleClick(material?.matGUID)}
+                to={`/material/${material?.matGUID}`}
               >
                 <Typography variant="h6" noWrap sx={{ fontWeight: 600, mb: 1 }}>
                   {material?.["Material Name"] || material?._id}
