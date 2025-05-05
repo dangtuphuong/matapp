@@ -3,29 +3,29 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 48px 16px;
-  gap: 64px;
+  padding: 6vh 4vw;
+  gap: 8vh;
 }
 
 .landing-hero {
   text-align: center;
-  max-width: 800px;
+  max-width: 80vw;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 24px;
+  gap: 3vh;
 }
 
 .landing-hero-title {
   font-weight: bold;
-  font-size: 62px !important;
-  margin-top: 30px !important;
-  margin-bottom: 5px !important;
+  font-size: clamp(2.5rem, 6vw, 4rem);
+  margin-top: 5vh !important;
+  margin-bottom: 1vh !important;
 }
 
 .landing-hero-subtitle {
-  font-size: 22px !important;
-  margin-bottom: 24px;
+  font-size: clamp(1rem, 2.5vw, 1.5rem) !important;
+  margin-bottom: 3vh;
   color: #555;
 }
 
@@ -35,11 +35,12 @@
   border-right: 3px solid #000;
   max-width: 100%;
   font-family: monospace;
+  font-size: clamp(1rem, 2.5vw, 1.25rem);
   animation: typing 11s steps(60, end) infinite,
     blink-caret 0.75s step-end infinite;
 }
 
-/* Typing happens in first 5s, then pause for 6s (total 11s) */
+/* Typing animation keyframes */
 @keyframes typing {
   0% {
     width: 0;
@@ -68,9 +69,10 @@
 .search-button {
   background-color: #000 !important;
   color: #fff !important;
-  padding: 10px 30px !important;
+  padding: 0.8em 2em !important;
   font-weight: 500;
   text-transform: none;
+  font-size: 1rem;
 }
 
 /* --- How It Works --- */
@@ -80,25 +82,26 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 32px;
+  gap: 5vh;
 }
 
 .section-title {
   font-weight: bold;
-  margin-bottom: 32px;
+  margin-bottom: 4vh;
+  font-size: clamp(1.5rem, 4vw, 2.25rem);
 }
 
 .steps-grid {
   display: flex;
   flex-wrap: wrap;
-  gap: 24px;
+  gap: 3vh 2vw;
   justify-content: center;
   perspective: 1000px;
 }
 
 .step-card {
-  width: 180px;
-  height: 220px;
+  width: clamp(150px, 20vw, 180px);
+  height: clamp(200px, 25vh, 220px);
   position: relative;
   perspective: 1000px;
 }
@@ -123,13 +126,14 @@
   backface-visibility: hidden;
   border: 1px solid #ccc;
   border-radius: 8px;
-  padding: 16px;
+  padding: 1em;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   background-color: #fff;
   text-align: center;
+  font-size: clamp(0.9rem, 2vw, 1rem);
 }
 
 .step-card-back {
@@ -148,26 +152,27 @@
   box-shadow: 0 0 4px rgba(0, 0, 0, 0.1);
 }
 
+/* --- About Section --- */
 .about-project {
   text-align: center;
-  padding: 40px 20px;
-  max-width: 800px;
+  padding: 5vh 4vw;
+  max-width: 80vw;
   margin: 0 auto;
 }
 
 .about-points {
-  margin-top: 24px;
+  margin-top: 3vh;
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 2vh;
   text-align: left;
 }
 
 .about-point-row {
   display: flex;
   align-items: flex-start;
-  gap: 12px;
-  font-size: 1.05rem;
+  gap: 1vw;
+  font-size: clamp(1rem, 2.2vw, 1.1rem);
   line-height: 1.6;
 }
 
