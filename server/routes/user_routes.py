@@ -75,7 +75,12 @@ def login():
         return jsonify({"message": "Invalid credentials!"}), 401
 
     access_token = create_access_token(identity=email, expires_delta=timedelta(days=7))
-    return jsonify(access_token=access_token, firstName=user.get("firstName", "")), 200
+    return jsonify(
+    access_token=access_token,
+    firstName=user.get("firstName", ""),
+    role=user.get("role", "")
+), 200
+
 
 
 # ------------ User Routes ------------

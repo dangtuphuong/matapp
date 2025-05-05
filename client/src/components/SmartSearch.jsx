@@ -13,6 +13,7 @@ import {
   Card,
   Skeleton,
   Snackbar,
+  Alert,
 } from "@mui/material";
 
 import NavbarPrivate from "./NavbarPrivate";
@@ -44,6 +45,9 @@ const LoadingCards = () =>
 
 const SmartSearch = () => {
   const navigate = useNavigate();
+
+  const userRole = localStorage.getItem("user_role");
+  const isAllowed = userRole === "admin" || userRole === "premium_user";
 
   const [isLoading, setLoading] = useState(false);
   const [model, setModel] = useState(MODELS.VECTOR);
@@ -94,7 +98,7 @@ const SmartSearch = () => {
   };
 
   useEffect(() => {
-    handleSearch();
+    if (isAllowed && skip > 0) handleSearch();
   }, [skip]);
 
   return (
@@ -104,105 +108,122 @@ const SmartSearch = () => {
         Smart Search Materials
       </Typography>
       <Container>
-        <Box sx={{ display: "flex", justifySelf: "center", width: "70%" }}>
-          <FormControl size="small" style={{ width: 160 }}>
-            <InputLabel id="model-select-label">Search Mode</InputLabel>
-            <Select
-              labelId="model-select-label"
-              label="Search Mode"
-              value={model}
-              onChange={(e) => setModel(e?.target?.value)}
-            >
-              <MenuItem value={MODELS.VECTOR}>Vector Search</MenuItem>
-              <MenuItem value={MODELS.LLM}>OpenAI</MenuItem>
-              <MenuItem value={MODELS.DEEPSEEK}>DeepSeek</MenuItem>
-              <MenuItem value={MODELS.GEMINI}>Google Gemini</MenuItem>
-            </Select>
-          </FormControl>
+        {!isAllowed ? (
+          <Alert severity="warning">
+            This feature is only accessible to premium users. Please contact us
+            to subscribe.
+          </Alert>
+        ) : (
+          <>
+            <Box sx={{ display: "flex", justifySelf: "center", width: "70%" }}>
+              <FormControl size="small" style={{ width: 160 }}>
+                <InputLabel id="model-select-label">Search Mode</InputLabel>
+                <Select
+                  labelId="model-select-label"
+                  label="Search Mode"
+                  value={model}
+                  onChange={(e) => setModel(e?.target?.value)}
+                >
+                  <MenuItem value={MODELS.VECTOR}>Vector Search</MenuItem>
+                  <MenuItem value={MODELS.LLM}>OpenAI</MenuItem>
+                  <MenuItem value={MODELS.DEEPSEEK}>DeepSeek</MenuItem>
+                  <MenuItem value={MODELS.GEMINI}>Google Gemini</MenuItem>
+                </Select>
+              </FormControl>
 
-          <TextField
-            size="small"
-            label="Search Query"
-            sx={{ m: "0 10px", flex: 1 }}
-            placeholder="Enter what you want to search for here"
-            variant="outlined"
-            value={query}
-            onChange={onChangeQuery}
-            onKeyDown={(e) => {
-              if (e?.key === "Enter") {
-                onSearch();
-              }
-            }}
-          />
-
-          <Button variant="contained" onClick={onSearch}>
-            Search
-          </Button>
-        </Box>
-
-        <Box px={6} display="flex" flexDirection="column" gap={2} mt={4}>
-          {isLoading ? (
-            <LoadingCards />
-          ) : (
-            searchResult.map((material, id) => (
-              <Card
-                key={id}
+              <TextField
+                size="small"
+                label="Search Query"
+                sx={{ m: "0 10px", flex: 1 }}
+                placeholder="Enter what you want to search for here"
                 variant="outlined"
-                sx={{
-                  p: "15px 30px",
-                  cursor: "pointer",
-                  "&:hover": {
-                    backgroundColor: "#f5fbff",
-                    borderColor: "#424242",
-                  },
+                value={query}
+                onChange={onChangeQuery}
+                onKeyDown={(e) => {
+                  if (e?.key === "Enter") {
+                    onSearch();
+                  }
                 }}
-                onClick={() => handleClick(material?.matGUID)}
-              >
-                <Typography variant="h6" noWrap sx={{ fontWeight: 600, mb: 1 }}>
-                  {material?.["Material Name"] || material?._id}
-                </Typography>
+              />
 
-                {material?.["Categories"]?.length > 0 && (
-                  <Typography variant="body1">
-                    Categories: {material?.["Categories"]?.join(", ")}
-                  </Typography>
-                )}
+              <Button variant="contained" onClick={onSearch}>
+                Search
+              </Button>
+            </Box>
 
-                {material?.["Material Notes"] && (
-                  <Typography variant="body1" noWrap>
-                    Notes: {material?.["Material Notes"]}
-                  </Typography>
-                )}
-
-                {material?.score && (
-                  <Typography
-                    variant="body2"
+            <Box px={6} display="flex" flexDirection="column" gap={2} mt={4}>
+              {isLoading ? (
+                <LoadingCards />
+              ) : (
+                searchResult.map((material, id) => (
+                  <Card
+                    key={id}
+                    variant="outlined"
                     sx={{
-                      mt: 1,
-                      textAlign: "right",
-                      fontStyle: "italic",
-                      color: "#757575",
+                      p: "15px 30px",
+                      cursor: "pointer",
+                      "&:hover": {
+                        backgroundColor: "#f5fbff",
+                        borderColor: "#424242",
+                      },
                     }}
+                    onClick={() => handleClick(material?.matGUID)}
                   >
-                    Similarity Score: {material.score}
-                  </Typography>
-                )}
-              </Card>
-            ))
-          )}
-        </Box>
-        {hasPagination && searchResult?.length > 0 && (
-          <Box align="center" px={6} m={2}>
-            <Button
-              onClick={() => setSkip(Math.max(0, skip - limit))}
-              disabled={skip <= 0 || isLoading}
-            >
-              Prev
-            </Button>
-            <Button onClick={() => setSkip(skip + limit)} disabled={isLoading}>
-              Next
-            </Button>
-          </Box>
+                    <Typography
+                      variant="h6"
+                      noWrap
+                      sx={{ fontWeight: 600, mb: 1 }}
+                    >
+                      {material?.["Material Name"] || material?._id}
+                    </Typography>
+
+                    {material?.["Categories"]?.length > 0 && (
+                      <Typography variant="body1">
+                        Categories: {material?.["Categories"]?.join(", ")}
+                      </Typography>
+                    )}
+
+                    {material?.["Material Notes"] && (
+                      <Typography variant="body1" noWrap>
+                        Notes: {material?.["Material Notes"]}
+                      </Typography>
+                    )}
+
+                    {material?.score && (
+                      <Typography
+                        variant="body2"
+                        sx={{
+                          mt: 1,
+                          textAlign: "right",
+                          fontStyle: "italic",
+                          color: "#757575",
+                        }}
+                      >
+                        Similarity Score: {material.score}
+                      </Typography>
+                    )}
+                  </Card>
+                ))
+              )}
+            </Box>
+
+            {hasPagination && searchResult?.length > 0 && (
+              <Box align="center" px={6} m={2}>
+                <Button
+                  onClick={() => setSkip(Math.max(0, skip - limit))}
+                  disabled={skip <= 0 || isLoading}
+                >
+                  Prev
+                </Button>
+                <Button
+                  onClick={() => setSkip(skip + limit)}
+                  disabled={isLoading}
+                >
+                  Next
+                </Button>
+              </Box>
+            )}
+          </>
         )}
         <br />
       </Container>
@@ -217,5 +238,4 @@ const SmartSearch = () => {
     </div>
   );
 };
-
 export default SmartSearch;
