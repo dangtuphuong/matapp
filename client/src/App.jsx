@@ -18,7 +18,9 @@ import UploadPage from "./components/UploadPage";
 
 import ProtectedRoute from "./components/ProtectedRoute";
 import PublicRoute from "./components/PublicRoute";
+import FlexibleRoute from "./components/FlexibleRoute";
 import SessionTimeout from "./components/SessionTimeout";
+import AboutUsPage from "./components/AboutUsPage";
 
 function App() {
   return (
@@ -39,6 +41,15 @@ function App() {
             <PublicRoute>
               <Register />
             </PublicRoute>
+          }
+        />
+        {/* Flexible routes (accessible on both status) */}
+        <Route
+          path="/aboutus"
+          element={
+            <FlexibleRoute>
+              <AboutUsPage />
+            </FlexibleRoute>
           }
         />
 
@@ -107,14 +118,7 @@ function App() {
             </ProtectedRoute>
           }
         />
-        <Route
-          path="/aboutus"
-          element={
-            <ProtectedRoute>
-              <AboutUs />
-            </ProtectedRoute>
-          }
-        />
+
         {/* Public landing page (root route) */}
         <Route path="/" element={<Landing />} />
       </Routes>

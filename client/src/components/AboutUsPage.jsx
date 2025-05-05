@@ -8,10 +8,20 @@ import {
   Psychology,
   RocketLaunch,
   CheckCircle,
-} 
-
-from "@mui/icons-material";
-import NavbarPrivate from "./NavbarPrivate";
+} from "@mui/icons-material";
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  IconButton,
+  Box,
+  Grid,
+  Typography,
+  Card,
+  CardContent,
+} from "@mui/material";
+import CloseIcon from "@mui/icons-material/Close";
+import FlexibleRoute from "./FlexibleRoute";
 import "./styles/AboutUsPage.css";
 
 const AboutUsPage = () => {
@@ -63,35 +73,72 @@ const AboutUsPage = () => {
         "Our platform simplifies complex comparisons using structured data, visualization, and property-based analysis.",
       icon: <Psychology className="icon" />,
     },
-    
   ];
+
+  const teamMembers = [
+    {
+      name: "Aditya Roy",
+      id: "104671426",
+      email: "104671426@student.swin.edu.au",
+    },
+    {
+      name: "Lalitha Samudith",
+      id: "104760748",
+      email: "104760748@student.swin.edu.au",
+    },
+    {
+      name: "Vu Hoang Nam Dao",
+      id: "104474191",
+      email: "104474191@student.swin.edu.au",
+    },
+    {
+      name: "Pattarapol Laovanich",
+      id: "104338734",
+      email: "104338734@student.swin.edu.au",
+    },
+    {
+      name: "Riya Shrestha",
+      id: "104652997",
+      email: "104652997@student.swin.edu.au",
+    },
+    {
+      name: "Tu Phuong Dang",
+      id: "103814482",
+      email: "103814482@student.swin.edu.au",
+    },
+  ];
+
+  const [openTeamModal, setOpenTeamModal] = React.useState(false);
 
   return (
     <>
-      <NavbarPrivate /> {/* Navbar for private routes */}
-      
       {/* Header section */}
       <div className="about-hero">
         <div className="hero-overlay" />
         <div className="hero-content">
-          <h1>About <span>MatApp </span></h1>
+          <h1>
+            About <span>MatApp </span>
+          </h1>
           <p>
-            <span>MatApp</span> is a next-generation platform designed to simplify material selection and property analysis for engineers, designers, and researchers. 
-            With a powerful database, intelligent search capabilities, and AI-driven comparison tools, we help organisations identify the best materials 
-            for their products faster and more accurately.
+            <span>MatApp</span> is a next-generation platform designed to
+            simplify material selection and property analysis for engineers,
+            designers, and researchers. With a powerful database, intelligent
+            search capabilities, and AI-driven comparison tools, we help
+            organisations identify the best materials for their products faster
+            and more accurately.
           </p>
         </div>
       </div>
-
       {/* Values & Mission sections */}
       <section className="section-light">
         <div className="section-header">
           <h2>Our Values & Mission</h2>
           <p>
-          At MatApp, our values are rooted in innovation, precision, and accessibility.
-          We believe that every engineer, researcher, or designer should have access to clear, 
-          data-driven material insights. Our mission is to transform the process of material 
-          selection making it smarter, faster, and more sustainable.
+            At MatApp, our values are rooted in innovation, precision, and
+            accessibility. We believe that every engineer, researcher, or
+            designer should have access to clear, data-driven material insights.
+            Our mission is to transform the process of material selection making
+            it smarter, faster, and more sustainable.
           </p>
         </div>
 
@@ -108,18 +155,18 @@ const AboutUsPage = () => {
           ))}
         </div>
       </section>
-
-      {/* Features section */}    
+      {/* Features section */}
       <section className="section-gray">
         <div className="section-header">
           <h2>Transforming Material Selection</h2>
           <p>
             We’re redefining how materials are explored, evaluated, and applied.
-            Our platform empowers users to navigate complex data effortlessly, 
-            compare properties intelligently, and make confident decisions with speed and accuracy.
+            Our platform empowers users to navigate complex data effortlessly,
+            compare properties intelligently, and make confident decisions with
+            speed and accuracy.
           </p>
         </div>
-          
+
         {/* Features grid sections*/}
         <div className="grid-3">
           {features.map((f, idx) => (
@@ -132,7 +179,64 @@ const AboutUsPage = () => {
         </div>
       </section>
 
-      
+      <Box textAlign="center" mt={4}>
+        <button
+          className="contact-dev-button"
+          onClick={() => setOpenTeamModal(true)}
+        >
+          Contact the Developers
+        </button>
+      </Box>
+
+      <Dialog
+        open={openTeamModal}
+        onClose={() => setOpenTeamModal(false)}
+        fullWidth
+        maxWidth="md"
+        className="team-dialog"
+      >
+        <DialogTitle>
+          Meet the Team
+          <IconButton
+            aria-label="close"
+            onClick={() => setOpenTeamModal(false)}
+            sx={{
+              position: "absolute",
+              right: 8,
+              top: 8,
+              color: (theme) => theme.palette.grey[500],
+            }}
+          >
+            <CloseIcon />
+          </IconButton>
+        </DialogTitle>
+        <DialogContent>
+          <Box display="flex" justifyContent="center">
+            <Grid container spacing={3} justifyContent="center">
+              {teamMembers.map((member, idx) => (
+                <Grid item xs={12} sm={6} md={4} key={idx}>
+                  <Card className="team-card" elevation={3}>
+                    <CardContent style={{ textAlign: "center" }}>
+                      <Typography variant="h6">{member.name}</Typography>
+                      <Typography variant="body2">
+                        Student ID: {member.id}
+                      </Typography>
+                      <Typography variant="body2" className="email-text">
+                        <a
+                          href={`mailto:${member.email}`}
+                          className="email-link"
+                        >
+                          {member.email}
+                        </a>
+                      </Typography>
+                    </CardContent>
+                  </Card>
+                </Grid>
+              ))}
+            </Grid>
+          </Box>
+        </DialogContent>
+      </Dialog>
     </>
   );
 };

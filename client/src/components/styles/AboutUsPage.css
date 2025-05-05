@@ -146,4 +146,40 @@
     color: #1e40af;
     font-weight: bold;
   }
+
+  /* --- Contact Developers Popup --- */
+.contact-dev-button {
+  background-color: #1e3a8a;
+  color: white;
+  padding: 12px 24px;
+  font-size: 16px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.contact-dev-button:hover {
+  background-color: #1e40af;
+}
+
+/* Optional: Make the dialog background stand out with blur */
+.MuiDialog-paper {
+  backdrop-filter: blur(8px);
+  background-color: rgba(255, 255, 255, 0.95);
+  border-radius: 12px;
+}
+
+/* Email styling in team cards */
+.email-link {
+  text-decoration: none;
+  color: #2563eb;
+  font-weight: 500;
+}
+
+.email-link:hover {
+  text-decoration: underline;
+}
+
   
