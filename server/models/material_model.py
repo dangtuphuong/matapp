@@ -194,79 +194,146 @@ class MaterialModel:
         return results
 
     @staticmethod
-    def upload_file(file):
-        if not file or file.filename == "":
-            raise ValueError("No file provided or empty filename")
+    def upload_files(files):
+        if not files:
+            raise ValueError("No files provided for upload.")
 
+        results = []
         materials_collection = mongo.db["materials"]
 
-        try:
-            file.stream.seek(0)
-            json_data = json.load(file.stream)
+        for file in files:
+            filename = file.filename
 
-            # Check for existing material by matGUID
-            if "matGUID" in json_data:
-                existing = materials_collection.find_one(
-                    {"matGUID": json_data["matGUID"]}
+            try:
+                # --- Read and Parse JSON ---
+                file.stream.seek(0)
+                try:
+                    json_data = json.load(file.stream)
+                except json.JSONDecodeError as e:
+                    results.append(
+                        {
+                            "filename": filename,
+                            "status": "error",
+                            "message": f"Invalid JSON format: {str(e)}",
+                        }
+                    )
+                    continue
+                except Exception as e:
+                    results.append(
+                        {
+                            "filename": filename,
+                            "status": "error",
+                            "message": f"Error reading file stream: {str(e)}",
+                        }
+                    )
+                    continue
+
+                # --- MANDATORY FIELD CHECK: Material Name ---
+                if "Material Name" not in json_data or not json_data["Material Name"]:
+                    results.append(
+                        {
+                            "filename": filename,
+                            "status": "skipped",
+                            "message": "Skipped: 'Material Name' key is missing or empty in the JSON data.",
+                        }
+                    )
+                    continue
+
+                material_name = json_data["Material Name"]
+
+                # --- Check for Existing Material (by matGUID first, then name) ---
+                existing_material = None
+                provided_mat_guid = json_data.get("matGUID")
+
+                if provided_mat_guid:
+                    existing_material = materials_collection.find_one(
+                        {"matGUID": provided_mat_guid}
+                    )
+                    if existing_material:
+                        results.append(
+                            {
+                                "filename": filename,
+                                "status": "exists",
+                                "message": f"Material with provided matGUID '{provided_mat_guid}' already exists.",
+                                "existing_id": str(existing_material["_id"]),
+                                "matGUID": provided_mat_guid,
+                                "Material Name": existing_material.get("Material Name"),
+                            }
+                        )
+                        continue
+
+                # Check by name only if matGUID wasn't provided or didn't match
+                existing_material = materials_collection.find_one(
+                    {"Material Name": material_name}
                 )
-                if existing:
-                    return {
-                        "status": "exists",
-                        "message": "Material with this matGUID already exists",
-                        "existing_id": str(existing["_id"]),
-                        "matGUID": json_data["matGUID"],
-                    }
+                if existing_material:
+                    results.append(
+                        {
+                            "filename": filename,
+                            "status": "exists",
+                            "message": f"Material with name '{material_name}' already exists.",
+                            "existing_id": str(existing_material["_id"]),
+                            "Material Name": material_name,
+                            "matGUID": existing_material.get("matGUID"),
+                        }
+                    )
+                    continue
 
-            # Check by material name if present
-            if "Material Name" in json_data:
-                existing = materials_collection.find_one(
-                    {"Material Name": json_data["Material Name"]}
+                # --- Process New Material ---
+                mat_object_id = ObjectId()
+                mat_guid_str = str(mat_object_id)
+
+                # Parse properties
+                properties = json_data.get("Properties", {})
+                parsed = parse_properties(properties)
+
+                # Update categories collection if needed
+                categories = json_data.get("Categories", [])
+                cats_update_result = CategoryModel.upload_categories(categories)
+
+                # Update property_filters collection if needed (min, max value)
+                filters_update_result = PropertyModel.upload_properties(properties)
+
+                # Create the document to insert
+                document = {
+                    "_id": mat_object_id,
+                    "matGUID": mat_guid_str,
+                    **json_data,
+                    "parsed_properties": parsed,
+                    "upload_date": datetime.now(timezone.utc),
+                }
+
+                # Insert into MongoDB
+                inserted = materials_collection.insert_one(document)
+
+                results.append(
+                    {
+                        "filename": filename,
+                        "inserted_id": str(inserted.inserted_id),
+                        "matGUID": mat_guid_str,
+                        "Material Name": material_name,
+                        "categories_update": cats_update_result,
+                        "props_filter_update": filters_update_result,
+                        "status": "success",
+                        "message": "File uploaded successfully",
+                    }
                 )
-                if existing:
-                    return {
-                        "status": "exists",
-                        "message": "Material with this name already exists",
-                        "existing_id": str(existing["_id"]),
-                        "Material Name": json_data["Material Name"],
-                        "matGUID": existing["matGUID"],
+
+            except ValueError as e:
+                results.append(
+                    {
+                        "filename": filename,
+                        "status": "error",
+                        "message": f"Data processing error: {str(e)}",
                     }
+                )
+            except Exception as e:
+                results.append(
+                    {
+                        "filename": filename,
+                        "status": "error",
+                        "message": f"An unexpected error occurred: {str(e)}",
+                    }
+                )
 
-            # Generate a new ObjectId for matGUID
-            mat_guid = ObjectId()
-
-            # Parse properties
-            properties = json_data.get("Properties", {})
-            parsed = parse_properties(properties)
-
-            # Update categories collection if needed
-            categories = json_data.get("Categories", [])
-            cat_update_result = CategoryModel.upload_categories(categories)
-
-            # Update property_filters collection if needed (min, max value)
-            filters_update_result = PropertyModel.upload_properties(properties)
-
-            # Create the document to insert
-            document = {
-                "_id": mat_guid,
-                "matGUID": str(mat_guid),
-                **json_data,
-                "parsed_properties": parsed,
-                "upload_date": datetime.now(timezone.utc),
-            }
-
-            # Insert into MongoDB
-            inserted = materials_collection.insert_one(document)
-
-            return {
-                "inserted_id": str(inserted.inserted_id),
-                "matGUID": document["matGUID"],
-                "categories_update": cat_update_result,
-                "prop_filter_update": filters_update_result,
-                "status": "success",
-                "message": "File uploaded successfully",
-            }
-
-        except json.JSONDecodeError as e:
-            raise ValueError(f"Invalid JSON file: {str(e)}")
-        except Exception as e:
-            raise e
+        return results

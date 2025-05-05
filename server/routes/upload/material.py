@@ -7,23 +7,20 @@ upload_bp = Blueprint("upload_routes", __name__)
 
 @upload_bp.route("/upload", methods=["POST"])
 @jwt_required()
-def upload_file():
-    if "material" not in request.files:
-        return jsonify({"error": "No file provided for upload"}), 400
+def handle_upload():
+    if "materials" not in request.files:
+        return jsonify({"error": "No file part in the request"}), 400
 
-    file = request.files["material"]
+    files = request.files.getlist("materials")
+
+    if not files or all(f.filename == "" for f in files):
+        return jsonify({"error": "No selected files"}), 400
 
     try:
-        upload_result = MaterialModel.upload_file(
-            file=file,
-        )
+        upload_results = MaterialModel.upload_files(files)
 
-        return (
-            jsonify({**upload_result}),
-            200,
-        )
-
+        return jsonify(upload_results), 200
     except ValueError as e:
         return jsonify({"error": str(e)}), 400
     except Exception as e:
-        return jsonify({"error": "Error uploading file", "details": str(e)}), 500
+        return jsonify({"error": "Error uploading files", "details": str(e)}), 500
