@@ -25,6 +25,7 @@ import { styled } from "@mui/material/styles";
 
 import NavbarPrivate from "./NavbarPrivate";
 import { uploadMaterials } from "../services/material-service";
+import UploadInstructions from "./UploadInstruction";
 import exampleData from "../utils/jsonExample.json";
 
 const cardStyle = {
@@ -302,8 +303,10 @@ const UploadPage = () => {
               </Button>
             )}
           </Card>
+          <UploadInstructions />
         </Box>
       </Container>
+      <br />
     </div>
   );
 };
