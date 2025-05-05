@@ -62,7 +62,7 @@ const FilterPropInfo = ({ material }) => {
       variant="body2"
       sx={{ mt: 1, textAlign: "right", fontStyle: "italic", color: "#757575" }}
     >
-      {key === "score" ? "Similarity Score" : key}: {value}
+      {key === "score" ? "Similarity Score" : key}: {value || "-"}
     </Typography>
   ));
 };
