@@ -7,6 +7,7 @@ import {
   Alert,
   Card,
   Container,
+  Divider,
   Link,
   List,
   ListItem,
@@ -165,32 +166,40 @@ const UploadPage = () => {
               </Typography>
               <List dense>
                 {uploadResults.map((result, index) => (
-                  <ListItem key={index} disablePadding>
-                    <ListItemIcon sx={{ minWidth: "40px" }}>
-                      {getResultIcon(result.status)}
-                    </ListItemIcon>
-                    <ListItemText
-                      primary={`${
-                        result.filename || `File ${index + 1}`
-                      }: ${result.status.toUpperCase()}`}
-                      secondary={
-                        <>
-                          {result.message} -
-                          {(result.status === "success" ||
-                            result.status === "exists") &&
-                            result.matGUID && (
-                              <Link
-                                sx={{ marginLeft: 1, display: "inline-block" }}
-                                component={RouterLink}
-                                to={`/material/${result.matGUID}`}
-                              >
-                                View Material
-                              </Link>
-                            )}
-                        </>
-                      }
-                    />
-                  </ListItem>
+                  <React.Fragment key={index}>
+                    <ListItem disablePadding>
+                      <ListItemIcon sx={{ minWidth: "40px" }}>
+                        {getResultIcon(result.status)}
+                      </ListItemIcon>
+                      <ListItemText
+                        primary={`${
+                          result.filename || `File ${index + 1}`
+                        }: ${result.status.toUpperCase()}`}
+                        secondary={
+                          <>
+                            {result.message} -
+                            {(result.status === "success" ||
+                              result.status === "exists") &&
+                              result.matGUID && (
+                                <Link
+                                  sx={{
+                                    marginLeft: 1,
+                                    display: "inline-block",
+                                  }}
+                                  component={RouterLink}
+                                  to={`/material/${result.matGUID}`}
+                                >
+                                  View Material
+                                </Link>
+                              )}
+                          </>
+                        }
+                      />
+                    </ListItem>
+                    {index < uploadResults?.length - 1 && (
+                      <Divider sx={{ color: "#bdbdbd", m: "10px 0" }} />
+                    )}
+                  </React.Fragment>
                 ))}
               </List>
             </Card>
@@ -239,7 +248,7 @@ const UploadPage = () => {
               </Button>
             </Box>
 
-            {files && files.length > 0 && (
+            {files?.length > 0 && (
               <Box sx={{ width: "100%", mt: 2 }}>
                 <Typography variant="subtitle1" gutterBottom>
                   Selected Files:
@@ -255,15 +264,20 @@ const UploadPage = () => {
                   }}
                 >
                   {Array.from(files).map((file, index) => (
-                    <ListItem key={index} disablePadding>
-                      <ListItemIcon sx={{ minWidth: "30px" }}>
-                        <DescriptionIcon fontSize="small" />
-                      </ListItemIcon>
-                      <ListItemText
-                        primary={file.name}
-                        secondary={`${(file.size / 1024).toFixed(1)} KB`}
-                      />
-                    </ListItem>
+                    <React.Fragment key={index}>
+                      <ListItem disablePadding>
+                        <ListItemIcon sx={{ minWidth: "30px", m: 1 }}>
+                          <DescriptionIcon fontSize="small" />
+                        </ListItemIcon>
+                        <ListItemText
+                          primary={file.name}
+                          secondary={`${(file.size / 1024).toFixed(1)} KB`}
+                        />
+                      </ListItem>
+                      {index < Array.from(files)?.length - 1 && (
+                        <Divider sx={{ color: "#bdbdbd" }} />
+                      )}
+                    </React.Fragment>
                   ))}
                 </List>
               </Box>
