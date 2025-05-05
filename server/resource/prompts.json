@@ -4,8 +4,8 @@
     "mongo_query": "[{\"$match\": {\"parsed_properties.Physical Properties.Density\": {\"$exists\": true, \"$ne\": []}}}, {\"$project\": {\"matGUID\": 1, \"Material Name\": 1, \"Categories\": 1, \"Material Notes\": 1, \"Density\": {\"$max\": {\"$map\": {\"input\": \"$parsed_properties.Physical Properties.Density\", \"as\": \"item\", \"in\": \"$item.metric.max\"}}}}}, {\"$match\": {\"Density\": {\"$exists\": true, \"$ne\": null}}}, {\"$sort\": {\"Density\": -1}}, {\"$limit\": 3}]"
   },
   {
-    "user_query": "Top 5 materials with lowest density",
-    "mongo_query": "[{\"$match\": {\"parsed_properties.Physical Properties.Density\": {\"$exists\": true, \"$ne\": []}}}, {\"$project\": {\"matGUID\": 1, \"Material Name\": 1, \"Categories\": 1, \"Material Notes\": 1, \"Density\": {\"$min\": {\"$map\": {\"input\": \"$parsed_properties.Physical Properties.Density\", \"as\": \"item\", \"in\": {\"$cond\": {\"if\": {\"$and\": [{\"$gt\": [\"$item.metric.min\", 0]}, {\"$ne\": [\"$item.metric.min\", null]}]}, \"then\": \"$item.metric.min\", \"else\": \"$item.metric.max\"}}}}}}}, {\"$match\": {\"Density\": {\"$exists\": true, \"$ne\": null, \"$gt\": 0}}}, {\"$sort\": {\"Density\": 1}}, {\"$limit\": 5}]"
+    "user_query": "Top 5 materials with lowest melting point",
+    "mongo_query": "[{\"$match\": {\"parsed_properties.Thermal Properties.Melting Point\": {\"$exists\": true, \"$ne\": []}}}, {\"$project\": {\"matGUID\": 1, \"Material Name\": 1, \"Categories\": 1, \"Material Notes\": 1, \"Melting Point\": {\"$min\": {\"$map\": {\"input\": \"$parsed_properties.Thermal Properties.Melting Point\", \"as\": \"item\", \"in\": {\"$cond\": {\"if\": {\"$ne\": [\"$item.metric.min\", null]}, \"then\": \"$item.metric.min\", \"else\": \"$item.metric.max\"}}}}}}}, {\"$match\": {\"Melting Point\": {\"$exists\": true, \"$ne\": null}}}, {\"$sort\": {\"Melting Point\": 1}}, {\"$limit\": 5}]"
   },
   {
     "user_query": "What are the strongest ceramic materials based on hardness",
