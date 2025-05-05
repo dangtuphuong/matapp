@@ -115,27 +115,28 @@ export const getProperties = async () => {
   }
 };
 
-export const uploadMaterial = async (file) => {
+export const uploadMaterials = async (files) => {
   const token = localStorage.getItem("access_token");
 
   if (!token) {
     throw new Error("No access token found");
   }
 
-  if (!file) {
-    throw new Error("No file provided for upload");
+  if (!files || files.length === 0) {
+    throw new Error("No files selected for upload.");
   }
 
   const formData = new FormData();
-  formData.append("material", file);
+
+  for (const file of files) {
+    formData.append("materials", file);
+  }
 
   try {
     const response = await axios.post(`${API_URL}/upload`, formData, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "multipart/form-data",
-      },
+      headers: { Authorization: `Bearer ${token}` },
     });
+
     return response.data;
   } catch (error) {
     console.error("Error uploading material:", error);

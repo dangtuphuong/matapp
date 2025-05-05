@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Link as RouterLink } from "react-router-dom";
 import {
   Box,
   Button,
@@ -6,15 +7,25 @@ import {
   Alert,
   Card,
   Container,
+  Divider,
   Link,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  CircularProgress,
 } from "@mui/material";
 import Upload from "@mui/icons-material/Upload";
 import DownloadIcon from "@mui/icons-material/Download";
+import DescriptionIcon from "@mui/icons-material/Description";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import ErrorIcon from "@mui/icons-material/Error";
+import WarningIcon from "@mui/icons-material/Warning";
 import { styled } from "@mui/material/styles";
-import { useNavigate } from "react-router-dom";
 
 import NavbarPrivate from "./NavbarPrivate";
-import { uploadMaterial } from "../services/material-service";
+import { uploadMaterials } from "../services/material-service";
+import UploadInstructions from "./UploadInstruction";
 import exampleData from "../utils/jsonExample.json";
 
 const cardStyle = {
@@ -36,65 +47,64 @@ const VisuallyHiddenInput = styled("input")({
 });
 
 const UploadPage = () => {
-  const navigate = useNavigate();
-
-  const [file, setFile] = useState(null);
-  const [previewData, setPreviewData] = useState(null);
+  const [files, setFiles] = useState(null);
   const [error, setError] = useState(null);
-  const [msg, setMsg] = useState(null);
-  const [uploadedID, setUploadedID] = useState(null);
+  const [uploadResults, setUploadResults] = useState([]);
   const [uploading, setUploading] = useState(false);
 
   const handleFileChange = (event) => {
-    const selectedFile = event.target.files[0];
-    if (!selectedFile) return;
-
-    if (
-      selectedFile.type !== "application/json" &&
-      !selectedFile.name.endsWith(".json")
-    ) {
-      setError("Please upload a JSON file");
+    const selectedFiles = event.target.files;
+    if (!selectedFiles || selectedFiles.length === 0) {
+      setFiles(null);
+      setError(null);
+      setUploadResults([]);
       return;
     }
 
-    setFile(selectedFile);
-    setError(null);
-    setMsg(null);
+    let fileError = null;
+    const validFiles = [];
 
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      try {
-        const jsonData = JSON.parse(e.target.result);
-        setPreviewData(jsonData);
-      } catch (err) {
-        setError("Invalid JSON file", err);
+    for (const file of selectedFiles) {
+      if (file.type !== "application/json" && !file.name.endsWith(".json")) {
+        fileError =
+          "Please select only JSON files. Invalid file detected: " + file.name;
+        break;
       }
-    };
-    reader.readAsText(selectedFile);
+      validFiles.push(file);
+    }
+
+    if (fileError) {
+      setError(fileError);
+      setFiles(null);
+      setUploadResults([]);
+      event.target.value = null;
+    } else {
+      setFiles(selectedFiles);
+      setError(null);
+      setUploadResults([]);
+    }
   };
 
   const handleFileSubmit = async () => {
-    if (!file) {
-      setError("Please select a file first");
+    if (!files || files.length === 0) {
+      setError("Please select files first");
       return;
     }
 
     try {
       setUploading(true);
-      const result = await uploadMaterial(file);
-      console.log(result);
-      setFile(null);
-      setPreviewData(null);
+      setError(null);
+      setUploadResults([]);
 
-      if (result?.status === "success") {
-        setMsg(result?.message);
-      } else if (result?.status === "exists") {
-        setError(result?.message);
-      }
+      const results = await uploadMaterials(files);
+      setUploadResults(Array.isArray(results) ? results : []);
 
-      setUploadedID(result?.matGUID ?? null);
+      setFiles(null);
+      const fileInput = document.getElementById("hidden-file-input");
+      if (fileInput) fileInput.value = "";
     } catch (error) {
-      setError(error.message || "Failed to upload file");
+      setError(error.message);
+      setUploadResults([]);
     } finally {
       setUploading(false);
     }
@@ -113,8 +123,25 @@ const UploadPage = () => {
       link.click();
       document.body.removeChild(link);
       URL.revokeObjectURL(url);
+      setError(null);
     } catch (error) {
-      setError("Failed to generate example file: ", error);
+      console.error("Failed to generate example file:", error);
+      setError("Failed to generate example file.");
+    }
+  };
+
+  const getResultIcon = (status) => {
+    switch (status) {
+      case "success":
+        return <CheckCircleIcon color="success" />;
+      case "exists":
+        return <WarningIcon color="warning" />;
+      case "skipped":
+        return <WarningIcon color="disabled" />;
+      case "error":
+        return <ErrorIcon color="error" />;
+      default:
+        return <DescriptionIcon />;
     }
   };
 
@@ -128,34 +155,57 @@ const UploadPage = () => {
         <Box sx={{ maxWidth: 800, mx: "auto", p: 3 }}>
           {error && (
             <Alert severity="error" sx={{ mb: 3 }}>
-              {error} -
-              {!!uploadedID && (
-                <Link
-                  sx={{ marginLeft: 1 }}
-                  component="button"
-                  onClick={() => navigate(`/material/${uploadedID}`)}
-                  underline="hover"
-                >
-                  Click here to nagivigate to the existing material
-                </Link>
-              )}
+              {error}
             </Alert>
           )}
-          {msg && (
-            <Alert sx={{ mb: 3 }}>
-              {msg} -
-              {!!uploadedID && (
-                <Link
-                  sx={{ marginLeft: 1 }}
-                  component="button"
-                  onClick={() => navigate(`/material/${uploadedID}`)}
-                  underline="hover"
-                >
-                  Click here to nagivigate to the uploaded material
-                </Link>
-              )}
-            </Alert>
+
+          {/* Display results list */}
+          {uploadResults.length > 0 && (
+            <Card sx={{ ...cardStyle, mb: 3 }}>
+              <Typography variant="h6" gutterBottom>
+                Upload Details
+              </Typography>
+              <List dense>
+                {uploadResults.map((result, index) => (
+                  <React.Fragment key={index}>
+                    <ListItem disablePadding>
+                      <ListItemIcon sx={{ minWidth: "40px" }}>
+                        {getResultIcon(result.status)}
+                      </ListItemIcon>
+                      <ListItemText
+                        primary={`${
+                          result.filename || `File ${index + 1}`
+                        }: ${result.status.toUpperCase()}`}
+                        secondary={
+                          <>
+                            {result.message} -
+                            {(result.status === "success" ||
+                              result.status === "exists") &&
+                              result.matGUID && (
+                                <Link
+                                  sx={{
+                                    marginLeft: 1,
+                                    display: "inline-block",
+                                  }}
+                                  component={RouterLink}
+                                  to={`/material/${result.matGUID}`}
+                                >
+                                  View Material
+                                </Link>
+                              )}
+                          </>
+                        }
+                      />
+                    </ListItem>
+                    {index < uploadResults?.length - 1 && (
+                      <Divider sx={{ color: "#bdbdbd", m: "10px 0" }} />
+                    )}
+                  </React.Fragment>
+                ))}
+              </List>
+            </Card>
           )}
+
           <Card
             sx={{
               ...cardStyle,
@@ -164,11 +214,20 @@ const UploadPage = () => {
               alignItems: "center",
             }}
           >
-            <Box sx={{ m: 1, display: "flex", gap: 4 }}>
+            <Box
+              sx={{
+                m: 1,
+                display: "flex",
+                gap: 4,
+                flexWrap: "wrap",
+                justifyContent: "center",
+              }}
+            >
               <Button
                 variant="outlined"
                 onClick={downloadExampleJson}
                 startIcon={<DownloadIcon />}
+                disabled={uploading}
               >
                 Example JSON
               </Button>
@@ -177,49 +236,77 @@ const UploadPage = () => {
                 role={undefined}
                 variant="outlined"
                 startIcon={<Upload />}
+                disabled={uploading}
               >
-                Select JSON File
-                <VisuallyHiddenInput type="file" onChange={handleFileChange} />
+                Select JSON Files
+                <VisuallyHiddenInput
+                  id="hidden-file-input"
+                  type="file"
+                  onChange={handleFileChange}
+                  multiple
+                  accept=".json,application/json"
+                />
               </Button>
             </Box>
 
-            {file && (
-              <Typography
-                variant="body1"
-                sx={{ fontStyle: "italic", color: "#757575", m: 1 }}
-              >
-                Selected: {file.name}
-              </Typography>
-            )}
-
-            {previewData && (
-              <Card
-                sx={{
-                  p: 2,
-                  mt: 2,
-                  backgroundColor: "#f5f5f5",
-                  boxShadow: "none",
-                }}
-              >
-                <Typography variant="body2">
-                  {JSON.stringify(previewData, null, 2)}
+            {files?.length > 0 && (
+              <Box sx={{ width: "100%", mt: 2 }}>
+                <Typography variant="subtitle1" gutterBottom>
+                  Selected Files:
                 </Typography>
-              </Card>
+                <List
+                  dense
+                  sx={{
+                    maxHeight: 200,
+                    overflow: "auto",
+                    border: "1px solid #eee",
+                    p: 1,
+                    borderRadius: 1,
+                  }}
+                >
+                  {Array.from(files).map((file, index) => (
+                    <React.Fragment key={index}>
+                      <ListItem disablePadding>
+                        <ListItemIcon sx={{ minWidth: "30px", m: 1 }}>
+                          <DescriptionIcon fontSize="small" />
+                        </ListItemIcon>
+                        <ListItemText
+                          primary={file.name}
+                          secondary={`${(file.size / 1024).toFixed(1)} KB`}
+                        />
+                      </ListItem>
+                      {index < Array.from(files)?.length - 1 && (
+                        <Divider sx={{ color: "#bdbdbd" }} />
+                      )}
+                    </React.Fragment>
+                  ))}
+                </List>
+              </Box>
             )}
 
-            {!!file && (
+            {files && files.length > 0 && (
               <Button
                 variant="contained"
                 color="primary"
                 onClick={handleFileSubmit}
-                sx={{ mt: 2 }}
+                disabled={uploading}
+                sx={{ mt: 3 }}
+                startIcon={
+                  uploading ? (
+                    <CircularProgress size={20} color="inherit" />
+                  ) : null
+                }
               >
-                {uploading ? "Uploading..." : "Upload JSON File"}
+                {uploading
+                  ? `Uploading ${files.length} file(s)...`
+                  : `Upload ${files.length} file(s)`}
               </Button>
             )}
           </Card>
+          <UploadInstructions />
         </Box>
       </Container>
+      <br />
     </div>
   );
 };

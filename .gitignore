@@ -3,4 +3,3 @@ venv
 # server/.env
 __pycache__
 myenv
-upload.py

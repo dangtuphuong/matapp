@@ -72,15 +72,15 @@ def get_prompt(user_query):
         REQUIREMENTS:
         1. Generate ONLY a valid MongoDB query JSON object with no explanation text
         2. The query must conform EXACTLY to the schema structure shown above
-        3. Only query the following properties: matGUID, Material Name, Categories, and Material Notes
-        4. Use proper MongoDB operators and syntax
-        5. Ensure the query addresses the user's intent completely
-        6. Return ONLY the query code, nothing else
+        3. Use proper MongoDB operators and syntax
+        4. Ensure the query addresses the user's intent completely
+        5. Return ONLY the query code, nothing else
         
         USER QUERY:
         {user_query}
         
         DO NOT include any explanations in your response. Output ONLY the MongoDB query as a valid JSON object.
+        IMPORTANT: Ensure the JSON is valid with proper syntax, all brackets and parentheses must be balanced.
     """
 
     return instruction_prompt

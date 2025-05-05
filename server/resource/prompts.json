@@ -4,16 +4,16 @@
     "mongo_query": "[{\"$match\": {\"parsed_properties.Physical Properties.Density\": {\"$exists\": true, \"$ne\": []}}}, {\"$project\": {\"matGUID\": 1, \"Material Name\": 1, \"Categories\": 1, \"Material Notes\": 1, \"Density\": {\"$max\": {\"$map\": {\"input\": \"$parsed_properties.Physical Properties.Density\", \"as\": \"item\", \"in\": \"$item.metric.max\"}}}}}, {\"$match\": {\"Density\": {\"$exists\": true, \"$ne\": null}}}, {\"$sort\": {\"Density\": -1}}, {\"$limit\": 3}]"
   },
   {
-    "user_query": "Top 5 materials with lowest density",
-    "mongo_query": "[{\"$match\": {\"parsed_properties.Physical Properties.Density\": {\"$exists\": true, \"$ne\": []}}}, {\"$project\": {\"matGUID\": 1, \"Material Name\": 1, \"Categories\": 1, \"Material Notes\": 1, \"Density\": {\"$min\": {\"$map\": {\"input\": \"$parsed_properties.Physical Properties.Density\", \"as\": \"item\", \"in\": {\"$cond\": {\"if\": {\"$and\": [{\"$gt\": [\"$item.metric.min\", 0]}, {\"$ne\": [\"$item.metric.min\", null]}]}, \"then\": \"$item.metric.min\", \"else\": \"$item.metric.max\"}}}}}}}, {\"$match\": {\"Density\": {\"$exists\": true, \"$ne\": null, \"$gt\": 0}}}, {\"$sort\": {\"Density\": 1}}, {\"$limit\": 5}]"
+    "user_query": "Top 5 materials with lowest melting point",
+    "mongo_query": "[{\"$match\": {\"parsed_properties.Thermal Properties.Melting Point\": {\"$elemMatch\": {\"$or\": [{\"metric.min\": {\"$exists\": true, \"$ne\": null}}, {\"metric.max\": {\"$exists\": true, \"$ne\": null}}]}}}}, {\"$project\": {\"matGUID\": 1, \"Material Name\": 1, \"Categories\": 1, \"Material Notes\": 1, \"Melting_Point\": {\"$min\": {\"$map\": {\"input\": {\"$filter\": {\"input\": \"$parsed_properties.Thermal Properties.Melting Point\", \"as\": \"mp\", \"cond\": {\"$or\": [{\"$ne\": [\"$$mp.metric.min\", null]}, {\"$ne\": [\"$$mp.metric.max\", null]}]}}}, \"as\": \"item\", \"in\": {\"$cond\": {\"if\": {\"$ne\": [\"$$item.metric.min\", null]}, \"then\": \"$$item.metric.min\", \"else\": \"$$item.metric.max\"}}}}}}}, {\"$match\": {\"Melting_Point\": {\"$exists\": true, \"$ne\": null}}}, {\"$sort\": {\"Melting_Point\": 1}}, {\"$limit\": 5}]"
   },
   {
-    "user_query": "What are the strongest ceramic materials based on hardness",
-    "mongo_query": "[{\"$match\": {\"Categories\": {\"$in\": [\"Ceramic\"]}, \"parsed_properties.Mechanical Properties.Hardness, Rockwell C\": {\"$exists\": true, \"$ne\": []}}}, {\"$project\": {\"matGUID\": 1, \"Material Name\": 1, \"Categories\": 1, \"Material Notes\": 1, \"Hardness\": {\"$max\": {\"$map\": {\"input\": \"$parsed_properties.Mechanical Properties.Hardness, Rockwell C\", \"as\": \"item\", \"in\": \"$item.metric.max\"}}}}}, {\"$match\": {\"Hardness\": {\"$exists\": true, \"$ne\": null}}}, {\"$sort\": {\"Hardness\": -1}}, {\"$limit\": 10}]"
+    "user_query": "What are the strongest white ceramic materials based on hardness",
+    "mongo_query": "[{\"$match\": {\"Categories\": {\"$elemMatch\": {\"$regex\": \"^ceramic(s?)$\", \"$options\": \"i\"}}, \"parsed_properties.Mechanical Properties.Hardness, Rockwell C\": {\"$exists\": true, \"$ne\": []}, \"parsed_properties.Descriptive Properties.Color\": {\"$elemMatch\": {\"$regex\": \"^white$\", \"$options\": \"i\"}}}}, {\"$project\": {\"matGUID\": 1, \"Material Name\": 1, \"Categories\": 1, \"Material Notes\": 1, \"Color\": \"$parsed_properties.Descriptive Properties.Color\", \"Hardness_Rockwell_C\": {\"$max\": {\"$map\": {\"input\": \"$parsed_properties.Mechanical Properties.Hardness, Rockwell C\", \"as\": \"item\", \"in\": \"$$item.metric.max\"}}}}}, {\"$match\": {\"Hardness_Rockwell_C\": {\"$exists\": true, \"$ne\": null}}}, {\"$sort\": {\"Hardness_Rockwell_C\": -1}}, {\"$limit\": 10}]"
   },
   {
     "user_query": "What are the materials with max service temperature above 500°C",
-    "mongo_query": "[{\"$match\": {\"parsed_properties.Thermal Properties.Maximum Service Temperature, Air\": {\"$exists\": true, \"$ne\": []}}}, {\"$project\": {\"matGUID\": 1, \"Material Name\": 1, \"Categories\": 1, \"Material Notes\": 1, \"Max_Service_Temp\": {\"$max\": {\"$map\": {\"input\": \"$parsed_properties.Thermal Properties.Maximum Service Temperature, Air\", \"as\": \"item\", \"in\": \"$item.metric.max\"}}}}}, {\"$match\": {\"Max_Service_Temp\": {\"$gt\": 500}}}, {\"$sort\": {\"Max_Service_Temp\": -1}}]"
+    "mongo_query": "[{\"$match\": {\"parsed_properties.Thermal Properties.Maximum Service Temperature, Air\": {\"$exists\": true, \"$ne\": []}}}, {\"$project\": {\"matGUID\": 1, \"Material Name\": 1, \"Categories\": 1, \"Material Notes\": 1, \"Maximum_Service_Temperature_Air\": {\"$max\": {\"$map\": {\"input\": \"$parsed_properties.Thermal Properties.Maximum Service Temperature, Air\", \"as\": \"item\", \"in\": \"$item.metric.max\"}}}}}, {\"$match\": {\"Maximum_Service_Temperature_Air\": {\"$gt\": 500}}}, {\"$sort\": {\"Maximum_Service_Temperature_Air\": -1}}]"
   },
   {
     "user_query": "Find materials with density between 5 and 10 g/cc",
@@ -21,6 +21,6 @@
   },
   {
     "user_query": "Find materials with specific carbide volume percentage",
-    "mongo_query": "[{\"$match\": {\"parsed_properties.Descriptive Properties.Carbide (Vol. %)\": {\"$exists\": true, \"$ne\": []}}}, {\"$project\": {\"matGUID\": 1, \"Material Name\": 1, \"Categories\": 1, \"Material Notes\": 1, \"Carbide_Volume\": {\"$arrayElemAt\": [\"$parsed_properties.Descriptive Properties.Carbide (Vol. %)\", 0]}}}, {\"$sort\": {\"Carbide_Volume\": -1}}]"
+    "mongo_query": "[{\"$match\": {\"parsed_properties.Descriptive Properties.Carbide (Vol. %)\": {\"$exists\": true, \"$ne\": []}}}, {\"$project\": {\"matGUID\": 1, \"Material Name\": 1, \"Categories\": 1, \"Material Notes\": 1, \"Carbide_Vol_Pct\": {\"$arrayElemAt\": [\"$parsed_properties.Descriptive Properties.Carbide (Vol. %)\", 0]}}}, {\"$sort\": {\"Carbide_Vol_Pct\": -1}}]"
   }
 ]
