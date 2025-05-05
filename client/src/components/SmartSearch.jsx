@@ -81,22 +81,25 @@ const SmartSearch = () => {
   const handleSearch = async () => {
     if (!query) return setSearchResult([]);
     setLoading(true);
-    if (model === MODELS.VECTOR) {
-      const response = await vectorSearch(query, limit, skip);
-      setSearchResult(
-        response?.data?.map((i) => ({ ...(i ?? {}), ...(i?.material ?? {}) }))
-      );
-    } else if (model === MODELS.LLM) {
-      const response = await llmSearch(query);
-      setSearchResult(response?.data?.result || []);
-    } else if (model === MODELS.DEEPSEEK) {
-      const response = await deepseekSearch(query);
-      setSearchResult(response?.data?.result || []);
-    } else if (model === MODELS.GEMINI) {
-      const response = await geminiSearch(query);
-      setSearchResult(response?.data?.result || []);
+    try {
+      if (model === MODELS.VECTOR) {
+        const response = await vectorSearch(query, limit, skip);
+        setSearchResult(
+          response?.data?.map((i) => ({ ...(i ?? {}), ...(i?.material ?? {}) }))
+        );
+      } else if (model === MODELS.LLM) {
+        const response = await llmSearch(query);
+        setSearchResult(response?.data?.result || []);
+      } else if (model === MODELS.DEEPSEEK) {
+        const response = await deepseekSearch(query);
+        setSearchResult(response?.data?.result || []);
+      } else if (model === MODELS.GEMINI) {
+        const response = await geminiSearch(query);
+        setSearchResult(response?.data?.result || []);
+      }
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   const onSearch = () => {
