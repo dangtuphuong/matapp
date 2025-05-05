@@ -17,6 +17,7 @@ import {
 } from "@mui/material";
 
 import NavbarPrivate from "./NavbarPrivate";
+import SubscriptionPage from "./SubscriptionPage";
 
 import {
   vectorSearch,
@@ -56,6 +57,15 @@ const SmartSearch = () => {
   const [query, setQuery] = useState("");
   const [searchResult, setSearchResult] = useState([]);
   const [showEmptyErr, setShowEmptyErr] = useState(false);
+  const [openModal, setOpenModal] = useState(false);
+
+  const handleOpenModal = () => {
+    setOpenModal(true);
+  };
+
+  const handleCloseModal = () => {
+    setOpenModal(false);
+  };
 
   const hasPagination = model === MODELS.VECTOR;
 
@@ -109,10 +119,70 @@ const SmartSearch = () => {
       </Typography>
       <Container>
         {!isAllowed ? (
-          <Alert severity="warning">
-            This feature is only accessible to premium users. Please contact us
-            to subscribe.
-          </Alert>
+          <Box mt={4} px={4}>
+            <Alert severity="warning" sx={{ mb: 3 }}>
+              This feature is only accessible to premium users. Please contact
+              us to subscribe.
+            </Alert>
+
+            <Typography variant="h5" gutterBottom>
+              🔓 Unlock Premium Search Features
+            </Typography>
+            <Typography variant="body1" gutterBottom>
+              Premium users gain access to intelligent search technologies that
+              supercharge material discovery. Here's what you’re missing:
+            </Typography>
+
+            <Box
+              display="grid"
+              gridTemplateColumns="repeat(auto-fill, minmax(280px, 1fr))"
+              gap={3}
+              mt={3}
+            >
+              {/* VECTOR Search */}
+              <Card variant="outlined" sx={{ p: 2 }}>
+                <Typography variant="h6">📦 Vector Search</Typography>
+                <Typography variant="body2" mt={1}>
+                  Find similar materials using advanced embeddings. Perfect for
+                  exploring alternatives based on your current choice.
+                </Typography>
+              </Card>
+
+              {/* LLM Search */}
+              <Card variant="outlined" sx={{ p: 2 }}>
+                <Typography variant="h6">🤖 OpenAI LLM Search</Typography>
+                <Typography variant="body2" mt={1}>
+                  Ask anything in natural language and get materials recommended
+                  by an intelligent assistant.
+                </Typography>
+              </Card>
+
+              {/* DeepSeek */}
+              <Card variant="outlined" sx={{ p: 2 }}>
+                <Typography variant="h6">🔍 DeepSeek</Typography>
+                <Typography variant="body2" mt={1}>
+                  An advanced language model trained for deep technical
+                  understanding of material properties and use cases.
+                </Typography>
+              </Card>
+
+              {/* Gemini */}
+              <Card variant="outlined" sx={{ p: 2 }}>
+                <Typography variant="h6">🌟 Google Gemini</Typography>
+                <Typography variant="body2" mt={1}>
+                  Explore materials with a Google-powered assistant that
+                  explains properties, differences, and ideal applications.
+                </Typography>
+              </Card>
+            </Box>
+
+            <Box textAlign="center" mt={4}>
+              <SubscriptionPage
+                open={openModal}
+                handleClose={handleCloseModal}
+              />
+            </Box>
+          </Box>
         ) : (
           <>
             <Box sx={{ display: "flex", justifySelf: "center", width: "70%" }}>
