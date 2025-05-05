@@ -40,6 +40,7 @@
   text-transform: none !important;
 }
 
+/* --- Button Style --- */
 .navbar-button {
   text-transform: none !important;
   font-weight: bolder;
@@ -59,9 +60,9 @@
   transform: scale(1.1);
   box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.2);
   text-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
-  
 }
 
+/* --- Logo Text --- */
 .navbar-logo-text {
   color: #ffffff;
   font-weight: 1000;
@@ -93,14 +94,16 @@
   font-weight: 500;
 }
 
+/* --- Center Links --- */
 .navbar-center-links {
   display: flex;
-  gap: 50px;
+  gap: 24px; /* Reduce this gap if needed */
   flex: 1;
   justify-content: center;
   align-items: center;
 }
 
+/* --- Links --- */
 .navbar-link {
   color: white;
   font-weight: 500;
@@ -111,8 +114,29 @@
   gap: 4px;
 }
 
-
-
 .navbar-link:hover {
   opacity: 0.8;
+}
+
+/* --- Mobile Adjustments --- */
+@media (max-width: 900px) {
+  /* Center links: Adjust the gap to prevent squeezing */
+  .navbar-center-links {
+    gap: 15px; /* Reduce the gap between links on smaller screens */
+  }
+
+  /* Hide navbar logo text on smaller screens */
+  .navbar-logo-text {
+    display: none;
+  }
+
+  /* Reduce font size of links to avoid overlap */
+  .navbar-link {
+    font-size: 0.875rem; /* Adjust font size for better fit */
+  }
+
+  /* Right section: Adjust profile and logout buttons */
+  .navbar-right-group {
+    gap: 16px;
+  }
 }
