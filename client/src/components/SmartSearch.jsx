@@ -42,6 +42,31 @@ const LoadingCards = () =>
     </Card>
   ));
 
+const FilterPropInfo = ({ material }) => {
+  const {
+    _id,
+    matGUID: _matId,
+    ["Material Name"]: _name,
+    ["Material Notes"]: _notes,
+    ["Key Words"]: _keywords,
+    Vendors,
+    Properties,
+    parsed_properties: _props,
+    Categories,
+    ...rest
+  } = material;
+
+  return Object.entries(rest).map(([key, value]) => (
+    <Typography
+      key={key}
+      variant="body2"
+      sx={{ mt: 1, textAlign: "right", fontStyle: "italic", color: "#757575" }}
+    >
+      {key === "score" ? "Similarity Score" : key}: {value}
+    </Typography>
+  ));
+};
+
 const SmartSearch = () => {
   const navigate = useNavigate();
 
@@ -53,7 +78,7 @@ const SmartSearch = () => {
   const [searchResult, setSearchResult] = useState([]);
   const [showEmptyErr, setShowEmptyErr] = useState(false);
 
-  const hasPagination = model === MODELS.VECTOR;
+  const isVectorSearch = model === MODELS.VECTOR;
 
   const handleSearch = async () => {
     if (!query) return setSearchResult([]);
@@ -174,24 +199,12 @@ const SmartSearch = () => {
                   </Typography>
                 )}
 
-                {material?.score && (
-                  <Typography
-                    variant="body2"
-                    sx={{
-                      mt: 1,
-                      textAlign: "right",
-                      fontStyle: "italic",
-                      color: "#757575",
-                    }}
-                  >
-                    Similarity Score: {material.score}
-                  </Typography>
-                )}
+                <FilterPropInfo material={material} />
               </Card>
             ))
           )}
         </Box>
-        {hasPagination && searchResult?.length > 0 && (
+        {isVectorSearch && searchResult?.length > 0 && (
           <Box align="center" px={6} m={2}>
             <Button
               onClick={() => setSkip(Math.max(0, skip - limit))}
