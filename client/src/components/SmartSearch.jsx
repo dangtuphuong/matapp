@@ -58,6 +58,7 @@ const SmartSearch = () => {
   const [searchResult, setSearchResult] = useState([]);
   const [showEmptyErr, setShowEmptyErr] = useState(false);
   const [openModal, setOpenModal] = useState(false);
+  const [showCards, setShowCards] = useState(true); // Default to true to show the cards when there's no input
 
   const handleOpenModal = () => {
     setOpenModal(true);
@@ -103,8 +104,17 @@ const SmartSearch = () => {
   };
 
   const onChangeQuery = (e) => {
-    setQuery(e.target.value);
-    setSkip(0);
+    const newQuery = e.target.value;
+    setQuery(newQuery);
+
+    // Show cards only when input is empty
+    if (newQuery === "") {
+      setShowCards(true);
+    } else {
+      setShowCards(false);
+    }
+
+    setSkip(0); // reset skip when a new search is entered
   };
 
   useEffect(() => {
@@ -133,48 +143,51 @@ const SmartSearch = () => {
               supercharge material discovery. Here's what you’re missing:
             </Typography>
 
-            <Box
-              display="grid"
-              gridTemplateColumns="repeat(auto-fill, minmax(280px, 1fr))"
-              gap={3}
-              mt={3}
-            >
-              {/* VECTOR Search */}
-              <Card variant="outlined" sx={{ p: 2 }}>
-                <Typography variant="h6">📦 Vector Search</Typography>
-                <Typography variant="body2" mt={1}>
-                  Find similar materials using advanced embeddings. Perfect for
-                  exploring alternatives based on your current choice.
-                </Typography>
-              </Card>
+            {/* Conditionally render the cards if input is not submitted */}
+            {showCards && (
+              <Box
+                display="grid"
+                gridTemplateColumns="repeat(auto-fill, minmax(280px, 1fr))"
+                gap={3}
+                mt={3}
+              >
+                {/* VECTOR Search */}
+                <Card variant="outlined" sx={{ p: 2 }}>
+                  <Typography variant="h6">📦 Vector Search</Typography>
+                  <Typography variant="body2" mt={1}>
+                    Find similar materials using advanced embeddings. Perfect
+                    for exploring alternatives based on your current choice.
+                  </Typography>
+                </Card>
 
-              {/* LLM Search */}
-              <Card variant="outlined" sx={{ p: 2 }}>
-                <Typography variant="h6">🤖 OpenAI LLM Search</Typography>
-                <Typography variant="body2" mt={1}>
-                  Ask anything in natural language and get materials recommended
-                  by an intelligent assistant.
-                </Typography>
-              </Card>
+                {/* LLM Search */}
+                <Card variant="outlined" sx={{ p: 2 }}>
+                  <Typography variant="h6">🤖 OpenAI LLM Search</Typography>
+                  <Typography variant="body2" mt={1}>
+                    Ask anything in natural language and get materials
+                    recommended by an intelligent assistant.
+                  </Typography>
+                </Card>
 
-              {/* DeepSeek */}
-              <Card variant="outlined" sx={{ p: 2 }}>
-                <Typography variant="h6">🔍 DeepSeek</Typography>
-                <Typography variant="body2" mt={1}>
-                  An advanced language model trained for deep technical
-                  understanding of material properties and use cases.
-                </Typography>
-              </Card>
+                {/* DeepSeek */}
+                <Card variant="outlined" sx={{ p: 2 }}>
+                  <Typography variant="h6">🔍 DeepSeek</Typography>
+                  <Typography variant="body2" mt={1}>
+                    An advanced language model trained for deep technical
+                    understanding of material properties and use cases.
+                  </Typography>
+                </Card>
 
-              {/* Gemini */}
-              <Card variant="outlined" sx={{ p: 2 }}>
-                <Typography variant="h6">🌟 Google Gemini</Typography>
-                <Typography variant="body2" mt={1}>
-                  Explore materials with a Google-powered assistant that
-                  explains properties, differences, and ideal applications.
-                </Typography>
-              </Card>
-            </Box>
+                {/* Gemini */}
+                <Card variant="outlined" sx={{ p: 2 }}>
+                  <Typography variant="h6">🌟 Google Gemini</Typography>
+                  <Typography variant="body2" mt={1}>
+                    Explore materials with a Google-powered assistant that
+                    explains properties, differences, and ideal applications.
+                  </Typography>
+                </Card>
+              </Box>
+            )}
 
             <Box textAlign="center" mt={4}>
               <SubscriptionPage
@@ -185,6 +198,7 @@ const SmartSearch = () => {
           </Box>
         ) : (
           <>
+            {/* Main Search Section */}
             <Box sx={{ display: "flex", justifySelf: "center", width: "70%" }}>
               <FormControl size="small" style={{ width: 160 }}>
                 <InputLabel id="model-select-label">Search Mode</InputLabel>
@@ -220,7 +234,58 @@ const SmartSearch = () => {
                 Search
               </Button>
             </Box>
-
+            {/* Add the card section here for premium/admin users */}
+            {showCards && (
+              <>
+                <Typography variant="h6" px={6} mt={4}>
+                  Explore Smart Search Tools
+                </Typography>
+                <Box
+                  display="grid"
+                  gridTemplateColumns={{ xs: "1fr", sm: "1fr 1fr" }}
+                  gap={3}
+                  mt={2}
+                  px={6}
+                >
+                  {[
+                    {
+                      title: "📦 Vector Search",
+                      desc: "Find similar materials using advanced embeddings. Perfect for exploring alternatives based on your current choice.",
+                      details:
+                        "Vector Search uses mathematical representations of materials, called embeddings. These embeddings capture the underlying features and relationships of materials, allowing the system to compare and find similar items based on their properties.",
+                    },
+                    {
+                      title: "🤖 OpenAI LLM Search",
+                      desc: "Ask anything in natural language and get materials recommended by an intelligent assistant.",
+                      details:
+                        "OpenAI LLM utilizes AI trained on vast datasets to understand natural language queries. It processes your request and provides the most relevant materials based on context, answering in an intuitive and human-like manner.",
+                    },
+                    {
+                      title: "🔍 DeepSeek",
+                      desc: "An advanced language model trained for deep technical understanding of material properties and use cases.",
+                      details:
+                        "DeepSeek leverages a specialized language model to deeply analyze technical material properties. It provides precise search results by understanding intricate details and nuances about materials, offering insightful recommendations.",
+                    },
+                    {
+                      title: "🌟 Google Gemini",
+                      desc: "Explore materials with a Google-powered assistant that explains properties, differences, and ideal applications.",
+                      details:
+                        "Google Gemini uses advanced machine learning algorithms developed by Google. It helps identify and explain material properties, differences, and ideal use cases by utilizing the vast knowledge base and AI capabilities of Google’s technologies.",
+                    },
+                  ].map((tool, idx) => (
+                    <Card key={idx} variant="outlined" sx={{ p: 2 }}>
+                      <Typography variant="h6">{tool.title}</Typography>
+                      <Typography variant="body2" mt={1}>
+                        {tool.desc}
+                      </Typography>
+                      <Typography variant="body2" mt={1}>
+                        <strong>How it works:</strong> {tool.details}
+                      </Typography>
+                    </Card>
+                  ))}
+                </Box>
+              </>
+            )}
             <Box px={6} display="flex" flexDirection="column" gap={2} mt={4}>
               {isLoading ? (
                 <LoadingCards />
@@ -276,7 +341,6 @@ const SmartSearch = () => {
                 ))
               )}
             </Box>
-
             {hasPagination && searchResult?.length > 0 && (
               <Box align="center" px={6} m={2}>
                 <Button
