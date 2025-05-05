@@ -174,6 +174,16 @@ class MaterialModel:
     @staticmethod
     def aggregate_materials(pipeline):
         materials_collection = mongo.db["materials"]
+
+        # Add a limit stage if not present
+        if not any("$limit" in stage for stage in pipeline if isinstance(stage, dict)):
+            pipeline.append({"$limit": 10})
+
+        # Make sure matGUID in pipeline
+        for stage in pipeline:
+            if isinstance(stage, dict) and "$project" in stage:
+                stage["$project"].setdefault("matGUID", 1)
+
         cursor = materials_collection.aggregate(pipeline)
 
         results = []

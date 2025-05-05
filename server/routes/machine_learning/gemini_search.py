@@ -34,10 +34,6 @@ def gemini_search():
         if not isinstance(pipeline, list):
             return jsonify({"error": "Pipeline must be a list"}), 400
 
-        # Add a limit stage if not present
-        if not any("$limit" in stage for stage in pipeline if isinstance(stage, dict)):
-            pipeline.append({"$limit": 10})
-
         results = MaterialModel.aggregate_materials(pipeline)
 
         return jsonify({"result": results}), 200
