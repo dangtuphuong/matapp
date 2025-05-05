@@ -9,7 +9,7 @@
   },
   {
     "user_query": "What are the strongest white ceramic materials based on hardness",
-    "mongo_query": "[{\"$match\": {\"Categories\": {\"$in\": [\"Ceramic\"]}, \"parsed_properties.Mechanical Properties.Hardness, Rockwell C\": {\"$exists\": true, \"$ne\": []}, \"parsed_properties.Descriptive Properties.Color\": {\"$exists\": true, \"$in\": [\"White\"]}}}, {\"$project\": {\"matGUID\": 1, \"Material Name\": 1, \"Categories\": 1, \"Material Notes\": 1, \"Color\": \"$parsed_properties.Descriptive Properties.Color\", \"Hardness_Rockwell_C\": {\"$max\": {\"$map\": {\"input\": \"$parsed_properties.Mechanical Properties.Hardness, Rockwell C\", \"as\": \"item\", \"in\": \"$$item.metric.max\"}}}}}, {\"$match\": {\"Hardness_Rockwell_C\": {\"$exists\": true, \"$ne\": null}}}, {\"$sort\": {\"Hardness_Rockwell_C\": -1}}, {\"$limit\": 10}]"
+    "mongo_query": "[{\"$match\": {\"Categories\": {\"$elemMatch\": {\"$regex\": \"^ceramic(s?)$\", \"$options\": \"i\"}}, \"parsed_properties.Mechanical Properties.Hardness, Rockwell C\": {\"$exists\": true, \"$ne\": []}, \"parsed_properties.Descriptive Properties.Color\": {\"$elemMatch\": {\"$regex\": \"^white$\", \"$options\": \"i\"}}}}, {\"$project\": {\"matGUID\": 1, \"Material Name\": 1, \"Categories\": 1, \"Material Notes\": 1, \"Color\": \"$parsed_properties.Descriptive Properties.Color\", \"Hardness_Rockwell_C\": {\"$max\": {\"$map\": {\"input\": \"$parsed_properties.Mechanical Properties.Hardness, Rockwell C\", \"as\": \"item\", \"in\": \"$$item.metric.max\"}}}}}, {\"$match\": {\"Hardness_Rockwell_C\": {\"$exists\": true, \"$ne\": null}}}, {\"$sort\": {\"Hardness_Rockwell_C\": -1}}, {\"$limit\": 10}]"
   },
   {
     "user_query": "What are the materials with max service temperature above 500°C",

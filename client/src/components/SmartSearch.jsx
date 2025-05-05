@@ -13,6 +13,7 @@ import {
   Card,
   Skeleton,
   Snackbar,
+  Alert,
 } from "@mui/material";
 
 import NavbarPrivate from "./NavbarPrivate";
@@ -49,6 +50,7 @@ const FilterPropInfo = ({ material }) => {
     ["Material Name"]: _name,
     ["Material Notes"]: _notes,
     ["Key Words"]: _keywords,
+    material: _m,
     Vendors,
     Properties,
     parsed_properties: _props,
@@ -62,7 +64,10 @@ const FilterPropInfo = ({ material }) => {
       variant="body2"
       sx={{ mt: 1, textAlign: "right", fontStyle: "italic", color: "#757575" }}
     >
-      {key === "score" ? "Similarity Score" : key}: {value || "-"}
+      {key === "score" ? "Similarity Score" : key}:{" "}
+      {typeof value === "object" && value !== null
+        ? JSON.stringify(value, null, 2)
+        : value ?? "-"}
     </Typography>
   ));
 };
@@ -75,6 +80,7 @@ const SmartSearch = () => {
   const [query, setQuery] = useState("");
   const [searchResult, setSearchResult] = useState([]);
   const [showEmptyErr, setShowEmptyErr] = useState(false);
+  const [isSearched, setIsSearched] = useState(false);
 
   const isVectorSearch = model === MODELS.VECTOR;
 
@@ -97,9 +103,12 @@ const SmartSearch = () => {
         const response = await geminiSearch(query);
         setSearchResult(response?.data?.result || []);
       }
+    } catch (e) {
+      console.log(e);
     } finally {
       setLoading(false);
     }
+    setIsSearched(true);
   };
 
   const onSearch = () => {
@@ -113,6 +122,7 @@ const SmartSearch = () => {
   const onChangeQuery = (e) => {
     setQuery(e.target.value);
     setSkip(0);
+    setIsSearched(false);
   };
 
   useEffect(() => {
@@ -163,6 +173,19 @@ const SmartSearch = () => {
         </Box>
 
         <Box px={6} display="flex" flexDirection="column" gap={2} mt={4}>
+          {!isLoading && !searchResult?.length && isSearched && (
+            <Alert
+              severity="error"
+              sx={{
+                mb: 3,
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              We couldn’t find any matches. Try adjusting your search query.
+            </Alert>
+          )}
           {isLoading ? (
             <LoadingCards />
           ) : (
