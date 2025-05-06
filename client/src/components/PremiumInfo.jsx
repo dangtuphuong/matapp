@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Typography, Box } from "@mui/material";
+import { Typography, Box, Alert } from "@mui/material";
 
 import SmartSeachInfo from "./SmartSeachInfo";
 import SubscriptionPage from "./SubscriptionPage";
