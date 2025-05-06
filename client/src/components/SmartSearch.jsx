@@ -119,7 +119,7 @@ const SmartSearch = () => {
       }
     } catch (e) {
       console.log(e);
-      setSearchResult([])
+      setSearchResult([]);
     } finally {
       setLoading(false);
     }
@@ -285,24 +285,32 @@ const SmartSearch = () => {
                       desc: "Find similar materials using advanced embeddings. Perfect for exploring alternatives based on your current choice.",
                       details:
                         "Vector Search uses mathematical representations of materials, called embeddings. These embeddings capture the underlying features and relationships of materials, allowing the system to compare and find similar items based on their properties.",
+                      example:
+                        '"Material with high impact strength and good chemical resistance" or "Plastic with high UV resistance and moderate flexibility"',
                     },
                     {
                       title: "🤖 OpenAI LLM Search",
                       desc: "Ask anything in natural language and get materials recommended by an intelligent assistant.",
                       details:
                         "OpenAI LLM utilizes AI trained on vast datasets to understand natural language queries. It processes your request and provides the most relevant materials based on context, answering in an intuitive and human-like manner.",
+                      example:
+                        '"What’s a good material for lightweight, heat-resistant components?" or "Recommend materials for eco-friendly packaging."',
                     },
                     {
                       title: "🔍 DeepSeek",
                       desc: "An advanced language model trained for deep technical understanding of material properties and use cases.",
                       details:
                         "DeepSeek leverages a specialized language model to deeply analyze technical material properties. It provides precise search results by understanding intricate details and nuances about materials, offering insightful recommendations.",
+                      example:
+                        '"What materials are both biocompatible and chemically resistant?" or "Which polymers have high UV resistance and are recyclable?"',
                     },
                     {
                       title: "🌟 Google Gemini",
                       desc: "Explore materials with a Google-powered assistant that explains properties, differences, and ideal applications.",
                       details:
                         "Google Gemini uses advanced machine learning algorithms developed by Google. It helps identify and explain material properties, differences, and ideal use cases by utilizing the vast knowledge base and AI capabilities of Google’s technologies.",
+                      example:
+                        '"What polymer has a melting point over 200°C and is used in aerospace applications?" or "Which polymer has tensile strength over 50 MPa and resists UV degradation?"',
                     },
                   ].map((tool, idx) => (
                     <Card key={idx} variant="outlined" sx={{ p: 2 }}>
@@ -312,6 +320,9 @@ const SmartSearch = () => {
                       </Typography>
                       <Typography variant="body2" mt={1}>
                         <strong>How it works:</strong> {tool.details}
+                      </Typography>
+                      <Typography variant="body2" mt={1}>
+                        <strong>Example query:</strong> {tool.example}
                       </Typography>
                     </Card>
                   ))}
