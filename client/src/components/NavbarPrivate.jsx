@@ -132,7 +132,7 @@ const Navbar = () => {
                 display: "flex",
                 flexWrap: "wrap",
                 justifyContent: "center",
-                gap: 1.5,
+                gap: 5,
                 flexGrow: 1,
                 overflow: "hidden",
                 minWidth: 0,
