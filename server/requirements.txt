@@ -10,6 +10,8 @@ faiss-cpu
 langchain
 langchain-core
 langchain-openai
+langchain-voyageai
+langchain_anthropic
 langchain-community
 langchain_huggingface
 langchain-google-genai

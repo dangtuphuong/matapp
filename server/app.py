@@ -12,6 +12,7 @@ from routes.machine_learning.vectorSearch import vt_bp
 from routes.machine_learning.llmSearch import ml_bp
 from routes.machine_learning.deepseek_search import deepseek_bp
 from routes.machine_learning.gemini_search import gemini_bp
+from routes.machine_learning.claude_search import claude_bp
 
 
 def create_app():
@@ -34,6 +35,7 @@ def create_app():
     app.register_blueprint(upload_bp, url_prefix="/api")
     app.register_blueprint(deepseek_bp, url_prefix="/api")
     app.register_blueprint(gemini_bp, url_prefix="/api")
+    app.register_blueprint(claude_bp, url_prefix="/api")
 
     # Test DB connection
     with app.app_context():
