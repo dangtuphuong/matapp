@@ -90,12 +90,14 @@ const SmartSearch = () => {
   const [showEmptyErr, setShowEmptyErr] = useState(false);
   const [showCards, setShowCards] = useState(true); // Default to true to show the cards when there's no input
   const [isSearched, setIsSearched] = useState(false);
+  const [resErr, setResErr] = useState(null);
 
   const isVectorSearch = model === MODELS.VECTOR;
 
   const handleSearch = async () => {
     if (!query) return setSearchResult([]);
     setLoading(true);
+    setResErr(null);
     try {
       if (model === MODELS.VECTOR) {
         const response = await vectorSearch(query, limit, skip);
@@ -115,6 +117,7 @@ const SmartSearch = () => {
     } catch (e) {
       console.log(e);
       setSearchResult([]);
+      setResErr(e?.response?.data?.error);
     } finally {
       setLoading(false);
     }
@@ -220,7 +223,8 @@ const SmartSearch = () => {
                   alignItems: "center",
                 }}
               >
-                We couldn’t find any matches. Try adjusting your search query.
+                {resErr ??
+                  "We couldn’t find any matches. Try adjusting your search query."}
               </Alert>
             )}
 
