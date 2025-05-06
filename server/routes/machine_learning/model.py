@@ -1,12 +1,13 @@
 import os
 import openai
-from langchain.embeddings import OpenAIEmbeddings
+from dotenv import load_dotenv
+from langchain_openai import OpenAIEmbeddings
 from langchain_openai import ChatOpenAI
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.prompts import FewShotChatMessagePromptTemplate
 from langchain_community.vectorstores import FAISS
 from langchain_core.example_selectors import SemanticSimilarityExampleSelector
-from langchain import LLMChain
+from langchain.chains import LLMChain
 from langchain.prompts import (
     ChatPromptTemplate,
     SystemMessagePromptTemplate,
@@ -27,8 +28,11 @@ schema_path = os.path.join(project_root, "resource", "schema.txt")
 with open(schema_path, "r", encoding="utf-8") as input_file:
     structure = input_file.read()
 
+# Load environment variables
+load_dotenv()
+
 # Set your OpenAI API key
-openai.api_key = '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' 
+openai.api_key = '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'
 embedding_model = OpenAIEmbeddings(openai_api_key=openai.api_key)
 
 llm = ChatOpenAI(temperature=0, model="gpt-4.1-mini", openai_api_key=openai.api_key)

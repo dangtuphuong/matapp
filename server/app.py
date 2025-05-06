@@ -6,8 +6,13 @@ from routes.material_routes import material_bp
 from routes.category_routes import category_bp
 from routes.property_routes import property_bp
 
+from routes.upload.material import upload_bp
+
 from routes.machine_learning.vectorSearch import vt_bp
 from routes.machine_learning.llmSearch import ml_bp
+from routes.machine_learning.deepseek_search import deepseek_bp
+from routes.machine_learning.gemini_search import gemini_bp
+
 
 def create_app():
     app = Flask(__name__)
@@ -26,6 +31,9 @@ def create_app():
     app.register_blueprint(ml_bp, url_prefix="/api")
     app.register_blueprint(category_bp, url_prefix="/api")
     app.register_blueprint(property_bp, url_prefix="/api")
+    app.register_blueprint(upload_bp, url_prefix="/api")
+    app.register_blueprint(deepseek_bp, url_prefix="/api")
+    app.register_blueprint(gemini_bp, url_prefix="/api")
 
     # Test DB connection
     with app.app_context():

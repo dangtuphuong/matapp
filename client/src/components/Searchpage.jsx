@@ -10,8 +10,10 @@ import {
   FormControlLabel,
   Button,
   Divider,
+  IconButton,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
+import DeleteIcon from "@mui/icons-material/Delete";
 import { RichTreeView } from "@mui/x-tree-view/RichTreeView";
 
 import { getCategories, getProperties } from "../services/material-service";
@@ -30,15 +32,23 @@ const convertGroupedData = (data) =>
     propGroup.properties.map((p) => ({
       label: p?.name,
       group: propGroup?.name,
-      units: p?.units,
+      units: p?.units?.reduce((unique_items, unit) => {
+        if (!unique_items.some((u) => u?.unit === unit?.unit)) {
+          unique_items.push(unit);
+        }
+        return unique_items;
+      }, []),
     }))
   );
 
-const PropertyFilterItem = ({ properties, onChange }) => {
+const PropertyFilterItem = ({ id, properties, onChange, onDelete }) => {
   const [selectedProperty, setSelectedProperty] = useState(null);
   const [selectedUnit, setSelectedUnit] = useState(null);
   const [min, setMin] = useState("");
   const [max, setMax] = useState("");
+  const [textVal, setTextVal] = useState("");
+
+  const isTextValProp = selectedProperty?.group === "Descriptive Properties";
 
   const onChangeUnit = (e) => {
     const selectedUnit = selectedProperty?.units?.find(
@@ -49,67 +59,102 @@ const PropertyFilterItem = ({ properties, onChange }) => {
 
   const onSelectProperty = (event, selectedOption) => {
     setSelectedProperty(selectedOption);
+    setMin("");
+    setMax("");
+    setTextVal("");
+    setSelectedUnit(null);
   };
 
   useEffect(() => {
     onChange({
-      category: selectedProperty?.group,
+      id,
+      group: selectedProperty?.group,
       property: selectedProperty?.label,
       ...(min !== "" && { min: Number(min) }),
       ...(max !== "" && { max: Number(max) }),
+      ...(isTextValProp && textVal !== "" && { text_value: textVal }),
       unit: selectedUnit?.unit,
     });
-  }, [selectedProperty?.label, min, max]);
+  }, [
+    id,
+    selectedProperty?.label,
+    min,
+    max,
+    selectedUnit?.unit,
+    textVal,
+    isTextValProp,
+  ]);
 
   return (
     <Box>
-      <Autocomplete
-        fullWidth
-        options={properties}
-        groupBy={(option) => option?.group}
-        renderInput={(p) => <TextField {...p} label="Property" />}
-        onChange={onSelectProperty}
-      />
+      <Box display="flex" alignItems="center" gap={0.5}>
+        <Autocomplete
+          fullWidth
+          size="small"
+          options={properties}
+          groupBy={(option) => option?.group}
+          renderInput={(p) => <TextField {...p} label="Property" />}
+          onChange={onSelectProperty}
+        />
+        <IconButton
+          aria-label="delete"
+          size="small"
+          sx={{ color: "info", "&:hover": { color: "error.main" } }}
+          onClick={() => onDelete(id)}
+        >
+          <DeleteIcon />
+        </IconButton>
+      </Box>
 
-      {selectedProperty && (
-        <Box sx={{ m: "10px 0" }}>
-          <RadioGroup
-            sx={{ mb: 1 }}
-            row
-            value={selectedUnit?.unit ?? ""}
-            onChange={onChangeUnit}
-          >
-            {selectedProperty?.units?.map((u) => (
-              <FormControlLabel
-                key={u.unit}
-                value={u.unit}
-                control={<Radio />}
-                label={u.unit}
+      {selectedProperty &&
+        (isTextValProp ? (
+          <Box sx={{ m: "10px 0" }}>
+            <TextField
+              fullWidth
+              size="small"
+              label="Descriptive Value"
+              value={textVal}
+              onChange={(e) => setTextVal(e?.target?.value)}
+            />
+          </Box>
+        ) : (
+          <Box sx={{ m: "10px 0" }}>
+            <RadioGroup
+              sx={{ mb: 1 }}
+              row
+              value={selectedUnit?.unit ?? ""}
+              onChange={onChangeUnit}
+            >
+              {selectedProperty?.units?.map((u) => (
+                <FormControlLabel
+                  key={u.unit}
+                  value={u.unit}
+                  control={<Radio />}
+                  label={u.unit}
+                />
+              ))}
+            </RadioGroup>
+            <div style={{ display: "flex" }}>
+              <TextField
+                sx={{ marginRight: "10px" }}
+                size="small"
+                label="Min"
+                value={min}
+                onChange={(e) => setMin(e?.target?.value)}
+                helperText={selectedUnit?.min}
+                error={isNaN(Number(min))}
               />
-            ))}
-          </RadioGroup>
-          <div style={{ display: "flex" }}>
-            <TextField
-              sx={{ marginRight: "10px" }}
-              size="small"
-              label="Min"
-              value={min}
-              onChange={(e) => setMin(e?.target?.value)}
-              helperText={selectedUnit?.min}
-              error={isNaN(Number(min))}
-            />
-            <TextField
-              size="small"
-              label="Max"
-              value={max}
-              onChange={(e) => setMax(e?.target?.value)}
-              helperText={selectedUnit?.max}
-              error={isNaN(Number(max))}
-            />
-          </div>
-        </Box>
-      )}
-      <Divider sx={{ m: "20px 0" }} />
+              <TextField
+                size="small"
+                label="Max"
+                value={max}
+                onChange={(e) => setMax(e?.target?.value)}
+                helperText={selectedUnit?.max}
+                error={isNaN(Number(max))}
+              />
+            </div>
+          </Box>
+        ))}
     </Box>
   );
 };
@@ -118,8 +163,9 @@ const SearchPage = () => {
   const [categories, setCategories] = useState([]);
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [properties, setProperties] = useState([]);
-  const [propertyFilters, setPropertyFilters] = useState([0]);
-  const [selectedProperties, setSelectedProperties] = useState([]);
+  const [selectedProperties, setSelectedProperties] = useState([
+    { id: Math.random().toString(36).substring(2, 10) },
+  ]);
   const [searchParams, setSearchParams] = useState({
     searchCategories: [],
     searchProperties: [],
@@ -140,18 +186,21 @@ const SearchPage = () => {
   };
 
   const handleSelectedProperties = (prop) => {
-    const existingIndex = selectedProperties?.findIndex(
-      ({ property }) => property === prop?.property
+    const index = selectedProperties?.findIndex(
+      (item) => item?.id === prop?.id
     );
 
-    if (existingIndex !== -1) {
+    if (index !== -1) {
       const updatedProperties = [...selectedProperties];
-      updatedProperties[existingIndex] = prop;
+      updatedProperties[index] = prop;
       setSelectedProperties(updatedProperties);
-    } else {
-      setSelectedProperties([...selectedProperties, prop]);
     }
   };
+
+  const handleDeleteProp = (id) =>
+    setSelectedProperties(
+      selectedProperties?.filter((item) => item?.id !== id)
+    );
 
   const onUpdateSearchParams = () =>
     setSearchParams({
@@ -165,12 +214,12 @@ const SearchPage = () => {
       <Typography align="center" variant="h4" sx={{ mt: 3, mb: 2 }}>
         Search Materials
       </Typography>
-      <Container sx={{ display: "flex" }}>
-        <Box sx={{ marginRight: "15px", width: "270px", minWidth: "270px" }}>
+      <Container maxWidth="xl" sx={{ display: "flex" }}>
+        <Box sx={{ marginRight: "20px", width: "320px", minWidth: "320px" }}>
           {/* Material Categories */}
           <Box>
-            <Typography variant="h6" sx={{ mb: "20px" }}>
-              By Categories
+            <Typography variant="h6" sx={{ mb: "10px" }}>
+              <b>By Categories</b>
             </Typography>
             <RichTreeView
               multiSelect
@@ -184,40 +233,54 @@ const SearchPage = () => {
           {/* Material Properties */}
           <Divider sx={{ m: "20px 0" }} />
           <Box>
-            <Typography variant="h6" sx={{ m: "20px 0" }}>
-              By Properties
-            </Typography>
+            <Box
+              display="flex"
+              alignItems="center"
+              justifyContent="space-between"
+              sx={{ my: 2 }}
+            >
+              <Typography variant="h6">
+                <b>By Properties</b>
+              </Typography>
+              <IconButton
+                aria-label="add"
+                size="small"
+                onClick={() =>
+                  setSelectedProperties([
+                    ...selectedProperties,
+                    { id: Math.random().toString(36).substring(2, 10) },
+                  ])
+                }
+              >
+                <AddIcon />
+              </IconButton>
+            </Box>
             <div>
-              {propertyFilters?.map((id) => (
-                <PropertyFilterItem
-                  key={id}
-                  properties={properties}
-                  onChange={handleSelectedProperties}
-                />
+              {selectedProperties?.map((item, index) => (
+                <React.Fragment key={item?.id}>
+                  <PropertyFilterItem
+                    key={item?.id}
+                    id={item?.id}
+                    properties={properties}
+                    onChange={handleSelectedProperties}
+                    onDelete={handleDeleteProp}
+                  />
+                  {index < selectedProperties.length - 1 && (
+                    <Divider
+                      sx={{ m: "20px 0", color: "#bdbdbd", fontSize: 12 }}
+                    >
+                      and
+                    </Divider>
+                  )}
+                </React.Fragment>
               ))}
             </div>
-            <Button
-              startIcon={<AddIcon />}
-              onClick={() =>
-                setPropertyFilters([
-                  ...propertyFilters,
-                  propertyFilters?.length + 1,
-                ])
-              }
-            >
-              More Property
+          </Box>
+
+          <Box sx={{ m: 4, display: "flex", justifyContent: "center" }}>
+            <Button variant="contained" onClick={onUpdateSearchParams}>
+              Search
             </Button>
-            <Box
-              sx={{
-                m: "20px 0",
-                display: "flex",
-                justifyContent: "center",
-              }}
-            >
-              <Button variant="contained" onClick={onUpdateSearchParams}>
-                Search
-              </Button>
-            </Box>
           </Box>
         </Box>
         <Box component="main" sx={{ flexGrow: 1 }}>

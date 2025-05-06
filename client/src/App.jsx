@@ -11,13 +11,16 @@ import Profile from "./components/ProfilePage";
 import EditUsers from "./components/EditUsers";
 import Material from "./components/MaterialPage";
 import Search from "./components/SearchPage";
-import SmartSearch from "./components/SmartSearch"
+import SmartSearch from "./components/SmartSearch";
+import ComparisonPage from "./components/MaterialComparisonPage";
+import AboutUs from "./components/AboutUsPage";
+import UploadPage from "./components/UploadPage";
 
 import ProtectedRoute from "./components/ProtectedRoute";
 import PublicRoute from "./components/PublicRoute";
+import FlexibleRoute from "./components/FlexibleRoute";
 import SessionTimeout from "./components/SessionTimeout";
-import SearchPage from "./components/SearchPage";
-import MaterialDetail from "./components/MaterialDetail";
+import AboutUsPage from "./components/AboutUsPage";
 
 function App() {
   return (
@@ -38,6 +41,15 @@ function App() {
             <PublicRoute>
               <Register />
             </PublicRoute>
+          }
+        />
+        {/* Flexible routes (accessible on both status) */}
+        <Route
+          path="/aboutus"
+          element={
+            <FlexibleRoute>
+              <AboutUsPage />
+            </FlexibleRoute>
           }
         />
 
@@ -86,10 +98,27 @@ function App() {
           path="/smart-search"
           element={
             <ProtectedRoute>
-              <SmartSearch /> 
+              <SmartSearch />
             </ProtectedRoute>
           }
         />
+        <Route
+          path="/compare"
+          element={
+            <ProtectedRoute>
+              <ComparisonPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/upload"
+          element={
+            <ProtectedRoute>
+              <UploadPage />
+            </ProtectedRoute>
+          }
+        />
+
         {/* Public landing page (root route) */}
         <Route path="/" element={<Landing />} />
       </Routes>

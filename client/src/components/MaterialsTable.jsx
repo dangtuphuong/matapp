@@ -14,9 +14,6 @@ import {
 import { getAllMaterials } from "../services/material-service";
 import Pagination from "./Pagination";
 
-import "./styles/navbar.css";
-import "./styles/Home.css";
-
 const headerStyle = {
   backgroundColor: "#424242",
   color: "white",
@@ -25,11 +22,11 @@ const headerStyle = {
 
 const MaterialsTable = ({ searchCategories, searchProperties }) => {
   const navigate = useNavigate();
-  const [isLoading, setLoading] = useState(false);
+  const [isLoading, setLoading] = useState(true);
   const [materials, setMaterials] = useState([]);
   const [totalCount, setTotalCount] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
-  const [limit] = useState(10);
+  const [limit, setLimit] = useState(10);
   const [searchTerm, setSearchTerm] = useState("");
 
   // Fetch materials from API
@@ -82,6 +79,7 @@ const MaterialsTable = ({ searchCategories, searchProperties }) => {
       {/* Material Name */}
       <Box sx={{ mb: 1.5 }}>
         <TextField
+          size="small"
           label="Search Material Name"
           fullWidth
           value={searchTerm}
@@ -128,6 +126,8 @@ const MaterialsTable = ({ searchCategories, searchProperties }) => {
 
       {totalPages > 0 && (
         <Pagination
+          limit={limit}
+          handleLimitChange={setLimit}
           currentPage={currentPage}
           totalPages={totalPages}
           handlePageChange={handlePageChange}

@@ -6,26 +6,49 @@ import {
   Box,
   IconButton,
   Button,
+  Drawer,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  useMediaQuery,
 } from "@mui/material";
+import MenuIcon from "@mui/icons-material/Menu";
 import { AccountCircle } from "@mui/icons-material";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import logo from "../img/onlylogo.png";
 import { getUserProfile } from "../services/user-service";
 import "./styles/Navbar.css";
 
+// Icons
+import HomeOutlinedIcon from "@mui/icons-material/HomeOutlined";
+import SearchIcon from "@mui/icons-material/Search";
+import TroubleshootIcon from "@mui/icons-material/Troubleshoot";
+import CompareArrowsIcon from "@mui/icons-material/CompareArrows";
+import FileUploadOutlinedIcon from "@mui/icons-material/FileUploadOutlined";
+import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
+
+const navItems = [
+  { label: "Home", path: "/home", icon: <HomeOutlinedIcon /> },
+  { label: "Search", path: "/search", icon: <SearchIcon /> },
+  { label: "Smart Search", path: "/smart-search", icon: <TroubleshootIcon /> },
+  { label: "Compare", path: "/compare", icon: <CompareArrowsIcon /> },
+  { label: "Upload", path: "/upload", icon: <FileUploadOutlinedIcon /> },
+  { label: "About Us", path: "/aboutus", icon: <InfoOutlinedIcon /> },
+];
+
 const Navbar = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const isMobile = useMediaQuery("(max-width: 900px)");
 
-  // Load username from localStorage initially
   const [username, setUsername] = useState(
     localStorage.getItem("username") || ""
   );
 
-  // Fetch user profile on initial render to update username
   useEffect(() => {
     const token = localStorage.getItem("access_token");
-
-    // Redirect to login if token is missing
     if (!token) {
       navigate("/login");
       return;
@@ -34,14 +57,13 @@ const Navbar = () => {
     getUserProfile(token)
       .then((data) => {
         setUsername(data.firstName);
-        localStorage.setItem("username", data.firstName); // Cache username
+        localStorage.setItem("username", data.firstName);
       })
       .catch(() => {
-        setUsername("User"); // Fallback if profile fetch fails
+        setUsername("User");
       });
   }, []);
 
-  // Handle logout: clear storage and redirect to login
   const handleLogout = () => {
     localStorage.removeItem("access_token");
     localStorage.removeItem("username");
@@ -49,60 +71,181 @@ const Navbar = () => {
     navigate("/login");
   };
 
+  const toggleDrawer = (open) => () => {
+    setDrawerOpen(open);
+  };
+
   return (
-    <AppBar
-      position="static"
-      sx={{
-        backgroundColor: "#1a1a1a",
-        zIndex: (theme) => theme.zIndex.drawer + 1,
-      }}
-    >
-      <Toolbar className="navbar-toolbar">
-        {/* Left section: logo and title */}
-        <Box component={Link} to="/home" className="navbar-logo">
-          <img src={logo} alt="Logo" />
-          <Typography variant="h6" className="navbar-logo-text">
-            MatApp
-          </Typography>
-        </Box>
-
-        {/* Center section: navigation links */}
-        <Box className="navbar-center-links">
-          <Link to="/home" className="navbar-link">
-            Home
-          </Link>
-          <Link to="/search" className="navbar-link">
-            Search
-          </Link>
-          <Link to="/smart-search" className="navbar-link">
-            Smart Search
-          </Link>
-          <Link to="/aboutus" className="navbar-link">
-            About Us
-          </Link>
-        </Box>
-
-        {/* Right section: profile icon and logout button */}
-        <Box className="navbar-right-group">
-          <Box component={Link} to="/profile" className="navbar-profile-link">
-            <IconButton color="inherit">
-              <AccountCircle />
-            </IconButton>
-            <Typography variant="body1" className="navbar-username">
-              {username}
+    <>
+      <AppBar
+        position="static"
+        sx={{
+          backgroundColor: "#1a1a1a",
+          zIndex: (theme) => theme.zIndex.drawer + 1,
+        }}
+      >
+        <Toolbar
+          className="navbar-toolbar"
+          sx={{ justifyContent: "space-between" }}
+        >
+          {/* Logo */}
+          <Box
+            component={Link}
+            to="/home"
+            className="navbar-logo"
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              textDecoration: "none",
+              flexShrink: 0,
+              minWidth: "auto",
+            }}
+          >
+            <img
+              src={logo}
+              alt="Logo"
+              style={{
+                width: 36,
+                height: 36,
+                objectFit: "contain",
+                marginRight: 8,
+              }}
+            />
+            <Typography
+              variant="h6"
+              className="navbar-logo-text"
+              sx={{
+                display: { xs: "none", md: "block" }, // 👈 Hide before md (960px)
+                fontSize: "1.25rem",
+                whiteSpace: "nowrap",
+                color: "white",
+              }}
+            >
+              MatApp
             </Typography>
           </Box>
 
-          <Button
-            variant="outlined"
-            onClick={handleLogout}
-            className="navbar-button"
+          {/* Desktop Nav Links */}
+          {!isMobile && (
+            <Box
+              className="navbar-center-links"
+              sx={{
+                display: "flex",
+                flexWrap: "wrap",
+                justifyContent: "center",
+                gap: 0,
+                flexGrow: 1,
+                overflow: "hidden",
+                minWidth: 0,
+              }}
+            >
+              {navItems.map(({ label, path, icon }) => (
+                <Link
+                  key={label}
+                  to={path}
+                  className="navbar-link"
+                  style={{
+                    padding: "11px 20px 11px 16px",
+                    borderRadius: "6px",
+                    backgroundColor:
+                      location?.pathname === path ? "#2F2F2F" : "transparent",
+                  }}
+                >
+                  {React.cloneElement(icon, {
+                    fontSize: "small",
+                    style: { marginRight: 5 },
+                  })}
+                  <span style={{ whiteSpace: "nowrap" }}>{label}</span>
+                </Link>
+              ))}
+            </Box>
+          )}
+
+          {/* Right section */}
+          <Box
+            className="navbar-right-group"
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              flexShrink: 0,
+              gap: 1,
+              marginLeft: "auto",
+            }}
           >
-            Logout
-          </Button>
+            <Box
+              component={Link}
+              to="/profile"
+              className="navbar-profile-link"
+              sx={{ display: "flex", alignItems: "center" }}
+            >
+              <IconButton color="inherit">
+                <AccountCircle />
+              </IconButton>
+              <Typography
+                variant="body1"
+                className="navbar-username"
+                sx={{
+                  display: { xs: "none", sm: "block" },
+                  whiteSpace: "nowrap",
+                }}
+              >
+                {username}
+              </Typography>
+            </Box>
+
+            <Button
+              variant="outlined"
+              onClick={handleLogout}
+              className="navbar-button"
+              sx={{
+                display: { xs: "none", md: "inline-flex" },
+                whiteSpace: "nowrap",
+              }}
+            >
+              Logout
+            </Button>
+
+            {/* Mobile: Hamburger menu */}
+            {isMobile && (
+              <IconButton
+                onClick={toggleDrawer(true)}
+                color="inherit"
+                sx={{ ml: 1 }}
+              >
+                <MenuIcon />
+              </IconButton>
+            )}
+          </Box>
+        </Toolbar>
+      </AppBar>
+
+      {/* Mobile Drawer */}
+      <Drawer anchor="right" open={drawerOpen} onClose={toggleDrawer(false)}>
+        <Box
+          sx={{ width: 250 }}
+          role="presentation"
+          onClick={toggleDrawer(false)}
+          onKeyDown={toggleDrawer(false)}
+        >
+          <List>
+            {navItems.map(({ label, path, icon }) => (
+              <ListItem button component={Link} to={path} key={label}>
+                <ListItemIcon>{icon}</ListItemIcon>
+                <ListItemText primary={label} />
+              </ListItem>
+            ))}
+
+            {/* Divider and Logout Button in Drawer */}
+            <ListItem button onClick={handleLogout}>
+              <ListItemIcon>
+                <AccountCircle />
+              </ListItemIcon>
+              <ListItemText primary="Logout" />
+            </ListItem>
+          </List>
         </Box>
-      </Toolbar>
-    </AppBar>
+      </Drawer>
+    </>
   );
 };
 

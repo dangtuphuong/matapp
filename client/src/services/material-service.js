@@ -4,13 +4,14 @@ const API_URL = "/api";
 
 export const getMaterialDetail = async (matID, setMaterial) => {
   const token = localStorage.getItem("access_token");
-  axios.get(`${API_URL}/material/detail/${matID}`, {
+  axios
+    .get(`${API_URL}/material/detail/${matID}`, {
       headers: {
-          Authorization: `Bearer ${token}`,
-      }
+        Authorization: `Bearer ${token}`,
+      },
     })
-    .then(response => setMaterial(response.data.material))
-}
+    .then((response) => setMaterial(response.data.material));
+};
 
 export const getAllMaterials = async ({
   page,
@@ -110,6 +111,35 @@ export const getProperties = async () => {
     return response.data;
   } catch (error) {
     console.error("Error fetching properties:", error);
+    throw error;
+  }
+};
+
+export const uploadMaterials = async (files) => {
+  const token = localStorage.getItem("access_token");
+
+  if (!token) {
+    throw new Error("No access token found");
+  }
+
+  if (!files || files.length === 0) {
+    throw new Error("No files selected for upload.");
+  }
+
+  const formData = new FormData();
+
+  for (const file of files) {
+    formData.append("materials", file);
+  }
+
+  try {
+    const response = await axios.post(`${API_URL}/upload`, formData, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error("Error uploading material:", error);
     throw error;
   }
 };

@@ -4,3 +4,12 @@ Flask-PyMongo
 Flask-JWT-Extended
 flask-bcrypt
 python-dotenv
+sentence-transformers
+openai
+faiss-cpu
+langchain
+langchain-core
+langchain-openai
+langchain-community
+langchain-voyageai
+langchain-google-genai
