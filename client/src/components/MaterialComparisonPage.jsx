@@ -11,7 +11,7 @@ import {
 import { Radar } from "react-chartjs-2";
 import {
   getAllMaterials,
-  getMaterialByMatGUID,
+  getMaterialByMatId,
 } from "../services/material-service";
 import NavbarPrivate from "./NavbarPrivate";
 import {
@@ -72,8 +72,8 @@ const MaterialComparisonPage = () => {
   const fetchMaterialDetails = async () => {
     try {
       const [m1, m2] = await Promise.all([
-        getMaterialByMatGUID(material1Id),
-        getMaterialByMatGUID(material2Id),
+        getMaterialByMatId(material1Id),
+        getMaterialByMatId(material2Id),
       ]);
       setMaterial1(m1);
       setMaterial2(m2);

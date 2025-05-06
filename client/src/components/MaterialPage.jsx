@@ -48,6 +48,19 @@ const iconStyle = {
   marginRight: "10px",
 };
 
+const mapProps = (props) =>
+  props?.reduce((result, prop) => {
+    const propType = prop?.prop_type;
+
+    if (!result[propType]) {
+      result[propType] = [];
+    }
+
+    result[propType].push(prop);
+
+    return result;
+  }, {});
+
 const LoadingComponent = () => (
   <Container className="mat-container">
     <Typography align="center" variant="h4" sx={{ mt: 3, mb: 3 }}>
@@ -72,7 +85,12 @@ const MaterialPage = () => {
   useEffect(() => {
     setLoading(true);
     getMaterialByMatId(mat_id)
-      .then((data) => setMaterial(data))
+      .then((data) =>
+        setMaterial({
+          ...(data || {}),
+          properties: mapProps(data?.properties || {}),
+        })
+      )
       .catch((err) => console.error(err))
       .finally(() => setLoading(false));
   }, [mat_id]);
@@ -112,13 +130,13 @@ const MaterialPage = () => {
                 </span>
                 {material?.categories?.join(", ")}
               </div>
-              {material?.["Key Words"] && (
+              {material?.keywords && (
                 <div style={itemWrapperStyle}>
                   <span style={itemStyle}>
                     <KeyIcon sx={iconStyle} />
                     Key Words
                   </span>
-                  {material?.["Key Words"]}
+                  {material?.keywords}
                 </div>
               )}
               {material?.notes && (
@@ -135,8 +153,7 @@ const MaterialPage = () => {
                   <PrecisionManufacturingIcon sx={iconStyle} />
                   Vendors
                 </span>
-                {material?.["Vendors"] ||
-                  "No vendors are listed for this material"}
+                {material?.vendors || "No vendors are listed for this material"}
               </div>
             </Card>
 
@@ -145,80 +162,84 @@ const MaterialPage = () => {
             </Typography>
 
             <TableContainer component={Paper}>
-              {Object.entries(material?.properties ?? {}).map(([key, items]) =>
-                key !== "Descriptive Properties" ? (
-                  <Table sx={{ minWidth: 650 }} aria-label="table" key={key}>
-                    <TableHead>
-                      <TableRow>
-                        <TableCell sx={{ ...headerStyle, width: "25%" }}>
-                          {key}
-                        </TableCell>
-                        <TableCell
-                          sx={{ ...headerStyle, width: "28%" }}
-                          align="right"
-                        >
-                          Metric
-                        </TableCell>
-                        <TableCell
-                          sx={{ ...headerStyle, width: "28%" }}
-                          align="right"
-                        >
-                          English
-                        </TableCell>
-                        <TableCell sx={headerStyle} align="right">
-                          Comments
-                        </TableCell>
-                      </TableRow>
-                    </TableHead>
-                    <TableBody>
-                      {Object.entries(items).map(([property, values]) =>
-                        values.map((value, index) => (
-                          <TableRow key={`${property}-${index}`}>
+              {Object.entries(material?.properties ?? {}).map(
+                ([prop_type, props]) =>
+                  prop_type !== "Descriptive Properties" ? (
+                    <Table
+                      sx={{ minWidth: 650 }}
+                      aria-label="table"
+                      key={prop_type}
+                    >
+                      <TableHead>
+                        <TableRow>
+                          <TableCell sx={{ ...headerStyle, width: "25%" }}>
+                            {prop_type}
+                          </TableCell>
+                          <TableCell
+                            sx={{ ...headerStyle, width: "28%" }}
+                            align="right"
+                          >
+                            Metric
+                          </TableCell>
+                          <TableCell
+                            sx={{ ...headerStyle, width: "28%" }}
+                            align="right"
+                          >
+                            English
+                          </TableCell>
+                          <TableCell sx={headerStyle} align="right">
+                            Comments
+                          </TableCell>
+                        </TableRow>
+                      </TableHead>
+                      <TableBody>
+                        {props?.map((prop, index) => (
+                          <TableRow key={`${prop?.prop_name}-${index}`}>
                             {index === 0 && (
-                              <TableCell rowSpan={values.length}>
-                                {property}
+                              <TableCell rowSpan={props.length}>
+                                {prop?.prop_name}
                               </TableCell>
                             )}
-                            <TableCell align="right">{value.Metric}</TableCell>
-                            <TableCell align="right">{value.English}</TableCell>
+                            {prop?.prop_values.map((value, index) => (
+                              <TableCell key={index} align="right">
+                                {value.text_value}
+                              </TableCell>
+                            ))}
+                            <TableCell align="right">{prop.Comments}</TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  ) : (
+                    <Table
+                      sx={{ minWidth: 650 }}
+                      aria-label="descriptive"
+                      key={prop_type}
+                    >
+                      <TableHead>
+                        <TableRow>
+                          <TableCell sx={headerStyle}>{prop_type}</TableCell>
+                          <TableCell sx={headerStyle} align="right">
+                            Value
+                          </TableCell>
+                        </TableRow>
+                      </TableHead>
+                      <TableBody>
+                        {props?.map((prop, index) => (
+                          <TableRow key={`${prop?.prop_name}-${index}`}>
+                            {index === 0 && (
+                              <TableCell rowSpan={props.length}>
+                                {prop?.prop_name}
+                              </TableCell>
+                            )}
                             <TableCell align="right">
-                              {value.Comments}
+                              {prop?.text_value}
                             </TableCell>
                           </TableRow>
-                        ))
-                      )}
-                    </TableBody>
-                  </Table>
-                ) : (
-                  <Table
-                    sx={{ minWidth: 650 }}
-                    aria-label="descriptive"
-                    key={key}
-                  >
-                    <TableHead>
-                      <TableRow>
-                        <TableCell sx={headerStyle}>{key}</TableCell>
-                        <TableCell sx={headerStyle} align="right">
-                          Value
-                        </TableCell>
-                      </TableRow>
-                    </TableHead>
-                    <TableBody>
-                      {Object.entries(items).map(([property, values]) =>
-                        values.map((value, index) => (
-                          <TableRow key={`${property}-${index}`}>
-                            {index === 0 && (
-                              <TableCell rowSpan={values.length}>
-                                {property}
-                              </TableCell>
-                            )}
-                            <TableCell align="right">{value}</TableCell>
-                          </TableRow>
-                        ))
-                      )}
-                    </TableBody>
-                  </Table>
-                )
+                        ))}
+                      </TableBody>
+                    </Table>
+                  )
               )}
             </TableContainer>
           </div>
