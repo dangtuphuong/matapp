@@ -5,6 +5,7 @@ from langchain_google_genai import ChatGoogleGenerativeAI, GoogleGenerativeAIEmb
 from langchain_core.prompts import ChatPromptTemplate, FewShotChatMessagePromptTemplate
 from langchain_community.vectorstores import FAISS
 from langchain_core.example_selectors import SemanticSimilarityExampleSelector
+import google.api_core.exceptions
 
 
 # Load environment variables
@@ -79,12 +80,50 @@ def get_prompt(user_query):
     return instruction_prompt
 
 
-def get_answer(user_query):
-    instruction_prompt = get_prompt(user_query)
+# ================= Helper Function to Check Rate Limit Errors =================
+def is_rate_limit_error(exception):
+    if isinstance(exception, google.api_core.exceptions.ResourceExhausted):
+        return True
+    if hasattr(exception, "status_code") and exception.status_code in [429, 503]:
+        return True
+    if isinstance(exception, Exception) and any(
+        msg in str(exception).lower()
+        for msg in [
+            "rate limit",
+            "quota exceeded",
+            "resource exhausted",
+            "too many requests",
+            "capacity",
+            "retry",
+        ]
+    ):
+        return True
+    return False
 
-    prompt = ChatPromptTemplate.from_messages(
-        [("system", instruction_prompt), few_shot_prompt, ("human", "{user_query}")]
-    )
 
-    chain = prompt | llm
-    return chain.invoke({"user_query": user_query}).content
+def generate_mongodb_query(user_query):
+    try:
+        instruction_prompt = get_prompt(user_query)
+
+        prompt = ChatPromptTemplate.from_messages(
+            [("system", instruction_prompt), few_shot_prompt, ("human", "{user_query}")]
+        )
+
+        chain = prompt | llm
+        response = chain.invoke({"user_query": user_query})
+
+        return {"success": True, "content": response.content}
+
+    except Exception as e:
+        print(f"Error generating MongoDB query: {str(e)}")
+
+        if is_rate_limit_error(e):
+            return {
+                "success": False,
+                "error": "API rate limit exceeded. Please try again later.",
+            }
+        else:
+            return {
+                "success": False,
+                "error": f"Failed to generate query: {str(e)}",
+            }

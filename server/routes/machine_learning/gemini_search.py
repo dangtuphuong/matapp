@@ -1,7 +1,7 @@
 from flask import Blueprint, jsonify, request
 from flask_jwt_extended import jwt_required
 
-from services.machine_learning.gemini_service import get_answer
+from services.machine_learning.gemini_service import generate_mongodb_query
 from models.material_model import MaterialModel
 from utils.llm import clean_and_parse_pipeline
 
@@ -20,8 +20,15 @@ def gemini_search():
         if not user_query:
             return jsonify({"error": "Query parameter is required"}), 400
 
-        # Get MongoDB pipeline from DeepSeek
-        pipeline_str = get_answer(user_query)
+        # Generate MongoDB pipeline
+        result = generate_mongodb_query(user_query)
+
+        # Check if generation was successful
+        if not result["success"]:
+            return jsonify({"error": result["error"]}), 500
+
+        pipeline_str = result["content"]
+
         if not pipeline_str:
             return jsonify({"error": "Failed to generate query"}), 500
 
