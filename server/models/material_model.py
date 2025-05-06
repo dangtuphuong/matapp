@@ -86,9 +86,7 @@ class MaterialModel:
 
         # Text search
         if searchTerm:
-            conditions.append(
-                {"Material Name": {"$regex": searchTerm, "$options": "i"}}
-            )
+            conditions.append({"mat_name": {"$regex": searchTerm, "$options": "i"}})
 
         # Category filtering
         filtered_categories = [cat.strip() for cat in searchCategories if cat.strip()]
@@ -162,7 +160,7 @@ class MaterialModel:
 
     @staticmethod
     def get_material_by_guid(mat_id):
-        # Fetch a single material by its matGUID
+        # Fetch a single material by its mat_id
         materials_collection = mongo.db["materials"]
         material = materials_collection.find_one({"mat_id": mat_id})
 
@@ -179,12 +177,12 @@ class MaterialModel:
         if not any("$limit" in stage for stage in pipeline if isinstance(stage, dict)):
             pipeline.append({"$limit": 10})
 
-        # Make sure matGUID in pipeline
+        # Make sure mat_id in pipeline
         for stage in pipeline:
             if isinstance(stage, dict) and "$project" in stage:
-                stage["$project"].setdefault("matGUID", 1)
-                stage["$project"].setdefault("Material Name", 1)
-                stage["$project"].setdefault("Material Notes", 1)
+                stage["$project"].setdefault("mat_id", 1)
+                stage["$project"].setdefault("mat_name", 1)
+                stage["$project"].setdefault("notes", 1)
 
         cursor = materials_collection.aggregate(pipeline)
 
@@ -230,43 +228,43 @@ class MaterialModel:
                     )
                     continue
 
-                # --- MANDATORY FIELD CHECK: Material Name ---
-                if "Material Name" not in json_data or not json_data["Material Name"]:
+                # --- MANDATORY FIELD CHECK: mat_name ---
+                if "mat_name" not in json_data or not json_data["mat_name"]:
                     results.append(
                         {
                             "filename": filename,
                             "status": "skipped",
-                            "message": "Skipped: 'Material Name' key is missing or empty in the JSON data.",
+                            "message": "Skipped: 'mat_name' key is missing or empty in the JSON data.",
                         }
                     )
                     continue
 
-                material_name = json_data["Material Name"]
+                material_name = json_data["mat_name"]
 
-                # --- Check for Existing Material (by matGUID first, then name) ---
+                # --- Check for Existing Material (by mat_id first, then name) ---
                 existing_material = None
-                provided_mat_guid = json_data.get("matGUID")
+                provided_mat_guid = json_data.get("mat_id")
 
                 if provided_mat_guid:
                     existing_material = materials_collection.find_one(
-                        {"matGUID": provided_mat_guid}
+                        {"mat_id": provided_mat_guid}
                     )
                     if existing_material:
                         results.append(
                             {
                                 "filename": filename,
                                 "status": "exists",
-                                "message": f"Material with provided matGUID '{provided_mat_guid}' already exists.",
+                                "message": f"Material with provided mat_id '{provided_mat_guid}' already exists.",
                                 "existing_id": str(existing_material["_id"]),
-                                "matGUID": provided_mat_guid,
-                                "Material Name": existing_material.get("Material Name"),
+                                "mat_id": provided_mat_guid,
+                                "mat_name": existing_material.get("mat_name"),
                             }
                         )
                         continue
 
-                # Check by name only if matGUID wasn't provided or didn't match
+                # Check by name only if mat_id wasn't provided or didn't match
                 existing_material = materials_collection.find_one(
-                    {"Material Name": material_name}
+                    {"mat_name": material_name}
                 )
                 if existing_material:
                     results.append(
@@ -275,8 +273,8 @@ class MaterialModel:
                             "status": "exists",
                             "message": f"Material with name '{material_name}' already exists.",
                             "existing_id": str(existing_material["_id"]),
-                            "Material Name": material_name,
-                            "matGUID": existing_material.get("matGUID"),
+                            "mat_name": material_name,
+                            "mat_id": existing_material.get("mat_id"),
                         }
                     )
                     continue
@@ -299,7 +297,7 @@ class MaterialModel:
                 # Create the document to insert
                 document = {
                     "_id": mat_object_id,
-                    "matGUID": mat_guid_str,
+                    "mat_id": mat_guid_str,
                     **json_data,
                     "parsed_properties": parsed,
                     "upload_date": datetime.now(timezone.utc),
@@ -312,8 +310,8 @@ class MaterialModel:
                     {
                         "filename": filename,
                         "inserted_id": str(inserted.inserted_id),
-                        "matGUID": mat_guid_str,
-                        "Material Name": material_name,
+                        "mat_id": mat_guid_str,
+                        "mat_name": material_name,
                         "categories_update": cats_update_result,
                         "props_filter_update": filters_update_result,
                         "status": "success",

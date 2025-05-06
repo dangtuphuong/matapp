@@ -85,14 +85,10 @@ const MaterialComparisonPage = () => {
   // Function to extract property values from material object
   const extractPropertyValues = (material) => {
     return propertiesToCompare.map((targetProp) => {
-      for (const category in material?.Properties) {
-        for (const prop in material.Properties[category]) {
-          if (prop.toLowerCase().includes(targetProp.toLowerCase())) {
-            const val = parseFloat(
-              material.Properties[category][prop][0]?.Metric
-            );
-            return isNaN(val) ? 0 : val;
-          }
+      for (const prop of material?.properties) {
+        if (prop?.prop_name?.toLowerCase().includes(targetProp.toLowerCase())) {
+          const val = parseFloat(prop?.prop_values?.[0]?.text_value);
+          return isNaN(val) ? 0 : val;
         }
       }
       return 0;
@@ -145,7 +141,7 @@ const MaterialComparisonPage = () => {
               label="Select Material 1"
             >
               {materials.map((mat) => (
-                <MenuItem key={mat.matGUID} value={mat.matGUID}>
+                <MenuItem key={mat.mat_id} value={mat.mat_id}>
                   {mat?.mat_name}
                 </MenuItem>
               ))}
@@ -160,7 +156,7 @@ const MaterialComparisonPage = () => {
               label="Select Material 2"
             >
               {materials.map((mat) => (
-                <MenuItem key={mat.matGUID} value={mat.matGUID}>
+                <MenuItem key={mat.mat_id} value={mat.mat_id}>
                   {mat?.mat_name}
                 </MenuItem>
               ))}

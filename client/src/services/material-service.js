@@ -53,7 +53,7 @@ export const getAllMaterials = async ({
   }
 };
 
-export const getMaterialByMatGUID = async (matGUID) => {
+export const getMaterialByMatId = async (mat_id) => {
   // Get the token from localStorage
   const token = localStorage.getItem("access_token");
 
@@ -63,7 +63,7 @@ export const getMaterialByMatGUID = async (matGUID) => {
   }
 
   try {
-    const response = await axios.get(`${API_URL}/materials/${matGUID}`, {
+    const response = await axios.get(`${API_URL}/materials/${mat_id}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },

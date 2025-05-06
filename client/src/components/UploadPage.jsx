@@ -181,14 +181,14 @@ const UploadPage = () => {
                             {result.message} -
                             {(result.status === "success" ||
                               result.status === "exists") &&
-                              result.matGUID && (
+                              result.mat_id && (
                                 <Link
                                   sx={{
                                     marginLeft: 1,
                                     display: "inline-block",
                                   }}
                                   component={RouterLink}
-                                  to={`/material/${result.matGUID}`}
+                                  to={`/material/${result.mat_id}`}
                                 >
                                   View Material
                                 </Link>

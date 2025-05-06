@@ -19,7 +19,7 @@ import EditNoteIcon from "@mui/icons-material/EditNote";
 import KeyIcon from "@mui/icons-material/Key";
 
 import NavbarPrivate from "./NavbarPrivate";
-import { getMaterialByMatGUID } from "../services/material-service";
+import { getMaterialByMatId } from "../services/material-service";
 import { exportElementToPDF } from "../utils/pdfExporter";
 import { exportPropertiesToCSV } from "../utils/csvExporter";
 import "./styles/MaterialPage.css";
@@ -64,18 +64,18 @@ const LoadingComponent = () => (
 );
 
 const MaterialPage = () => {
-  const { matGUID } = useParams();
+  const { mat_id } = useParams();
   const [isLoading, setLoading] = useState(false);
   const [material, setMaterial] = useState(null);
   const contentRef = useRef();
 
   useEffect(() => {
     setLoading(true);
-    getMaterialByMatGUID(matGUID)
+    getMaterialByMatId(mat_id)
       .then((data) => setMaterial(data))
       .catch((err) => console.error(err))
       .finally(() => setLoading(false));
-  }, [matGUID]);
+  }, [mat_id]);
 
   const handleDownloadPDF = () => {
     if (contentRef.current) {

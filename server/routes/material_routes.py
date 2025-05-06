@@ -40,12 +40,12 @@ def get_materials():
         return jsonify({"error": "Server error"}), 500
 
 
-# Route to fetch a material by matGUID, with JWT token check
-@material_bp.route("/materials/<mat_guid>", methods=["GET"])
+# Route to fetch a material by mat_id, with JWT token check
+@material_bp.route("/materials/<mat_id>", methods=["GET"])
 @jwt_required()
-def get_material_by_guid(mat_guid):
+def get_material_by_guid(mat_id):
     try:
-        material = MaterialModel.get_material_by_guid(mat_guid)
+        material = MaterialModel.get_material_by_guid(mat_id)
         if material:
             return jsonify(material), 200
         return jsonify({"message": "Material not found"}), 404

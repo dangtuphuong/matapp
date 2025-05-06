@@ -87,7 +87,7 @@ function App() {
           }
         />
         <Route
-          path="/material/:matGUID"
+          path="/material/:mat_id"
           element={
             <ProtectedRoute>
               <Material />

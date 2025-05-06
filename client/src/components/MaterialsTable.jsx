@@ -109,7 +109,7 @@ const MaterialsTable = ({ searchCategories, searchProperties }) => {
             materials?.map((material) => (
               <TableRow
                 key={material?._id}
-                onClick={() => onRowClick(material?.matGUID)}
+                onClick={() => onRowClick(material?.mat_id)}
                 sx={{ cursor: "pointer" }}
               >
                 <TableCell>{material?.mat_name}</TableCell>
