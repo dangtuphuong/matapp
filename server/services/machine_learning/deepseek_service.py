@@ -1,7 +1,7 @@
 import os
 import json
 from dotenv import load_dotenv
-from langchain_huggingface import HuggingFaceEmbeddings
+from langchain_voyageai import VoyageAIEmbeddings
 from langchain_openai import ChatOpenAI
 from langchain_core.prompts import (
     ChatPromptTemplate,
@@ -33,8 +33,9 @@ structure = ""
 with open("resource/schema.json", "r", encoding="utf-8") as input_file:
     structure = input_file.read()
 
-# ================= Initialize DeepSeek LLM =================
-embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-mpnet-base-v2")
+# ================= Voyage Embedding Configuration =================
+VOYAGE_API_KEY = os.getenv("VOYAGE_API_KEY")
+embeddings = VoyageAIEmbeddings(model="voyage-code-3", voyage_api_key=VOYAGE_API_KEY)
 
 # DeepSeek LLM (OpenAI-compatible)
 llm = ChatOpenAI(
@@ -97,10 +98,10 @@ def generate_mongodb_query(user_query):
             [system_msg, few_shot_prompt, human_msg]
         )
 
-        chain = LLMChain(llm=llm, prompt=chat_prompt)
-        answer = chain.run(user_query=user_query)
+        chain = chat_prompt | llm
+        response = chain.invoke({"user_query": user_query})
 
-        return {"success": True, "content": answer}
+        return {"success": True, "content": response.content}
 
     except Exception as e:
         print(f"Error generating MongoDB query: {str(e)}")
