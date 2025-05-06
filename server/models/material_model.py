@@ -183,6 +183,8 @@ class MaterialModel:
         for stage in pipeline:
             if isinstance(stage, dict) and "$project" in stage:
                 stage["$project"].setdefault("matGUID", 1)
+                stage["$project"].setdefault("Material Name", 1)
+                stage["$project"].setdefault("Material Notes", 1)
 
         cursor = materials_collection.aggregate(pipeline)
 
