@@ -20,7 +20,6 @@ import {
 import ClearIcon from "@mui/icons-material/Clear";
 
 import NavbarPrivate from "./NavbarPrivate";
-import SubscriptionPage from "./SubscriptionPage";
 import SmartSeachInfo from "./SmartSeachInfo";
 import PremiumInfo from "./PremiumInfo";
 

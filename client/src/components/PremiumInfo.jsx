@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Typography, Box } from "@mui/material";
 
 import SmartSeachInfo from "./SmartSeachInfo";
+import SubscriptionPage from "./SubscriptionPage";
 
 const PremiumInfo = () => {
   const [openModal, setOpenModal] = useState(false);
