@@ -81,7 +81,7 @@ const MaterialPage = () => {
     if (contentRef.current) {
       exportElementToPDF(
         contentRef.current,
-        `${material?.["Material Name"] || "material"}.pdf`
+        `${material?.mat_name || "material"}.pdf`
       );
     }
   };
@@ -95,7 +95,7 @@ const MaterialPage = () => {
         <Container className="mat-container">
           <div ref={contentRef}>
             <Typography align="center" variant="h4" sx={{ mt: 3, mb: 3 }}>
-              {material?.["Material Name"]}
+              {material?.mat_name}
             </Typography>
             <Card
               sx={{

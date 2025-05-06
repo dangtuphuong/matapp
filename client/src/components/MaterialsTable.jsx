@@ -112,8 +112,8 @@ const MaterialsTable = ({ searchCategories, searchProperties }) => {
                 onClick={() => onRowClick(material?.matGUID)}
                 sx={{ cursor: "pointer" }}
               >
-                <TableCell>{material?.["Material Name"]}</TableCell>
-                <TableCell>{material?.Categories?.join(", ")}</TableCell>
+                <TableCell>{material?.mat_name}</TableCell>
+                <TableCell>{material?.categories?.join(", ")}</TableCell>
               </TableRow>
             ))
           ) : (

@@ -34,7 +34,7 @@ const UploadInstructions = () => (
             <>
               Ensure your files are valid JSON (<code>.json</code>) and contain
               the necessary fields, including a non-empty{" "}
-              <strong>"Material Name"</strong>. Download the{" "}
+              <strong>"mat_name"</strong>. Download the{" "}
               <strong>"Example JSON"</strong> to check the required structure.
             </>
           }

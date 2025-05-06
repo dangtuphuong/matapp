@@ -9,7 +9,10 @@ import {
   InputLabel,
 } from "@mui/material";
 import { Radar } from "react-chartjs-2";
-import { getAllMaterials, getMaterialByMatGUID } from "../services/material-service";
+import {
+  getAllMaterials,
+  getMaterialByMatGUID,
+} from "../services/material-service";
 import NavbarPrivate from "./NavbarPrivate";
 import {
   Chart as ChartJS,
@@ -22,7 +25,14 @@ import {
 } from "chart.js";
 import "./styles/MaterialComparisonPage.css";
 
-ChartJS.register(RadialLinearScale, PointElement, LineElement, Filler, Tooltip, Legend);
+ChartJS.register(
+  RadialLinearScale,
+  PointElement,
+  LineElement,
+  Filler,
+  Tooltip,
+  Legend
+);
 
 // Properties you want to compare
 const propertiesToCompare = [
@@ -78,7 +88,9 @@ const MaterialComparisonPage = () => {
       for (const category in material?.Properties) {
         for (const prop in material.Properties[category]) {
           if (prop.toLowerCase().includes(targetProp.toLowerCase())) {
-            const val = parseFloat(material.Properties[category][prop][0]?.Metric);
+            const val = parseFloat(
+              material.Properties[category][prop][0]?.Metric
+            );
             return isNaN(val) ? 0 : val;
           }
         }
@@ -87,19 +99,19 @@ const MaterialComparisonPage = () => {
     });
   };
 
-  // Prepare data for the chart 
+  // Prepare data for the chart
   const radarData = {
     labels: propertiesToCompare,
     datasets: [
       {
-        label: material1?.["Material Name"] || "Material 1",
+        label: material1?.mat_name || "Material 1",
         data: material1 ? extractPropertyValues(material1) : [],
         backgroundColor: "rgba(255, 99, 132, 0.2)",
         borderColor: "rgba(255, 99, 132, 1)",
         borderWidth: 2,
       },
       {
-        label: material2?.["Material Name"] || "Material 2",
+        label: material2?.mat_name || "Material 2",
         data: material2 ? extractPropertyValues(material2) : [],
         backgroundColor: "rgba(54, 162, 235, 0.2)",
         borderColor: "rgba(54, 162, 235, 1)",
@@ -114,7 +126,12 @@ const MaterialComparisonPage = () => {
       <NavbarPrivate />
 
       <Container className="compare-container">
-        <Typography className="compare-header" variant="h4" align="center" sx={{ mt: 4, mb: 3 }}>
+        <Typography
+          className="compare-header"
+          variant="h4"
+          align="center"
+          sx={{ mt: 4, mb: 3 }}
+        >
           Material Comparison
         </Typography>
 
@@ -129,7 +146,7 @@ const MaterialComparisonPage = () => {
             >
               {materials.map((mat) => (
                 <MenuItem key={mat.matGUID} value={mat.matGUID}>
-                  {mat["Material Name"]}
+                  {mat?.mat_name}
                 </MenuItem>
               ))}
             </Select>
@@ -144,7 +161,7 @@ const MaterialComparisonPage = () => {
             >
               {materials.map((mat) => (
                 <MenuItem key={mat.matGUID} value={mat.matGUID}>
-                  {mat["Material Name"]}
+                  {mat?.mat_name}
                 </MenuItem>
               ))}
             </Select>

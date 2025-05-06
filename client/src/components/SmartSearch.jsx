@@ -51,15 +51,14 @@ const LoadingCards = () =>
 const FilterPropInfo = ({ material }) => {
   const {
     _id,
-    matGUID: _matId,
-    ["Material Name"]: _name,
-    ["Material Notes"]: _notes,
-    ["Key Words"]: _keywords,
+    mat_id: _matId,
+    mat_name: _name,
+    notes: _notes,
+    keywords: _k,
     material: _m,
-    Vendors,
-    Properties,
-    parsed_properties: _props,
-    Categories,
+    vendors: _v,
+    properties: _p,
+    categories: _c,
     ...rest
   } = material;
 
@@ -248,25 +247,25 @@ const SmartSearch = () => {
                       },
                     }}
                     component={Link}
-                    to={`/material/${material?.matGUID}`}
+                    to={`/material/${material?.mat_id}`}
                   >
                     <Typography
                       variant="h6"
                       noWrap
                       sx={{ fontWeight: 600, mb: 1 }}
                     >
-                      {material?.["Material Name"] || material?._id}
+                      {material?.mat_name || material?._id}
                     </Typography>
 
-                    {material?.["Categories"]?.length > 0 && (
+                    {material?.categories?.length > 0 && (
                       <Typography variant="body1">
-                        Categories: {material?.["Categories"]?.join(", ")}
+                        Categories: {material?.categories?.join(", ")}
                       </Typography>
                     )}
 
-                    {material?.["Material Notes"] && (
+                    {material?.notes && (
                       <Typography variant="body1" noWrap>
-                        Notes: {material?.["Material Notes"]}
+                        Notes: {material?.notes}
                       </Typography>
                     )}
 

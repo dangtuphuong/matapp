@@ -161,10 +161,10 @@ class MaterialModel:
         return materials_list, total_count
 
     @staticmethod
-    def get_material_by_guid(mat_guid):
+    def get_material_by_guid(mat_id):
         # Fetch a single material by its matGUID
         materials_collection = mongo.db["materials"]
-        material = materials_collection.find_one({"matGUID": mat_guid})
+        material = materials_collection.find_one({"mat_id": mat_id})
 
         if material:
             material["_id"] = str(material["_id"])
