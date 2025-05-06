@@ -14,7 +14,10 @@ import {
   Skeleton,
   Snackbar,
   Alert,
+  InputAdornment,
+  IconButton,
 } from "@mui/material";
+import ClearIcon from "@mui/icons-material/Clear";
 
 import NavbarPrivate from "./NavbarPrivate";
 import SubscriptionPage from "./SubscriptionPage";
@@ -119,7 +122,7 @@ const SmartSearch = () => {
       }
     } catch (e) {
       console.log(e);
-      setSearchResult([])
+      setSearchResult([]);
     } finally {
       setLoading(false);
     }
@@ -259,6 +262,19 @@ const SmartSearch = () => {
                   if (e?.key === "Enter") {
                     onSearch();
                   }
+                }}
+                InputProps={{
+                  endAdornment: query ? (
+                    <InputAdornment position="end">
+                      <IconButton
+                        aria-label="clear search"
+                        onClick={() => onChangeQuery({ target: { value: "" } })}
+                        edge="end"
+                      >
+                        <ClearIcon />
+                      </IconButton>
+                    </InputAdornment>
+                  ) : null,
                 }}
               />
 
