@@ -22,8 +22,8 @@ export const exportPropertiesToCSV = (material) => {
   lines.push("");
 
   // Grouped Properties
-  if (material.Properties) {
-    Object.entries(material.Properties).forEach(([category, props]) => {
+  if (material.properties) {
+    Object.entries(material.properties).forEach(([category, props]) => {
       lines.push(`${category},,,,,`);
       lines.push("Property,Metric,English,Comments,");
       Object.entries(props).forEach(([propName, values]) => {

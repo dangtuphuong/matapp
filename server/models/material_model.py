@@ -91,7 +91,7 @@ class MaterialModel:
         # Category filtering
         filtered_categories = [cat.strip() for cat in searchCategories if cat.strip()]
         if filtered_categories:
-            conditions.append({"Categories": {"$all": filtered_categories}})
+            conditions.append({"categories": {"$all": filtered_categories}})
 
         # Property filtering
         for prop in searchProperties:
@@ -284,11 +284,11 @@ class MaterialModel:
                 mat_guid_str = str(mat_object_id)
 
                 # Parse properties
-                properties = json_data.get("Properties", {})
+                properties = json_data.get("properties", {})
                 parsed = parse_properties(properties)
 
                 # Update categories collection if needed
-                categories = json_data.get("Categories", [])
+                categories = json_data.get("categories", [])
                 cats_update_result = CategoryModel.upload_categories(categories)
 
                 # Update property_filters collection if needed (min, max value)

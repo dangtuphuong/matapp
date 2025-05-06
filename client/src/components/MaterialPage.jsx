@@ -110,7 +110,7 @@ const MaterialPage = () => {
                   <CategoryIcon sx={iconStyle} />
                   Categories
                 </span>
-                {material?.["Categories"]?.join(", ")}
+                {material?.categories?.join(", ")}
               </div>
               {material?.["Key Words"] && (
                 <div style={itemWrapperStyle}>
@@ -121,13 +121,13 @@ const MaterialPage = () => {
                   {material?.["Key Words"]}
                 </div>
               )}
-              {material?.["Material Notes"] && (
+              {material?.notes && (
                 <div style={itemWrapperStyle}>
                   <span style={itemStyle}>
                     <EditNoteIcon sx={iconStyle} />
                     Material Notes
                   </span>
-                  {material?.["Material Notes"]}
+                  {material?.notes}
                 </div>
               )}
               <div style={itemWrapperStyle}>
@@ -145,85 +145,80 @@ const MaterialPage = () => {
             </Typography>
 
             <TableContainer component={Paper}>
-              {Object.entries(material?.["Properties"] ?? {}).map(
-                ([key, items]) =>
-                  key !== "Descriptive Properties" ? (
-                    <Table sx={{ minWidth: 650 }} aria-label="table" key={key}>
-                      <TableHead>
-                        <TableRow>
-                          <TableCell sx={{ ...headerStyle, width: "25%" }}>
-                            {key}
-                          </TableCell>
-                          <TableCell
-                            sx={{ ...headerStyle, width: "28%" }}
-                            align="right"
-                          >
-                            Metric
-                          </TableCell>
-                          <TableCell
-                            sx={{ ...headerStyle, width: "28%" }}
-                            align="right"
-                          >
-                            English
-                          </TableCell>
-                          <TableCell sx={headerStyle} align="right">
-                            Comments
-                          </TableCell>
-                        </TableRow>
-                      </TableHead>
-                      <TableBody>
-                        {Object.entries(items).map(([property, values]) =>
-                          values.map((value, index) => (
-                            <TableRow key={`${property}-${index}`}>
-                              {index === 0 && (
-                                <TableCell rowSpan={values.length}>
-                                  {property}
-                                </TableCell>
-                              )}
-                              <TableCell align="right">
-                                {value.Metric}
+              {Object.entries(material?.properties ?? {}).map(([key, items]) =>
+                key !== "Descriptive Properties" ? (
+                  <Table sx={{ minWidth: 650 }} aria-label="table" key={key}>
+                    <TableHead>
+                      <TableRow>
+                        <TableCell sx={{ ...headerStyle, width: "25%" }}>
+                          {key}
+                        </TableCell>
+                        <TableCell
+                          sx={{ ...headerStyle, width: "28%" }}
+                          align="right"
+                        >
+                          Metric
+                        </TableCell>
+                        <TableCell
+                          sx={{ ...headerStyle, width: "28%" }}
+                          align="right"
+                        >
+                          English
+                        </TableCell>
+                        <TableCell sx={headerStyle} align="right">
+                          Comments
+                        </TableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {Object.entries(items).map(([property, values]) =>
+                        values.map((value, index) => (
+                          <TableRow key={`${property}-${index}`}>
+                            {index === 0 && (
+                              <TableCell rowSpan={values.length}>
+                                {property}
                               </TableCell>
-                              <TableCell align="right">
-                                {value.English}
+                            )}
+                            <TableCell align="right">{value.Metric}</TableCell>
+                            <TableCell align="right">{value.English}</TableCell>
+                            <TableCell align="right">
+                              {value.Comments}
+                            </TableCell>
+                          </TableRow>
+                        ))
+                      )}
+                    </TableBody>
+                  </Table>
+                ) : (
+                  <Table
+                    sx={{ minWidth: 650 }}
+                    aria-label="descriptive"
+                    key={key}
+                  >
+                    <TableHead>
+                      <TableRow>
+                        <TableCell sx={headerStyle}>{key}</TableCell>
+                        <TableCell sx={headerStyle} align="right">
+                          Value
+                        </TableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {Object.entries(items).map(([property, values]) =>
+                        values.map((value, index) => (
+                          <TableRow key={`${property}-${index}`}>
+                            {index === 0 && (
+                              <TableCell rowSpan={values.length}>
+                                {property}
                               </TableCell>
-                              <TableCell align="right">
-                                {value.Comments}
-                              </TableCell>
-                            </TableRow>
-                          ))
-                        )}
-                      </TableBody>
-                    </Table>
-                  ) : (
-                    <Table
-                      sx={{ minWidth: 650 }}
-                      aria-label="descriptive"
-                      key={key}
-                    >
-                      <TableHead>
-                        <TableRow>
-                          <TableCell sx={headerStyle}>{key}</TableCell>
-                          <TableCell sx={headerStyle} align="right">
-                            Value
-                          </TableCell>
-                        </TableRow>
-                      </TableHead>
-                      <TableBody>
-                        {Object.entries(items).map(([property, values]) =>
-                          values.map((value, index) => (
-                            <TableRow key={`${property}-${index}`}>
-                              {index === 0 && (
-                                <TableCell rowSpan={values.length}>
-                                  {property}
-                                </TableCell>
-                              )}
-                              <TableCell align="right">{value}</TableCell>
-                            </TableRow>
-                          ))
-                        )}
-                      </TableBody>
-                    </Table>
-                  )
+                            )}
+                            <TableCell align="right">{value}</TableCell>
+                          </TableRow>
+                        ))
+                      )}
+                    </TableBody>
+                  </Table>
+                )
               )}
             </TableContainer>
           </div>
