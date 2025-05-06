@@ -86,17 +86,25 @@ def get_prompt(user_query):
     return instruction_prompt
 
 
-def get_answer(user_query):
-    instruction_prompt = get_prompt(user_query)
+def generate_mongodb_query(user_query):
+    try:
+        instruction_prompt = get_prompt(user_query)
 
-    system_msg = SystemMessagePromptTemplate.from_template(instruction_prompt)
-    human_msg = HumanMessagePromptTemplate.from_template("{user_query}")
+        system_msg = SystemMessagePromptTemplate.from_template(instruction_prompt)
+        human_msg = HumanMessagePromptTemplate.from_template("{user_query}")
 
-    chat_prompt = ChatPromptTemplate.from_messages(
-        [system_msg, few_shot_prompt, human_msg]
-    )
+        chat_prompt = ChatPromptTemplate.from_messages(
+            [system_msg, few_shot_prompt, human_msg]
+        )
 
-    chain = LLMChain(llm=llm, prompt=chat_prompt)
-    answer = chain.run(user_query=user_query)
+        chain = LLMChain(llm=llm, prompt=chat_prompt)
+        answer = chain.run(user_query=user_query)
 
-    return answer
+        return {"success": True, "content": answer}
+
+    except Exception as e:
+        print(f"Error generating MongoDB query: {str(e)}")
+        return {
+            "success": False,
+            "error": str(e),
+        }
