@@ -80,7 +80,7 @@ const MaterialsTable = ({ searchCategories, searchProperties }) => {
       <Box sx={{ mb: 1.5 }}>
         <TextField
           size="small"
-          label="Search Material Name"
+          label="Search by Material Name"
           fullWidth
           value={searchTerm}
           onChange={handleSearchChange}
@@ -118,7 +118,7 @@ const MaterialsTable = ({ searchCategories, searchProperties }) => {
             ))
           ) : (
             <TableRow>
-              <TableCell>No data available</TableCell>
+              <TableCell>No results found.</TableCell>
             </TableRow>
           )}
         </TableBody>

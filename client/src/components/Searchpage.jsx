@@ -93,7 +93,9 @@ const PropertyFilterItem = ({ id, properties, onChange, onDelete }) => {
           size="small"
           options={properties}
           groupBy={(option) => option?.group}
-          renderInput={(p) => <TextField {...p} label="Property" />}
+          renderInput={(p) => (
+            <TextField {...p} label={selectedProperty?.group || "Property"} />
+          )}
           onChange={onSelectProperty}
         />
         <IconButton
