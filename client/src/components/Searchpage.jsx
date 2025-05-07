@@ -62,7 +62,7 @@ const PropertyFilterItem = ({ id, properties, onChange, onDelete }) => {
     setMin("");
     setMax("");
     setTextVal("");
-    setSelectedUnit(null);
+    setSelectedUnit(isTextValProp ? selectedOption?.units[0] : null);
   };
 
   useEffect(() => {
@@ -93,7 +93,9 @@ const PropertyFilterItem = ({ id, properties, onChange, onDelete }) => {
           size="small"
           options={properties}
           groupBy={(option) => option?.group}
-          renderInput={(p) => <TextField {...p} label="Property" />}
+          renderInput={(p) => (
+            <TextField {...p} label={selectedProperty?.group || "Property"} />
+          )}
           onChange={onSelectProperty}
         />
         <IconButton
@@ -125,14 +127,16 @@ const PropertyFilterItem = ({ id, properties, onChange, onDelete }) => {
               value={selectedUnit?.unit ?? ""}
               onChange={onChangeUnit}
             >
-              {selectedProperty?.units?.map((u) => (
-                <FormControlLabel
-                  key={u.unit}
-                  value={u.unit}
-                  control={<Radio />}
-                  label={u.unit}
-                />
-              ))}
+              {selectedProperty?.units?.map((u) =>
+                u?.unit ? (
+                  <FormControlLabel
+                    key={u.unit}
+                    value={u.unit}
+                    control={<Radio />}
+                    label={u.unit}
+                  />
+                ) : null
+              )}
             </RadioGroup>
             <div style={{ display: "flex" }}>
               <TextField
@@ -212,7 +216,7 @@ const SearchPage = () => {
     <div className="search-page-container">
       <NavbarPrivate />
       <Typography align="center" variant="h4" sx={{ mt: 3, mb: 2 }}>
-        Search Materials
+        Material Search
       </Typography>
       <Container maxWidth="xl" sx={{ display: "flex" }}>
         <Box sx={{ marginRight: "20px", width: "320px", minWidth: "320px" }}>

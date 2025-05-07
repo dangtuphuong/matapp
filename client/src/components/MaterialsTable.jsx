@@ -28,14 +28,21 @@ const MaterialsTable = ({ searchCategories, searchProperties }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [limit, setLimit] = useState(10);
   const [searchTerm, setSearchTerm] = useState("");
+  const [propsCol, setPropsCol] = useState(null);
 
   // Fetch materials from API
   const fetchMaterials = useCallback((params) => {
     setLoading(true);
+    setPropsCol(null);
     return getAllMaterials(params)
       .then((data) => {
         setMaterials(data.materials);
         setTotalCount(data.total_count);
+        setPropsCol(
+          params?.searchProperties?.filter(
+            (p) => !!p?.property && !!p?.group
+          ) || []
+        );
       })
       .catch((err) => console.error(err))
       .finally(() => setLoading(false));
@@ -80,7 +87,7 @@ const MaterialsTable = ({ searchCategories, searchProperties }) => {
       <Box sx={{ mb: 1.5 }}>
         <TextField
           size="small"
-          label="Search Material Name"
+          label="Search by Material Name"
           fullWidth
           value={searchTerm}
           onChange={handleSearchChange}
@@ -89,8 +96,15 @@ const MaterialsTable = ({ searchCategories, searchProperties }) => {
       <Table sx={{ border: "1px solid #ccc" }}>
         <TableHead>
           <TableRow>
-            <TableCell sx={headerStyle}>Name</TableCell>
-            <TableCell sx={headerStyle}>Category</TableCell>
+            <TableCell sx={{ ...headerStyle, flex: 1 }}>Name</TableCell>
+            <TableCell sx={{ ...headerStyle, width: "30%" }}>
+              Category
+            </TableCell>
+            {!!propsCol?.length && (
+              <TableCell sx={{ ...headerStyle, width: "20%" }}>
+                Filtered Props
+              </TableCell>
+            )}
           </TableRow>
         </TableHead>
         <TableBody>
@@ -112,13 +126,37 @@ const MaterialsTable = ({ searchCategories, searchProperties }) => {
                 onClick={() => onRowClick(material?.matGUID)}
                 sx={{ cursor: "pointer" }}
               >
-                <TableCell>{material?.["Material Name"]}</TableCell>
-                <TableCell>{material?.Categories?.join(", ")}</TableCell>
+                <TableCell sx={{ flex: 1 }}>
+                  {material?.["Material Name"]}
+                </TableCell>
+                <TableCell sx={{ width: "30%" }}>
+                  {material?.Categories?.join(", ")}
+                </TableCell>
+                {!!propsCol?.length && (
+                  <TableCell sx={{ width: "20%" }}>
+                    {propsCol?.map(({ group, property, unit }) => {
+                      const items =
+                        material?.["Properties"]?.[group]?.[property];
+                      const item = items?.[items.length - 1] || {};
+                      return (
+                        <p key={property}>
+                          {`${property}: ${
+                            item?.English
+                              ? item?.English?.includes(unit)
+                                ? item?.English
+                                : item.Metric
+                              : item
+                          }`}
+                        </p>
+                      );
+                    })}
+                  </TableCell>
+                )}
               </TableRow>
             ))
           ) : (
             <TableRow>
-              <TableCell>No data available</TableCell>
+              <TableCell>No results found.</TableCell>
             </TableRow>
           )}
         </TableBody>

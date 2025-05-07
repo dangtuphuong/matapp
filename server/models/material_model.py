@@ -3,6 +3,7 @@ import json
 from datetime import datetime, timezone
 from bson import ObjectId
 from services.upload.parse_service import parse_properties, flatten_and_concatenate
+from services.search.query_service import build_range_conditions
 from models.category_model import CategoryModel
 from models.property_model import PropertyModel
 from routes.machine_learning.vectorSearch import get_embedding_for_new_material
@@ -17,73 +18,6 @@ class MaterialModel:
         searchCategories = searchCategories or []
         searchProperties = searchProperties or []
         conditions = []
-
-        # Helper: Builds unit-based numeric range conditions
-        def build_range_conditions(unit_key, unit_name, min_val, max_val):
-            conds = []
-
-            if unit_name:
-                conds.append({f"{unit_key}.unit": unit_name})
-
-            if min_val is not None:
-                min_val = float(min_val)
-                conds.append(
-                    {
-                        "$or": [
-                            {
-                                "$and": [
-                                    {"%s.type" % unit_key: "absolute"},
-                                    {f"{unit_key}.min": {"$gte": min_val}},
-                                ]
-                            },
-                            {
-                                "$and": [
-                                    {"%s.type" % unit_key: "range"},
-                                    {f"{unit_key}.min": {"$lte": min_val}},
-                                    {f"{unit_key}.max": {"$gte": min_val}},
-                                ]
-                            },
-                            {
-                                "$and": [
-                                    {"%s.type" % unit_key: "range"},
-                                    {f"{unit_key}.min": {"$lte": min_val}},
-                                    {f"{unit_key}.max": {"$exists": False}},
-                                ]
-                            },
-                        ]
-                    }
-                )
-
-            if max_val is not None:
-                max_val = float(max_val)
-                conds.append(
-                    {
-                        "$or": [
-                            {
-                                "$and": [
-                                    {"%s.type" % unit_key: "absolute"},
-                                    {f"{unit_key}.max": {"$lte": max_val}},
-                                ]
-                            },
-                            {
-                                "$and": [
-                                    {"%s.type" % unit_key: "range"},
-                                    {f"{unit_key}.min": {"$lte": max_val}},
-                                    {f"{unit_key}.max": {"$gte": max_val}},
-                                ]
-                            },
-                            {
-                                "$and": [
-                                    {"%s.type" % unit_key: "range"},
-                                    {f"{unit_key}.max": {"$gte": max_val}},
-                                    {f"{unit_key}.min": {"$exists": False}},
-                                ]
-                            },
-                        ]
-                    }
-                )
-
-            return conds
 
         # Text search
         if searchTerm:
@@ -100,9 +34,9 @@ class MaterialModel:
         for prop in searchProperties:
             prop_type = prop.get("group")
             prop_name = prop.get("property")
-            target_unit = prop.get("unit")
-            min_val = prop.get("min")
-            max_val = prop.get("max")
+            unit = prop.get("unit")
+            min = prop.get("min")
+            max = prop.get("max")
             text_val = prop.get("text_value")
 
             if not prop_name or not prop_type:
@@ -117,10 +51,8 @@ class MaterialModel:
                 continue
 
             try:
-                metric = build_range_conditions("metric", target_unit, min_val, max_val)
-                english = build_range_conditions(
-                    "english", target_unit, min_val, max_val
-                )
+                metric = build_range_conditions("metric", unit, min, max)
+                english = build_range_conditions("english", unit, min, max)
 
                 sub_conditions = []
                 if metric:
@@ -183,9 +115,14 @@ class MaterialModel:
         # Make sure matGUID in pipeline
         for stage in pipeline:
             if isinstance(stage, dict) and "$project" in stage:
-                stage["$project"].setdefault("matGUID", 1)
-                stage["$project"].setdefault("Material Name", 1)
-                stage["$project"].setdefault("Material Notes", 1)
+                keys = [
+                    "_id",
+                    "matGUID",
+                    "Material Name",
+                    "Material Notes",
+                ]
+                for key in keys:
+                    stage["$project"][key] = 1
 
         cursor = materials_collection.aggregate(pipeline)
 
@@ -310,17 +247,12 @@ class MaterialModel:
                 # Insert into MongoDB
                 inserted = materials_collection.insert_one(document)
 
-                object_for_embedding = {
-                    **json_data
-                }
+                object_for_embedding = {**json_data}
 
                 text_object = flatten_and_concatenate(object_for_embedding, False)
                 embeddings = get_embedding_for_new_material(text_object)
 
-                db_obj = {
-                    "matGUID": mat_guid_str,
-                    "embedding": embeddings.tolist()
-                }
+                db_obj = {"matGUID": mat_guid_str, "embedding": embeddings.tolist()}
 
                 embeddings_collection.insert_one(db_obj)
 
