@@ -155,7 +155,7 @@ const SmartSearch = () => {
     <div className="smart-search-page-container">
       <NavbarPrivate />
       <Typography align="center" variant="h4" sx={{ mt: 3, mb: 2 }}>
-        Smart Search Materials
+        Material Smart Search
       </Typography>
       <Container>
         {!isAllowed ? (

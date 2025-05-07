@@ -212,7 +212,7 @@ const SearchPage = () => {
     <div className="search-page-container">
       <NavbarPrivate />
       <Typography align="center" variant="h4" sx={{ mt: 3, mb: 2 }}>
-        Search Materials
+        Material Search
       </Typography>
       <Container maxWidth="xl" sx={{ display: "flex" }}>
         <Box sx={{ marginRight: "20px", width: "320px", minWidth: "320px" }}>

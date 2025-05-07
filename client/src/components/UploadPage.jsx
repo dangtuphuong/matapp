@@ -149,7 +149,7 @@ const UploadPage = () => {
     <div className="upload-page-container">
       <NavbarPrivate />
       <Typography align="center" variant="h4" sx={{ mt: 3, mb: 2 }}>
-        Upload Materials
+        Upload Material Files
       </Typography>
       <Container>
         <Box sx={{ maxWidth: 800, mx: "auto", p: 3 }}>
