@@ -1,3 +1,4 @@
+
 import { useEffect, useState, useRef } from "react";
 import { useParams } from "react-router-dom";
 import {
@@ -12,6 +13,7 @@ import {
   Paper,
   Card,
   Skeleton,
+  Button,
 } from "@mui/material";
 import CategoryIcon from "@mui/icons-material/Category";
 import PrecisionManufacturingIcon from "@mui/icons-material/PrecisionManufacturing";
@@ -68,6 +70,7 @@ const MaterialPage = () => {
   const [isLoading, setLoading] = useState(false);
   const [material, setMaterial] = useState(null);
   const contentRef = useRef();
+  const [isBookmarked, setBookmarked] = useState(false);
 
   useEffect(() => {
     setLoading(true);
@@ -86,13 +89,49 @@ const MaterialPage = () => {
     }
   };
 
+  const handleBookmark = async () => {
+    try {
+      const token = localStorage.getItem("access_token");
+      await fetch("/api/bookmarks", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ matGUID }),
+      });
+      setBookmarked(true);
+    } catch (err) {
+      console.error("Failed to bookmark material", err);
+    }
+  };
+
   return (
     <div>
       <NavbarPrivate />
       {isLoading ? (
         <LoadingComponent />
       ) : (
+        
         <Container className="mat-container">
+          <div style={{ textAlign: "right", marginTop: "10px" }}>
+          <Button
+            variant={isBookmarked ? "outlined" : "contained"}
+            onClick={handleBookmark}
+            disabled={isBookmarked}
+            sx={{
+              backgroundColor: isBookmarked ? "transparent" : "#023e8a",
+              color: isBookmarked ? "#023e8a" : "#fff",
+              border: "1px solid #023e8a",
+              "&:hover": {
+                backgroundColor: isBookmarked ? "#e3f2fd" : "#0353a4",
+              },
+            }}
+            >
+            {isBookmarked ? "Bookmarked" : "Add Bookmark"}
+          </Button>
+          </div>
+
           <div ref={contentRef}>
             <Typography align="center" variant="h4" sx={{ mt: 3, mb: 3 }}>
               {material?.["Material Name"]}

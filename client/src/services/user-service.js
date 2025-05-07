@@ -76,3 +76,38 @@ export const deleteUser = async (token, email) =>
       Authorization: `Bearer ${token}`,
     },
   });
+
+// Fetch bookmarked materials
+export const getUserBookmarks = async (token) =>
+  await axios
+    .get("/api/bookmarks", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+    .then((res) => res.data);
+
+// Add a material to bookmarks
+export const addBookmark = async (matGUID) => {
+  const token = localStorage.getItem("access_token");
+  await axios.post(
+    "/api/bookmarks",
+    { matGUID },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+};
+
+// Get all bookmarked materials
+export const getBookmarks = async () => {
+  const token = localStorage.getItem("access_token");
+  const response = await axios.get("/api/bookmarks", {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return response.data;
+};
