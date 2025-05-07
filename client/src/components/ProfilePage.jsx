@@ -7,9 +7,6 @@ import {
   Paper,
   Avatar,
   TextField,
-  List,
-  ListItem,
-  ListItemText,
   IconButton,
 } from "@mui/material";
 import {
@@ -24,14 +21,17 @@ import NavbarPrivate from "./NavbarPrivate";
 import { ROLES, ROLE_LABELS } from "../constants";
 import "./styles/Profile.css";
 
+import axios from "axios";
+
 const ProfilePage = () => {
   const [profile, setProfile] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [bookmarks, setBookmarks] = useState([]);
   const navigate = useNavigate();
 
-  // Fetch user profile on mount
+  // Fetch user profile + bookmarks on mount
   useEffect(() => {
     const token = localStorage.getItem("access_token");
 
@@ -40,6 +40,14 @@ const ProfilePage = () => {
         setProfile(data);
         setName(`${data.firstName} ${data.lastName}`);
         setEmail(data.email);
+
+        // Fetch bookmarks
+        axios
+          .get("/api/bookmarks", {
+            headers: { Authorization: `Bearer ${token}` },
+          })
+          .then((res) => setBookmarks(res.data))
+          .catch((err) => console.error("Bookmark fetch failed", err));
       })
       .catch((err) => {
         console.error("Profile fetch failed", err);
@@ -47,20 +55,12 @@ const ProfilePage = () => {
       });
   }, [navigate]);
 
-  // Dummy bookmarks for demonstration
-  const dummyBookmarks = [
-    { title: "Material 1", date: "05/04/2023" },
-    { title: "Material 2", date: "05/04/2023" },
-    { title: "Material 3", date: "05/04/2023" },
-    { title: "Material 4", date: "05/04/2023" },
-  ];
-
-  // Save updated name/email to backend
   const handleSave = async () => {
     try {
       const token = localStorage.getItem("access_token");
       const [firstName, ...lastNameParts] = name.trim().split(" ");
       const lastName = lastNameParts.join(" ") || "";
+
       await fetch("/api/profile/update", {
         method: "PUT",
         headers: {
@@ -70,7 +70,6 @@ const ProfilePage = () => {
         body: JSON.stringify({ firstName, lastName, email }),
       });
 
-      // Update UI
       setProfile((prev) => ({
         ...prev,
         firstName,
@@ -83,7 +82,6 @@ const ProfilePage = () => {
     }
   };
 
-  // Conditionally render role-based action buttons
   const renderRoleButtons = (role) => {
     switch (role) {
       case ROLES.NORMAL_USER:
@@ -125,7 +123,6 @@ const ProfilePage = () => {
 
   return (
     <>
-      {/* Top Navbar */}
       <NavbarPrivate />
 
       <main className="profile-main">
@@ -152,9 +149,7 @@ const ProfilePage = () => {
                 margin="normal"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                InputProps={{
-                  readOnly: !isEditing,
-                }}
+                InputProps={{ readOnly: !isEditing }}
               />
               <TextField
                 fullWidth
@@ -162,9 +157,7 @@ const ProfilePage = () => {
                 margin="normal"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                InputProps={{
-                  readOnly: !isEditing,
-                }}
+                InputProps={{ readOnly: !isEditing }}
               />
               <TextField
                 fullWidth
@@ -172,9 +165,7 @@ const ProfilePage = () => {
                 margin="normal"
                 defaultValue={profile?.dateOfBirth}
                 key={profile?.dateOfBirth}
-                InputProps={{
-                  readOnly: true,
-                }}
+                InputProps={{ readOnly: true }}
               />
               <TextField
                 fullWidth
@@ -182,9 +173,7 @@ const ProfilePage = () => {
                 margin="normal"
                 defaultValue={profile?.gender}
                 key={profile?.gender}
-                InputProps={{
-                  readOnly: true,
-                }}
+                InputProps={{ readOnly: true }}
               />
               <TextField
                 fullWidth
@@ -192,9 +181,7 @@ const ProfilePage = () => {
                 margin="normal"
                 defaultValue={ROLE_LABELS[profile?.role] || "Unknown"}
                 key={profile?.role}
-                InputProps={{
-                  readOnly: true,
-                }}
+                InputProps={{ readOnly: true }}
               />
 
               <div className="profile-buttons">
@@ -221,19 +208,28 @@ const ProfilePage = () => {
           <section className="bookmarks-section">
             <h3 className="section-title">Bookmarks</h3>
             <div className="bookmarks-list">
-              {dummyBookmarks.map((bookmark, index) => (
-                <div key={index} className="bookmark-item">
-                  <span className="bookmark-title">{bookmark.title}</span>
-                  <div className="bookmark-actions">
-                    <span className="bookmark-date">Saved on {bookmark.date}</span>
-                    <div className="bookmark-buttons">
-                      <IconButton>
-                        <OpenInNew fontSize="small" />
-                      </IconButton>
+              {bookmarks.length > 0 ? (
+                bookmarks.map((bookmark, index) => (
+                  <div key={index} className="bookmark-item">
+                    <span className="bookmark-title">
+                      {bookmark["Material Name"]}
+                    </span>
+                    <div className="bookmark-actions">
+                      <div className="bookmark-buttons">
+                        <IconButton
+                          onClick={() => navigate(`/material/${bookmark.matGUID}`)}
+                        >
+                          <OpenInNew fontSize="small" />
+                        </IconButton>
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                ))
+              ) : (
+                <Typography variant="body2" sx={{ color: "#777" }}>
+                  No bookmarks found.
+                </Typography>
+              )}
             </div>
           </section>
         </div>

@@ -7,10 +7,20 @@ import {
   Button,
   FormControl,
   InputLabel,
+  Tabs,
+  Tab,
+  Box,
+  Table,
+  TableHead,
+  TableRow,
+  TableCell,
+  TableBody,
+  Paper,
 } from "@mui/material";
-import { Radar } from "react-chartjs-2";
+import { Radar, Bar } from "react-chartjs-2";
 import { getAllMaterials, getMaterialByMatGUID } from "../services/material-service";
 import NavbarPrivate from "./NavbarPrivate";
+
 import {
   Chart as ChartJS,
   RadialLinearScale,
@@ -19,12 +29,25 @@ import {
   Filler,
   Tooltip,
   Legend,
+  CategoryScale,
+  LinearScale,
+  BarElement,
 } from "chart.js";
+
 import "./styles/MaterialComparisonPage.css";
 
-ChartJS.register(RadialLinearScale, PointElement, LineElement, Filler, Tooltip, Legend);
+ChartJS.register(
+  RadialLinearScale,
+  PointElement,
+  LineElement,
+  Filler,
+  Tooltip,
+  Legend,
+  CategoryScale,
+  LinearScale,
+  BarElement
+);
 
-// Properties you want to compare
 const propertiesToCompare = [
   "Density",
   "Compressive Strength",
@@ -33,15 +56,14 @@ const propertiesToCompare = [
   "Tensile Strength",
 ];
 
-// MaterialComparisonPage component
 const MaterialComparisonPage = () => {
   const [materials, setMaterials] = useState([]);
   const [material1Id, setMaterial1Id] = useState("");
   const [material2Id, setMaterial2Id] = useState("");
   const [material1, setMaterial1] = useState(null);
   const [material2, setMaterial2] = useState(null);
+  const [activeTab, setActiveTab] = useState(0);
 
-  // Fetch all materials with pagination and set them
   useEffect(() => {
     getAllMaterials({
       page: 1,
@@ -50,15 +72,10 @@ const MaterialComparisonPage = () => {
       searchCategories: [],
       searchProperties: [],
     })
-      .then((data) => {
-        setMaterials(data.materials || []);
-      })
-      .catch((err) => {
-        console.error("API error:", err);
-      });
+      .then((data) => setMaterials(data.materials || []))
+      .catch((err) => console.error("API error:", err));
   }, []);
 
-  // Fetch material details when material IDs change
   const fetchMaterialDetails = async () => {
     try {
       const [m1, m2] = await Promise.all([
@@ -72,9 +89,8 @@ const MaterialComparisonPage = () => {
     }
   };
 
-  // Function to extract property values from material object
-  const extractPropertyValues = (material) => {
-    return propertiesToCompare.map((targetProp) => {
+  const extractPropertyValues = (material) =>
+    propertiesToCompare.map((targetProp) => {
       for (const category in material?.Properties) {
         for (const prop in material.Properties[category]) {
           if (prop.toLowerCase().includes(targetProp.toLowerCase())) {
@@ -85,9 +101,7 @@ const MaterialComparisonPage = () => {
       }
       return 0;
     });
-  };
 
-  // Prepare data for the chart 
   const radarData = {
     labels: propertiesToCompare,
     datasets: [
@@ -108,19 +122,32 @@ const MaterialComparisonPage = () => {
     ],
   };
 
+  const barData = {
+    labels: propertiesToCompare,
+    datasets: [
+      {
+        label: material1?.["Material Name"] || "Material 1",
+        data: material1 ? extractPropertyValues(material1) : [],
+        backgroundColor: "rgba(255, 99, 132, 0.7)",
+      },
+      {
+        label: material2?.["Material Name"] || "Material 2",
+        data: material2 ? extractPropertyValues(material2) : [],
+        backgroundColor: "rgba(54, 162, 235, 0.7)",
+      },
+    ],
+  };
+
   return (
     <>
-      {/* Navbar */}
       <NavbarPrivate />
-
       <Container className="compare-container">
-        <Typography className="compare-header" variant="h4" align="center" sx={{ mt: 4, mb: 3 }}>
+        <Typography variant="h4" align="center" className="compare-header">
           Material Comparison
         </Typography>
 
-        {/* Select Materials */}
         <div className="select-row">
-          <FormControl sx={{ minWidth: 350, maxWidth: 350 }}>
+          <FormControl sx={{ minWidth: 400, maxWidth: 400 }}>
             <InputLabel>Select Material 1</InputLabel>
             <Select
               value={material1Id}
@@ -135,7 +162,7 @@ const MaterialComparisonPage = () => {
             </Select>
           </FormControl>
 
-          <FormControl sx={{ minWidth: 350, maxWidth: 350, mx: 2 }}>
+          <FormControl sx={{ minWidth: 400, maxWidth: 400, mx: 2 }}>
             <InputLabel>Select Material 2</InputLabel>
             <Select
               value={material2Id}
@@ -159,9 +186,49 @@ const MaterialComparisonPage = () => {
           </Button>
         </div>
 
-        {/* Radar Chart */}
-        <div className="chart-wrapper">
-          {material1 && material2 && (
+        {/* Tabs */}
+        {/*<Tabs
+          value={activeTab}
+          onChange={(_, val) => setActiveTab(val)}
+          centered
+          sx={{ mt: 2, mb: 4 }}
+        >
+          <Tab label="Table View" />
+          <Tab label="Radar Chart" />
+          <Tab label="Bar Chart" />
+        </Tabs>*/}
+
+        {/* Tab Content */}
+        <Box className="chart-wrapper">
+          {activeTab === 0 && material1 && material2 && (
+            <Box className="table-comparison">
+              <Typography variant="h6" align="center" sx={{ mb: 2 }}>
+                Property Comparison Table
+              </Typography>
+              <Paper>
+                <Table>
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>Property</TableCell>
+                      <TableCell>{material1["Material Name"]}</TableCell>
+                      <TableCell>{material2["Material Name"]}</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {propertiesToCompare.map((prop, idx) => (
+                      <TableRow key={idx}>
+                        <TableCell>{prop}</TableCell>
+                        <TableCell>{extractPropertyValues(material1)[idx]}</TableCell>
+                        <TableCell>{extractPropertyValues(material2)[idx]}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </Paper>
+            </Box>
+          )}
+
+          {activeTab === 1 && material1 && material2 && (
             <Radar
               data={radarData}
               options={{
@@ -188,7 +255,35 @@ const MaterialComparisonPage = () => {
               }}
             />
           )}
-        </div>
+
+          {activeTab === 2 && material1 && material2 && (
+            <Bar
+              data={barData}
+              options={{
+                responsive: true,
+                plugins: {
+                  legend: {
+                    position: "top",
+                    labels: {
+                      color: "#444",
+                    },
+                  },
+                },
+                scales: {
+                  x: {
+                    ticks: { color: "#333" },
+                    grid: { color: "#ccc" },
+                  },
+                  y: {
+                    beginAtZero: true,
+                    ticks: { color: "#333" },
+                    grid: { color: "#ccc" },
+                  },
+                },
+              }}
+            />
+          )}
+        </Box>
       </Container>
     </>
   );
