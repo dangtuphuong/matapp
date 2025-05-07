@@ -60,13 +60,13 @@ const HomePage = () => {
           borderRadius: "20px",
           margin: "30px",
           padding: "30px",
-          height: "47%",
+          height: "50%",
         }}
         className="background-wrapper"
       >
         <Container className="landing-container">
           <Box className="landing-hero">
-            <Typography variant="h2" className="landing-hero-title" sx={{ textTransform: 'uppercase', letterSpacing: 5, fontFamily: 'Monospace' }}>
+            <Typography variant="h2" className="landing-hero-title" sx={{ textTransform: 'uppercase', letterSpacing: 5, fontFamily: 'Monospace', }}>
               Smart Material Selection
             </Typography>
             <Typography
