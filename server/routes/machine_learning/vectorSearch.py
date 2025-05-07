@@ -13,6 +13,9 @@ def get_embedding(data, precision="float32"):
     return model.encode(data, precision=precision).tolist()
 
 
+def get_embedding_for_new_material(data):
+    return model.encode(data)
+
 vt_bp = Blueprint("vt_bp", __name__)
 
 

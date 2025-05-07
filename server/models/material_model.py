@@ -2,9 +2,10 @@ from extensions import mongo
 import json
 from datetime import datetime, timezone
 from bson import ObjectId
-from services.upload.parse_service import parse_properties
+from services.upload.parse_service import parse_properties, flatten_and_concatenate
 from models.category_model import CategoryModel
 from models.property_model import PropertyModel
+from routes.machine_learning.vectorSearch import get_embedding_for_new_material
 
 
 class MaterialModel:
@@ -200,6 +201,7 @@ class MaterialModel:
 
         results = []
         materials_collection = mongo.db["materials"]
+        embeddings_collection = mongo.db["embeddings"]
 
         for file in files:
             filename = file.filename
@@ -305,6 +307,20 @@ class MaterialModel:
 
                 # Insert into MongoDB
                 inserted = materials_collection.insert_one(document)
+
+                object_for_embedding = {
+                    **json_data
+                }
+
+                text_object = flatten_and_concatenate(object_for_embedding, False)
+                embeddings = get_embedding_for_new_material(text_object)
+
+                db_obj = {
+                    "matGUID": mat_guid_str,
+                    "embedding": embeddings.tolist()
+                }
+
+                embeddings_collection.insert_one(db_obj)
 
                 results.append(
                     {
