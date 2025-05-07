@@ -183,9 +183,14 @@ class MaterialModel:
         # Make sure matGUID in pipeline
         for stage in pipeline:
             if isinstance(stage, dict) and "$project" in stage:
-                stage["$project"].setdefault("matGUID", 1)
-                stage["$project"].setdefault("Material Name", 1)
-                stage["$project"].setdefault("Material Notes", 1)
+                keys = [
+                    "_id",
+                    "matGUID",
+                    "Material Name",
+                    "Material Notes",
+                ]
+                for key in keys:
+                    stage["$project"][key] = 1
 
         cursor = materials_collection.aggregate(pipeline)
 
@@ -310,17 +315,12 @@ class MaterialModel:
                 # Insert into MongoDB
                 inserted = materials_collection.insert_one(document)
 
-                object_for_embedding = {
-                    **json_data
-                }
+                object_for_embedding = {**json_data}
 
                 text_object = flatten_and_concatenate(object_for_embedding, False)
                 embeddings = get_embedding_for_new_material(text_object)
 
-                db_obj = {
-                    "matGUID": mat_guid_str,
-                    "embedding": embeddings.tolist()
-                }
+                db_obj = {"matGUID": mat_guid_str, "embedding": embeddings.tolist()}
 
                 embeddings_collection.insert_one(db_obj)
 
