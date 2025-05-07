@@ -10,3 +10,148 @@
 .home-message {
   margin-bottom: 24px;
 }
+
+.landing-hero-title {
+  font-size: 10.5rem;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.typing-text {
+  font-size: 2.5rem;
+  font-weight: 400;
+  color: #ffffff;
+}
+
+.homepage-bg-wrapper {
+  display: flex;
+  flex-direction: row;
+  margin: 30px;
+  border-radius: 20px;
+  overflow: hidden;
+  min-height: 100vh;
+  box-shadow: 0 0 25px rgba(0, 0, 0, 0.05);
+  background-color: white;
+}
+
+.homepage-bg-image {
+  flex: 1;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  border-radius: 20px 0 0 20px;
+}
+
+.homepage-content {
+  flex: 1;
+  padding: 40px;
+  background-color: #fafafa;
+}
+
+.how-it-works {
+  display: flex;
+  margin-top: 1%;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  border-radius: 20px;
+  box-shadow: 0 0 25px rgba(0, 0, 0, 0.05);
+}
+
+.material-title span{
+  font-weight: bold !important;
+  color: #023e8a !important;
+  text-align: center !important;
+  font-size: 22px !important;
+}
+
+
+.steps-grid {
+  display: flex;
+  gap: 30px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.step-card {
+  width: 220px;
+  height: 300px;
+  perspective: 1000px;
+}
+
+.step-card-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transition: transform 0.8s;
+  transform-style: preserve-3d;
+}
+
+.step-card:hover .step-card-inner {
+  transform: rotateY(180deg);
+}
+
+/* Front of the card with full image */
+.step-card-front {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+  border-radius: 15px;
+  backface-visibility: hidden;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.step-title-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%; /* No overflow */
+  padding: 10px 0;
+  background: rgba(0, 0, 0, 0.6);
+  color: #fff;
+  font-size: 18px;
+  font-weight: bold;
+  text-align: center;
+  border-bottom-left-radius: 7px;
+  border-bottom-right-radius: 7px;
+}
+
+
+/* Back side */
+.step-card-back {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  background: #f1f1f1;
+  transform: rotateY(180deg);
+  border-radius: 15px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+.step-title-back {
+  font-weight: bold;
+  font-size: 18px;
+  margin-bottom: 10px;
+  color: #023e8a;
+  text-align: center;
+}
+
+.step-title-back span {
+  font-weight: bold;
+  color: #023e8a;
+}
+
+.step-desc {
+  font-size: 14px;
+  color: #333;
+  text-align: center;
+}

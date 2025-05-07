@@ -115,7 +115,7 @@ const Navbar = () => {
               variant="h6"
               className="navbar-logo-text"
               sx={{
-                display: { xs: "none", md: "block" }, // 👈 Hide before md (960px)
+                display: { xs: "none", md: "block" }, 
                 fontSize: "1.25rem",
                 whiteSpace: "nowrap",
                 color: "white",
@@ -176,7 +176,8 @@ const Navbar = () => {
               component={Link}
               to="/profile"
               className="navbar-profile-link"
-              sx={{ display: "flex", alignItems: "center" }}
+              sx={{ display: "flex", alignItems: "center", backgroundColor: "rgb(47, 47, 47)", borderRadius: "6px",}}
+              
             >
               <IconButton color="inherit">
                 <AccountCircle />
@@ -187,6 +188,7 @@ const Navbar = () => {
                 sx={{
                   display: { xs: "none", sm: "block" },
                   whiteSpace: "nowrap",
+                  marginRight: "20px",
                 }}
               >
                 {username}
