@@ -124,3 +124,32 @@ def parse_properties(properties):
     except Exception as e:
         print(f"Error parsing upload material: {e}")
         return {}
+
+def flatten_and_concatenate(data, getKey):
+    # Initialize an empty list to store all string values
+    flat_text = []
+    
+    # Iterate through each key-value pair in the dictionary
+    for key, value in data.items():
+        if isinstance(value, dict):
+            # If the value is a dictionary, recursively flatten it
+            flat_text.append(flatten_and_concatenate(value, True))
+        elif isinstance(value, str):
+            # If the value is a string, add it to the flat_text list
+            if (getKey):
+                flat_text.append(key)
+                flat_text.append(":")
+            flat_text.append(value)
+            flat_text.append(",")
+        elif isinstance(value, list):
+            # If the value is a list, we handle each item (recursively for nested dicts)
+            for item in value:
+                if isinstance(item, dict):
+                    flat_text.append(flatten_and_concatenate(item, True))
+                elif isinstance(item, str):
+                    if (getKey):
+                        flat_text.append(key)
+                        flat_text.append(":")
+                    flat_text.append(item)
+                    flat_text.append(",")
+    return " ".join(flat_text)
