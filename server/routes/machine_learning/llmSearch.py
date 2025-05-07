@@ -15,10 +15,13 @@ def llm_search():
     try:
         user_query = request.json.get("query")
 
-        pipeline_str = get_answer(user_query)
+        result = get_answer(user_query)
 
-        if not pipeline_str:
-            return jsonify({"error": "Failed to generate query"}), 500
+        # Check if generation was successful
+        if not result["success"]:
+            return jsonify({"error": result["error"]}), 500
+
+        pipeline_str = result["content"]
 
         print(f"Generated pipeline string: {pipeline_str}")
 
