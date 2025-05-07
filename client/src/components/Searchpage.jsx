@@ -62,7 +62,7 @@ const PropertyFilterItem = ({ id, properties, onChange, onDelete }) => {
     setMin("");
     setMax("");
     setTextVal("");
-    setSelectedUnit(null);
+    setSelectedUnit(selectedOption?.units[0]);
   };
 
   useEffect(() => {
@@ -127,14 +127,16 @@ const PropertyFilterItem = ({ id, properties, onChange, onDelete }) => {
               value={selectedUnit?.unit ?? ""}
               onChange={onChangeUnit}
             >
-              {selectedProperty?.units?.map((u) => (
-                <FormControlLabel
-                  key={u.unit}
-                  value={u.unit}
-                  control={<Radio />}
-                  label={u.unit}
-                />
-              ))}
+              {selectedProperty?.units?.map((u) =>
+                u?.unit ? (
+                  <FormControlLabel
+                    key={u.unit}
+                    value={u.unit}
+                    control={<Radio />}
+                    label={u.unit}
+                  />
+                ) : null
+              )}
             </RadioGroup>
             <div style={{ display: "flex" }}>
               <TextField

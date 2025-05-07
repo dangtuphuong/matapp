@@ -28,14 +28,21 @@ const MaterialsTable = ({ searchCategories, searchProperties }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [limit, setLimit] = useState(10);
   const [searchTerm, setSearchTerm] = useState("");
+  const [propsCol, setPropsCol] = useState(null);
 
   // Fetch materials from API
   const fetchMaterials = useCallback((params) => {
     setLoading(true);
+    setPropsCol(null);
     return getAllMaterials(params)
       .then((data) => {
         setMaterials(data.materials);
         setTotalCount(data.total_count);
+        setPropsCol(
+          params?.searchProperties?.filter(
+            (p) => !!p?.property && !!p?.group
+          ) || []
+        );
       })
       .catch((err) => console.error(err))
       .finally(() => setLoading(false));
@@ -91,6 +98,11 @@ const MaterialsTable = ({ searchCategories, searchProperties }) => {
           <TableRow>
             <TableCell sx={headerStyle}>Name</TableCell>
             <TableCell sx={headerStyle}>Category</TableCell>
+            {!!propsCol?.length && (
+              <TableCell sx={{ ...headerStyle, align: "right" }}>
+                Filtered Props
+              </TableCell>
+            )}
           </TableRow>
         </TableHead>
         <TableBody>
@@ -114,6 +126,24 @@ const MaterialsTable = ({ searchCategories, searchProperties }) => {
               >
                 <TableCell>{material?.["Material Name"]}</TableCell>
                 <TableCell>{material?.Categories?.join(", ")}</TableCell>
+                {!!propsCol?.length && (
+                  <TableCell>
+                    {propsCol?.map(({ group, property, unit }) => {
+                      const items =
+                        material?.["Properties"]?.[group]?.[property];
+                      const item = items?.[items.length - 1] || {};
+                      return (
+                        <p key={property}>
+                          {`${property}: ${
+                            item?.English?.includes(unit)
+                              ? item?.English
+                              : item.Metric
+                          }`}
+                        </p>
+                      );
+                    })}
+                  </TableCell>
+                )}
               </TableRow>
             ))
           ) : (
