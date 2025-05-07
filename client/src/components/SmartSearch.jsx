@@ -14,10 +14,14 @@ import {
   Skeleton,
   Snackbar,
   Alert,
+  InputAdornment,
+  IconButton,
 } from "@mui/material";
+import ClearIcon from "@mui/icons-material/Clear";
 
 import NavbarPrivate from "./NavbarPrivate";
-import SubscriptionPage from "./SubscriptionPage";
+import SmartSeachInfo from "./SmartSeachInfo";
+import PremiumInfo from "./PremiumInfo";
 
 import {
   vectorSearch,
@@ -84,23 +88,16 @@ const SmartSearch = () => {
   const [query, setQuery] = useState("");
   const [searchResult, setSearchResult] = useState([]);
   const [showEmptyErr, setShowEmptyErr] = useState(false);
-  const [openModal, setOpenModal] = useState(false);
   const [showCards, setShowCards] = useState(true); // Default to true to show the cards when there's no input
   const [isSearched, setIsSearched] = useState(false);
-
-  const handleOpenModal = () => {
-    setOpenModal(true);
-  };
-
-  const handleCloseModal = () => {
-    setOpenModal(false);
-  };
+  const [resErr, setResErr] = useState(null);
 
   const isVectorSearch = model === MODELS.VECTOR;
 
   const handleSearch = async () => {
     if (!query) return setSearchResult([]);
     setLoading(true);
+    setResErr(null);
     try {
       if (model === MODELS.VECTOR) {
         const response = await vectorSearch(query, limit, skip);
@@ -120,6 +117,7 @@ const SmartSearch = () => {
     } catch (e) {
       console.log(e);
       setSearchResult([]);
+      setResErr(e?.response?.data?.error);
     } finally {
       setLoading(false);
     }
@@ -157,77 +155,11 @@ const SmartSearch = () => {
     <div className="smart-search-page-container">
       <NavbarPrivate />
       <Typography align="center" variant="h4" sx={{ mt: 3, mb: 2 }}>
-        Smart Search Materials
+        Material Smart Search
       </Typography>
       <Container>
         {!isAllowed ? (
-          <Box mt={4} px={4}>
-            <Alert severity="warning" sx={{ mb: 3 }}>
-              This feature is only accessible to premium users. Please contact
-              us to subscribe.
-            </Alert>
-
-            <Typography variant="h5" gutterBottom>
-              🔓 Unlock Premium Search Features
-            </Typography>
-            <Typography variant="body1" gutterBottom>
-              Premium users gain access to intelligent search technologies that
-              supercharge material discovery. Here's what you’re missing:
-            </Typography>
-
-            {/* Conditionally render the cards if input is not submitted */}
-            {showCards && (
-              <Box
-                display="grid"
-                gridTemplateColumns="repeat(auto-fill, minmax(280px, 1fr))"
-                gap={3}
-                mt={3}
-              >
-                {/* VECTOR Search */}
-                <Card variant="outlined" sx={{ p: 2 }}>
-                  <Typography variant="h6">📦 Vector Search</Typography>
-                  <Typography variant="body2" mt={1}>
-                    Find similar materials using advanced embeddings. Perfect
-                    for exploring alternatives based on your current choice.
-                  </Typography>
-                </Card>
-
-                {/* LLM Search */}
-                <Card variant="outlined" sx={{ p: 2 }}>
-                  <Typography variant="h6">🤖 OpenAI LLM Search</Typography>
-                  <Typography variant="body2" mt={1}>
-                    Ask anything in natural language and get materials
-                    recommended by an intelligent assistant.
-                  </Typography>
-                </Card>
-
-                {/* DeepSeek */}
-                <Card variant="outlined" sx={{ p: 2 }}>
-                  <Typography variant="h6">🔍 DeepSeek</Typography>
-                  <Typography variant="body2" mt={1}>
-                    An advanced language model trained for deep technical
-                    understanding of material properties and use cases.
-                  </Typography>
-                </Card>
-
-                {/* Gemini */}
-                <Card variant="outlined" sx={{ p: 2 }}>
-                  <Typography variant="h6">🌟 Google Gemini</Typography>
-                  <Typography variant="body2" mt={1}>
-                    Explore materials with a Google-powered assistant that
-                    explains properties, differences, and ideal applications.
-                  </Typography>
-                </Card>
-              </Box>
-            )}
-
-            <Box textAlign="center" mt={4}>
-              <SubscriptionPage
-                open={openModal}
-                handleClose={handleCloseModal}
-              />
-            </Box>
-          </Box>
+          <PremiumInfo />
         ) : (
           <>
             {/* Main Search Section */}
@@ -260,75 +192,26 @@ const SmartSearch = () => {
                     onSearch();
                   }
                 }}
+                InputProps={{
+                  endAdornment: query ? (
+                    <InputAdornment position="end">
+                      <IconButton
+                        aria-label="clear search"
+                        onClick={() => onChangeQuery({ target: { value: "" } })}
+                        edge="end"
+                      >
+                        <ClearIcon />
+                      </IconButton>
+                    </InputAdornment>
+                  ) : null,
+                }}
               />
 
               <Button variant="contained" onClick={onSearch}>
                 Search
               </Button>
             </Box>
-            {/* Add the card section here for premium/admin users */}
-            {showCards && (
-              <>
-                <Typography variant="h6" px={6} mt={4}>
-                  Explore Smart Search Tools
-                </Typography>
-                <Box
-                  display="grid"
-                  gridTemplateColumns={{ xs: "1fr", sm: "1fr 1fr" }}
-                  gap={3}
-                  mt={2}
-                  px={6}
-                >
-                  {[
-                    {
-                      title: "📦 Vector Search",
-                      desc: "Find similar materials using advanced embeddings. Perfect for exploring alternatives based on your current choice.",
-                      details:
-                        "Vector Search uses mathematical representations of materials, called embeddings. These embeddings capture the underlying features and relationships of materials, allowing the system to compare and find similar items based on their properties.",
-                      example:
-                        '"Material with high impact strength and good chemical resistance" or "Plastic with high UV resistance and moderate flexibility"',
-                    },
-                    {
-                      title: "🤖 OpenAI LLM Search",
-                      desc: "Ask anything in natural language and get materials recommended by an intelligent assistant.",
-                      details:
-                        "OpenAI LLM utilizes AI trained on vast datasets to understand natural language queries. It processes your request and provides the most relevant materials based on context, answering in an intuitive and human-like manner.",
-                      example:
-                        '"What’s a good material for lightweight, heat-resistant components?" or "Recommend materials for eco-friendly packaging."',
-                    },
-                    {
-                      title: "🔍 DeepSeek",
-                      desc: "An advanced language model trained for deep technical understanding of material properties and use cases.",
-                      details:
-                        "DeepSeek leverages a specialized language model to deeply analyze technical material properties. It provides precise search results by understanding intricate details and nuances about materials, offering insightful recommendations.",
-                      example:
-                        '"What materials are both biocompatible and chemically resistant?" or "Which polymers have high UV resistance and are recyclable?"',
-                    },
-                    {
-                      title: "🌟 Google Gemini",
-                      desc: "Explore materials with a Google-powered assistant that explains properties, differences, and ideal applications.",
-                      details:
-                        "Google Gemini uses advanced machine learning algorithms developed by Google. It helps identify and explain material properties, differences, and ideal use cases by utilizing the vast knowledge base and AI capabilities of Google’s technologies.",
-                      example:
-                        '"What polymer has a melting point over 200°C and is used in aerospace applications?" or "Which polymer has tensile strength over 50 MPa and resists UV degradation?"',
-                    },
-                  ].map((tool, idx) => (
-                    <Card key={idx} variant="outlined" sx={{ p: 2 }}>
-                      <Typography variant="h6">{tool.title}</Typography>
-                      <Typography variant="body2" mt={1}>
-                        {tool.desc}
-                      </Typography>
-                      <Typography variant="body2" mt={1}>
-                        <strong>How it works:</strong> {tool.details}
-                      </Typography>
-                      <Typography variant="body2" mt={1}>
-                        <strong>Example query:</strong> {tool.example}
-                      </Typography>
-                    </Card>
-                  ))}
-                </Box>
-              </>
-            )}
+
             {!isLoading && !searchResult?.length && isSearched && (
               <Alert
                 severity="error"
@@ -340,9 +223,14 @@ const SmartSearch = () => {
                   alignItems: "center",
                 }}
               >
-                We couldn’t find any matches. Try adjusting your search query.
+                {resErr ??
+                  "We couldn’t find any matches. Try adjusting your search query."}
               </Alert>
             )}
+
+            {/* Add the card section here for premium/admin users */}
+            {showCards && <SmartSeachInfo />}
+
             <Box px={6} display="flex" flexDirection="column" gap={2} mt={4}>
               {isLoading ? (
                 <LoadingCards />

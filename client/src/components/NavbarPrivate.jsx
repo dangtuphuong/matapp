@@ -15,7 +15,7 @@ import {
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import { AccountCircle } from "@mui/icons-material";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import logo from "../img/onlylogo.png";
 import { getUserProfile } from "../services/user-service";
 import "./styles/Navbar.css";
@@ -39,6 +39,7 @@ const navItems = [
 
 const Navbar = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [drawerOpen, setDrawerOpen] = useState(false);
   const isMobile = useMediaQuery("(max-width: 900px)");
 
@@ -132,14 +133,24 @@ const Navbar = () => {
                 display: "flex",
                 flexWrap: "wrap",
                 justifyContent: "center",
-                gap: 1.5,
+                gap: 0,
                 flexGrow: 1,
                 overflow: "hidden",
                 minWidth: 0,
               }}
             >
               {navItems.map(({ label, path, icon }) => (
-                <Link key={label} to={path} className="navbar-link">
+                <Link
+                  key={label}
+                  to={path}
+                  className="navbar-link"
+                  style={{
+                    padding: "11px 20px 11px 16px",
+                    borderRadius: "6px",
+                    backgroundColor:
+                      location?.pathname === path ? "#2F2F2F" : "transparent",
+                  }}
+                >
                   {React.cloneElement(icon, {
                     fontSize: "small",
                     style: { marginRight: 5 },

@@ -49,6 +49,7 @@ def register():
             "lastName": last_name,
             "dateOfBirth": dob,
             "gender": gender,
+            "bookmarks": []
         }
     )
 
@@ -185,3 +186,51 @@ def delete_user(user_id):
 
     User.delete_user(user_id)
     return jsonify({"message": "User deleted successfully"}), 200
+
+
+# ------------ Bookmarks ------------
+
+@user_bp.route("/bookmarks", methods=["POST"])
+@jwt_required()
+def add_bookmark():
+    current_user_email = get_jwt_identity()
+    user = User.find_by_email(current_user_email)
+
+    if not user:
+        return jsonify({"message": "User not found"}), 404
+
+    data = request.get_json()
+    mat_guid = data.get("matGUID")
+
+    if not mat_guid:
+        return jsonify({"message": "matGUID is required"}), 400
+
+    # Initialize bookmarks if not present
+    bookmarks = user.get("bookmarks", [])
+    if mat_guid not in bookmarks:
+        bookmarks.append(mat_guid)
+        User.update_user(user["_id"], {"bookmarks": bookmarks})
+
+    return jsonify({"message": "Bookmark added successfully"}), 200
+
+
+@user_bp.route("/bookmarks", methods=["GET"])
+@jwt_required()
+def get_bookmarks():
+    current_user_email = get_jwt_identity()
+    user = User.find_by_email(current_user_email)
+
+    if not user:
+        return jsonify({"message": "User not found"}), 404
+
+    from models.material_model import MaterialModel  # ✅ safe import
+
+    bookmarks = user.get("bookmarks", [])
+    materials = [
+        MaterialModel.get_material_by_guid(guid)
+        for guid in bookmarks
+        if MaterialModel.get_material_by_guid(guid)
+    ]
+
+    return jsonify(materials), 200
+

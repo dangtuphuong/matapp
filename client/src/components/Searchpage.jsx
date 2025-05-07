@@ -10,8 +10,10 @@ import {
   FormControlLabel,
   Button,
   Divider,
+  IconButton,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
+import DeleteIcon from "@mui/icons-material/Delete";
 import { RichTreeView } from "@mui/x-tree-view/RichTreeView";
 
 import { getCategories, getProperties } from "../services/material-service";
@@ -39,7 +41,7 @@ const convertGroupedData = (data) =>
     }))
   );
 
-const PropertyFilterItem = ({ id, properties, onChange }) => {
+const PropertyFilterItem = ({ id, properties, onChange, onDelete }) => {
   const [selectedProperty, setSelectedProperty] = useState(null);
   const [selectedUnit, setSelectedUnit] = useState(null);
   const [min, setMin] = useState("");
@@ -60,7 +62,7 @@ const PropertyFilterItem = ({ id, properties, onChange }) => {
     setMin("");
     setMax("");
     setTextVal("");
-    setSelectedUnit(null);
+    setSelectedUnit(isTextValProp ? selectedOption?.units[0] : null);
   };
 
   useEffect(() => {
@@ -85,14 +87,26 @@ const PropertyFilterItem = ({ id, properties, onChange }) => {
 
   return (
     <Box>
-      <Autocomplete
-        fullWidth
-        size="small"
-        options={properties}
-        groupBy={(option) => option?.group}
-        renderInput={(p) => <TextField {...p} label="Property" />}
-        onChange={onSelectProperty}
-      />
+      <Box display="flex" alignItems="center" gap={0.5}>
+        <Autocomplete
+          fullWidth
+          size="small"
+          options={properties}
+          groupBy={(option) => option?.group}
+          renderInput={(p) => (
+            <TextField {...p} label={selectedProperty?.group || "Property"} />
+          )}
+          onChange={onSelectProperty}
+        />
+        <IconButton
+          aria-label="delete"
+          size="small"
+          sx={{ color: "info", "&:hover": { color: "error.main" } }}
+          onClick={() => onDelete(id)}
+        >
+          <DeleteIcon />
+        </IconButton>
+      </Box>
 
       {selectedProperty &&
         (isTextValProp ? (
@@ -113,14 +127,16 @@ const PropertyFilterItem = ({ id, properties, onChange }) => {
               value={selectedUnit?.unit ?? ""}
               onChange={onChangeUnit}
             >
-              {selectedProperty?.units?.map((u) => (
-                <FormControlLabel
-                  key={u.unit}
-                  value={u.unit}
-                  control={<Radio />}
-                  label={u.unit}
-                />
-              ))}
+              {selectedProperty?.units?.map((u) =>
+                u?.unit ? (
+                  <FormControlLabel
+                    key={u.unit}
+                    value={u.unit}
+                    control={<Radio />}
+                    label={u.unit}
+                  />
+                ) : null
+              )}
             </RadioGroup>
             <div style={{ display: "flex" }}>
               <TextField
@@ -185,6 +201,11 @@ const SearchPage = () => {
     }
   };
 
+  const handleDeleteProp = (id) =>
+    setSelectedProperties(
+      selectedProperties?.filter((item) => item?.id !== id)
+    );
+
   const onUpdateSearchParams = () =>
     setSearchParams({
       searchCategories: selectedCategories,
@@ -195,14 +216,14 @@ const SearchPage = () => {
     <div className="search-page-container">
       <NavbarPrivate />
       <Typography align="center" variant="h4" sx={{ mt: 3, mb: 2 }}>
-        Search Materials
+        Material Search
       </Typography>
-      <Container sx={{ display: "flex" }}>
-        <Box sx={{ marginRight: "15px", width: "270px", minWidth: "270px" }}>
+      <Container maxWidth="xl" sx={{ display: "flex" }}>
+        <Box sx={{ marginRight: "20px", width: "320px", minWidth: "320px" }}>
           {/* Material Categories */}
           <Box>
-            <Typography variant="h6" sx={{ mb: "20px" }}>
-              By Categories
+            <Typography variant="h6" sx={{ mb: "10px" }}>
+              <b>By Categories</b>
             </Typography>
             <RichTreeView
               multiSelect
@@ -216,9 +237,28 @@ const SearchPage = () => {
           {/* Material Properties */}
           <Divider sx={{ m: "20px 0" }} />
           <Box>
-            <Typography variant="h6" sx={{ m: "20px 0" }}>
-              By Properties
-            </Typography>
+            <Box
+              display="flex"
+              alignItems="center"
+              justifyContent="space-between"
+              sx={{ my: 2 }}
+            >
+              <Typography variant="h6">
+                <b>By Properties</b>
+              </Typography>
+              <IconButton
+                aria-label="add"
+                size="small"
+                onClick={() =>
+                  setSelectedProperties([
+                    ...selectedProperties,
+                    { id: Math.random().toString(36).substring(2, 10) },
+                  ])
+                }
+              >
+                <AddIcon />
+              </IconButton>
+            </Box>
             <div>
               {selectedProperties?.map((item, index) => (
                 <React.Fragment key={item?.id}>
@@ -227,6 +267,7 @@ const SearchPage = () => {
                     id={item?.id}
                     properties={properties}
                     onChange={handleSelectedProperties}
+                    onDelete={handleDeleteProp}
                   />
                   {index < selectedProperties.length - 1 && (
                     <Divider
@@ -238,29 +279,12 @@ const SearchPage = () => {
                 </React.Fragment>
               ))}
             </div>
-            <Button
-              sx={{ m: "10px 0" }}
-              startIcon={<AddIcon />}
-              onClick={() =>
-                setSelectedProperties([
-                  ...selectedProperties,
-                  { id: Math.random().toString(36).substring(2, 10) },
-                ])
-              }
-            >
-              More Property
+          </Box>
+
+          <Box sx={{ m: 4, display: "flex", justifyContent: "center" }}>
+            <Button variant="contained" onClick={onUpdateSearchParams}>
+              Search
             </Button>
-            <Box
-              sx={{
-                m: 2,
-                display: "flex",
-                justifyContent: "center",
-              }}
-            >
-              <Button variant="contained" onClick={onUpdateSearchParams}>
-                Search
-              </Button>
-            </Box>
           </Box>
         </Box>
         <Box component="main" sx={{ flexGrow: 1 }}>

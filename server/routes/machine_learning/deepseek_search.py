@@ -1,7 +1,7 @@
 from flask import Blueprint, jsonify, request
 from flask_jwt_extended import jwt_required
 
-from services.machine_learning.deepseek_service import get_answer
+from services.machine_learning.deepseek_service import generate_mongodb_query
 from models.material_model import MaterialModel
 from utils.llm import clean_and_parse_pipeline
 
@@ -21,9 +21,13 @@ def deepseek_search():
             return jsonify({"error": "Query parameter is required"}), 400
 
         # Get MongoDB pipeline from DeepSeek
-        pipeline_str = get_answer(user_query)
-        if not pipeline_str:
-            return jsonify({"error": "Failed to generate query"}), 500
+        result = generate_mongodb_query(user_query)
+
+        # Check if generation was successful
+        if not result["success"]:
+            return jsonify({"error": result["error"]}), 500
+
+        pipeline_str = result["content"]
 
         print(f"Generated pipeline string: {pipeline_str}")
 
