@@ -96,10 +96,12 @@ const MaterialsTable = ({ searchCategories, searchProperties }) => {
       <Table sx={{ border: "1px solid #ccc" }}>
         <TableHead>
           <TableRow>
-            <TableCell sx={headerStyle}>Name</TableCell>
-            <TableCell sx={headerStyle}>Category</TableCell>
+            <TableCell sx={{ ...headerStyle, flex: 1 }}>Name</TableCell>
+            <TableCell sx={{ ...headerStyle, width: "30%" }}>
+              Category
+            </TableCell>
             {!!propsCol?.length && (
-              <TableCell sx={{ ...headerStyle, align: "right" }}>
+              <TableCell sx={{ ...headerStyle, width: "20%" }}>
                 Filtered Props
               </TableCell>
             )}
@@ -124,10 +126,14 @@ const MaterialsTable = ({ searchCategories, searchProperties }) => {
                 onClick={() => onRowClick(material?.matGUID)}
                 sx={{ cursor: "pointer" }}
               >
-                <TableCell>{material?.["Material Name"]}</TableCell>
-                <TableCell>{material?.Categories?.join(", ")}</TableCell>
+                <TableCell sx={{ flex: 1 }}>
+                  {material?.["Material Name"]}
+                </TableCell>
+                <TableCell sx={{ width: "30%" }}>
+                  {material?.Categories?.join(", ")}
+                </TableCell>
                 {!!propsCol?.length && (
-                  <TableCell>
+                  <TableCell sx={{ width: "20%" }}>
                     {propsCol?.map(({ group, property, unit }) => {
                       const items =
                         material?.["Properties"]?.[group]?.[property];
@@ -135,9 +141,11 @@ const MaterialsTable = ({ searchCategories, searchProperties }) => {
                       return (
                         <p key={property}>
                           {`${property}: ${
-                            item?.English?.includes(unit)
-                              ? item?.English
-                              : item.Metric
+                            item?.English
+                              ? item?.English?.includes(unit)
+                                ? item?.English
+                                : item.Metric
+                              : item
                           }`}
                         </p>
                       );

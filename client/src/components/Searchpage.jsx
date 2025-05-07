@@ -62,7 +62,7 @@ const PropertyFilterItem = ({ id, properties, onChange, onDelete }) => {
     setMin("");
     setMax("");
     setTextVal("");
-    setSelectedUnit(selectedOption?.units[0]);
+    setSelectedUnit(isTextValProp ? selectedOption?.units[0] : null);
   };
 
   useEffect(() => {
