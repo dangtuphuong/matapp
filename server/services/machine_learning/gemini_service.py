@@ -56,36 +56,29 @@ def get_prompt(user_query):
     escaped_structure = structure.replace("{", "{{").replace("}", "}}")
 
     instruction_prompt = f"""
-        You are an expert MongoDB query generator. Create accurate, efficient MongoDB aggregation queries strictly following the schema and user intent.
-        SCHEMA INTERPRETATION:
-        The schema uses aliases defined in `_ALIAS`.
-        - `VMS` (in `_ALIAS.VMS`) is: `{{{{\\"min\\":\\"float\\", \\"max\\":\\"float\\", \\"unit\\":\\"string\\"}}}}`.
-        - `PDEF` (in `_ALIAS.PDEF`) is: `[{{{{\\"metric\\":VMS_object, \\"english\\":VMS_object}}}}]`.
-        Use the following actual schema for reference:
-        ```
-        {escaped_structure}
-        ```
-        QUERY GUIDELINES:
-        1.  **Schema Adherence:** Paths must be precise.
-        2.  **`PDEF` Field Logic (within `$elemMatch` or for projection):**
-            *   **Units:** If user specifies a unit (e.g., "°C", "ksi"), the condition within `$elemMatch` (or for direct access) should be on `metric.unit` or `english.unit`. If no unit specified but implied, assume `metric` and a common unit (e.g., "°C" for temperature, "%" for percentage); otherwise, query numerical `metric` values directly.
-            *   **Values:** Use `metric.min` or `english.min` for "lowest", `metric.max` or `english.max` for "highest". For "between X and Y": `metric.max: {{{{ $gte: X }}}} AND metric.min: {{{{ $lte: Y }}}}` (or `english.*`). For "equals X": `metric.min: {{{{ $lte: X }}}} AND metric.max: {{{{ $gte: X }}}}` (or `english.*`).
-        3.  **Descriptive/Fallback Properties:**
-            *   Query explicitly defined `parsed_properties.Descriptive Properties` (e.g., `Color: ["string"]`) as per their type.
-            *   For other properties not `PDEF`, top-level, or explicitly typed in `Descriptive Properties`, assume path `parsed_properties.Descriptive Properties.<PropertyName>`. Perform a case-insensitive text match using `$regex` directly on this field. Example: `{{{{ \\"<path_to_property>\\": {{{{ \\"$regex\\": \\"value\\", \\"$options\\": \\"i\\" }}}} }}}}`.
-        4. **Categories Field Rule:**
-            * Always query `Categories` using a case-insensitive regex: 
-            `{{{{ \\"Categories\\": {{{{ \\"$regex\\": \\"ceramic\\", \\"$options\\": \\"i\\" }}}} }}}}`
-        5.  **Existence Checks:** Ensure fields exist and are not null before deep access.
-        6.  **Output:** Your ENTIRE response MUST be ONLY the MongoDB aggregation pipeline as a directly parsable JSON array string (e.g., `[{{{{\\\\\\"stage1\\\\\\":{{{{}}}}}}}}, {{{{\\\\\\"stage2\\\\\\":{{{{}}}}}}}}]`). NO explanations, comments, or markdown.
-        7.  **Operators:** Use efficient MongoDB operators. Always use `$elemMatch` when filtering conditions apply to elements within an array.
-        8.  **Field Name Quoting:**
-            *   Always wrap all property names (keys) in **double quotes**, especially those containing spaces, commas, or special characters. Example: `Hardness, Rockwell C`
-            *   All keys must be valid JSON strings.
+        You are an expert at writing MongoDB aggregation pipelines. Generate a **valid JSON array string** that matches the **user intent** and strictly follows the **schema**.
+
+        **SCHEMA FORMAT:**
+            - {str(escaped_structure)}
+
+        **RULES:**
+        1. **Use precise field paths** from the schema.
+        2. **PDEF logic**:
+            - Units: If specified, filter `metric.unit` or `english.unit`. If implied, assume `metric`.
+            - Values:
+                - "lowest": use `*.min $lte X`
+                - "highest": use `*.max $gte X`
+                - "between X and Y": `*.max $gte X AND *.min $lte Y`
+                - "equals X": `*.min $lte X AND *.max $gte X`
+        3. **Other properties**:
+            - Use `parsed_properties.Descriptive Properties.<Property>` and apply case-insensitive `$regex`.
+        4. **Categories**: Always query with case-insensitive regex.
+        5. **Check field existence** before deep access.
+        6. **No explanations**. Return **only** the aggregation pipeline as a JSON string.
+        7. **Must quote all keys** with double quotes. Use `$elemMatch` for arrays.
 
         USER QUERY:
         {user_query}
-        MONGODB AGGREGATION PIPELINE (JSON STRING):
     """
 
     return instruction_prompt
