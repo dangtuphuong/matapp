@@ -1,4 +1,3 @@
-
 import { useEffect, useState, useRef } from "react";
 import { useParams } from "react-router-dom";
 import {
@@ -113,7 +112,6 @@ const MaterialPage = () => {
       {isLoading ? (
         <LoadingComponent />
       ) : (
-
         //BOOKMARK BUTTON
         <Container className="mat-container">
           <div style={{ textAlign: "right", marginTop: "10px" }}>
@@ -121,6 +119,7 @@ const MaterialPage = () => {
               onClick={handleBookmark}
               disabled={isBookmarked}
               sx={{
+                float: "right",
                 backgroundColor: isBookmarked ? "transparent" : "#3d4650",
                 color: isBookmarked ? "#023e8a" : "#fff",
                 border: "1px solid #023e8a",
