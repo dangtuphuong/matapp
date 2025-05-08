@@ -118,9 +118,10 @@ const ProfilePage = () => {
     }
   };
 
+
   return (
     <>
-      <NavbarPrivate />
+      <NavbarPrivate /> 
 
       <main className="profile-main">
         {/* Left Sidebar */}
@@ -131,9 +132,7 @@ const ProfilePage = () => {
             </Avatar>
           </div>
           <h2 className="sidebar-name">{profile?.firstName || "Test User"}</h2>
-          <p className="sidebar-email">
-            {profile?.email || "user@example.com"}
-          </p>
+          <p className="sidebar-email">{profile?.email || "user@example.com"}</p>
         </div>
 
         {/* Main Content */}
@@ -184,6 +183,20 @@ const ProfilePage = () => {
               />
 
               <div className="profile-buttons">
+                {!isEditing ? (
+                  <Button variant="contained" onClick={() => setIsEditing(true)}>
+                    Update Profile
+                  </Button>
+                ) : (
+                  <>
+                    <Button variant="contained" onClick={handleSave}>
+                      Save
+                    </Button>
+                    <Button variant="outlined" onClick={() => setIsEditing(false)}>
+                      Cancel
+                    </Button>
+                  </>
+                )}
                 {renderRoleButtons(profile?.role)}
               </div>
             </form>
@@ -201,21 +214,12 @@ const ProfilePage = () => {
                     </span>
                     <div className="bookmark-actions">
                       <span className="bookmark-date">
-                        Saved on{" "}
-                        {bookmark.saved_at
-                          ? new Date(bookmark.saved_at).toLocaleDateString()
-                          : "N/A"}
+                        Saved on {bookmark.saved_at ? new Date(bookmark.saved_at).toLocaleDateString() : "N/A"}
                       </span>
-                      <IconButton
-                        onClick={() =>
-                          navigate(`/material/${bookmark.matGUID}`)
-                        }
-                      >
+                      <IconButton onClick={() => navigate(`/material/${bookmark.matGUID}`)}>
                         <OpenInNew fontSize="small" />
                       </IconButton>
-                      <IconButton
-                        onClick={() => handleDeleteBookmark(bookmark.matGUID)}
-                      >
+                      <IconButton onClick={() => handleDeleteBookmark(bookmark.matGUID)}>
                         <Delete fontSize="small" />
                       </IconButton>
                     </div>

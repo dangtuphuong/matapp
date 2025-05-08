@@ -113,20 +113,20 @@ const EditUsers = () => {
     <>
       {/* Navbar with logged-in admin's name */}
       <NavbarPrivate />
-      <Container>
+      <Container className="edit-users-container">
         <Typography className="edit-users-title">Manage Users</Typography>
 
         {/* Users Table */}
         <Table className="user-table">
           <TableHead>
-            <TableRow>
-              <TableCell>First Name</TableCell>
-              <TableCell>Last Name</TableCell>
-              <TableCell>Email</TableCell>
-              <TableCell>Gender</TableCell>
-              <TableCell>DOB</TableCell>
-              <TableCell>Role</TableCell>
-              <TableCell align="right">Actions</TableCell>
+            <TableRow className="table-header-row">
+              <TableCell className="table-cell"><span>First Name</span></TableCell>
+              <TableCell><span>Last Name</span></TableCell>
+              <TableCell><span>Email</span></TableCell>
+              <TableCell><span>Gender</span></TableCell>
+              <TableCell><span>DOB</span></TableCell>
+              <TableCell><span>Role</span></TableCell>
+              <TableCell align="right"><span>Actions</span></TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
