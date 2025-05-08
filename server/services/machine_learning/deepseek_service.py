@@ -1,7 +1,7 @@
 import os
 import json
 from dotenv import load_dotenv
-from langchain_voyageai import VoyageAIEmbeddings
+from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_openai import ChatOpenAI
 from langchain_core.prompts import (
     ChatPromptTemplate,
@@ -33,9 +33,8 @@ structure = ""
 with open("resource/schema.json", "r", encoding="utf-8") as input_file:
     structure = input_file.read()
 
-# ================= Voyage Embedding Configuration =================
-VOYAGE_API_KEY = os.getenv("VOYAGE_API_KEY")
-embeddings = VoyageAIEmbeddings(model="voyage-code-3", voyage_api_key=VOYAGE_API_KEY)
+# ================= Embedding Configuration =================
+embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
 
 # DeepSeek LLM (OpenAI-compatible)
 llm = ChatOpenAI(
