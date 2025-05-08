@@ -50,17 +50,17 @@ export const getAllUsers = async (token) =>
     .then((res) => res.data);
 
 // Update a user's info (admin access required)
-export const updateUserInfo = async (token, email, updatedData) =>
-  await axios.put(`${API_URL}/users/${email}`, updatedData, {
+export const updateUserInfo = async (token, userId, updatedData) =>
+  await axios.put(`${API_URL}/users/${userId}`, updatedData, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
   });
 
 // Reset a user's password (admin access required)
-export const resetUserPassword = async (token, email, newPassword) =>
-  await axios.put(
-    `${API_URL}/users/${email}/password`,
+export const resetUserPassword = async (token, userId, newPassword) =>
+  await axios.post(
+    `${API_URL}/users/${userId}/reset-password`,
     { newPassword },
     {
       headers: {

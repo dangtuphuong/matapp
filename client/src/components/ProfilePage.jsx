@@ -87,42 +87,20 @@ const ProfilePage = () => {
 
   // Function to render role-specific buttons
   const renderRoleButtons = (role) => {
-    switch (role) {
-      case ROLES.NORMAL_USER:
-        return (
-          <Button
-            variant="contained"
-            color="secondary"
-            className="go-premium-button"
-            size="large"
-          >
-            Go Premium
-          </Button>
-        );
-      case ROLES.PREMIUM_USER:
-        return (
-          <Button variant="outlined" startIcon={<Download />}>
-            Export Data
-          </Button>
-        );
-      case ROLES.ADMIN:
-        return (
-          <>
-            <Button
-              variant="outlined"
-              startIcon={<Group />}
-              onClick={() => navigate("/edit-users")}
-            >
-              Edit Users
-            </Button>
-            <Button variant="outlined" startIcon={<Download />}>
-              Export Data
-            </Button>
-          </>
-        );
-      default:
-        return null;
+    if (role === ROLES.ADMIN) {
+      return (
+        <Button
+          variant="outlined"
+          startIcon={<Group />}
+          onClick={() => navigate("/edit-users")}
+        >
+          Edit Users
+        </Button>
+      );
     }
+
+    // Premium users: no buttons
+    return null;
   };
 
   // Function to handle bookmark deletion
@@ -140,10 +118,9 @@ const ProfilePage = () => {
     }
   };
 
-
   return (
     <>
-      <NavbarPrivate /> 
+      <NavbarPrivate />
 
       <main className="profile-main">
         {/* Left Sidebar */}
@@ -154,7 +131,9 @@ const ProfilePage = () => {
             </Avatar>
           </div>
           <h2 className="sidebar-name">{profile?.firstName || "Test User"}</h2>
-          <p className="sidebar-email">{profile?.email || "user@example.com"}</p>
+          <p className="sidebar-email">
+            {profile?.email || "user@example.com"}
+          </p>
         </div>
 
         {/* Main Content */}
@@ -205,20 +184,6 @@ const ProfilePage = () => {
               />
 
               <div className="profile-buttons">
-                {!isEditing ? (
-                  <Button variant="contained" onClick={() => setIsEditing(true)}>
-                    Update Profile
-                  </Button>
-                ) : (
-                  <>
-                    <Button variant="contained" onClick={handleSave}>
-                      Save
-                    </Button>
-                    <Button variant="outlined" onClick={() => setIsEditing(false)}>
-                      Cancel
-                    </Button>
-                  </>
-                )}
                 {renderRoleButtons(profile?.role)}
               </div>
             </form>
@@ -236,12 +201,21 @@ const ProfilePage = () => {
                     </span>
                     <div className="bookmark-actions">
                       <span className="bookmark-date">
-                        Saved on {bookmark.saved_at ? new Date(bookmark.saved_at).toLocaleDateString() : "N/A"}
+                        Saved on{" "}
+                        {bookmark.saved_at
+                          ? new Date(bookmark.saved_at).toLocaleDateString()
+                          : "N/A"}
                       </span>
-                      <IconButton onClick={() => navigate(`/material/${bookmark.matGUID}`)}>
+                      <IconButton
+                        onClick={() =>
+                          navigate(`/material/${bookmark.matGUID}`)
+                        }
+                      >
                         <OpenInNew fontSize="small" />
                       </IconButton>
-                      <IconButton onClick={() => handleDeleteBookmark(bookmark.matGUID)}>
+                      <IconButton
+                        onClick={() => handleDeleteBookmark(bookmark.matGUID)}
+                      >
                         <Delete fontSize="small" />
                       </IconButton>
                     </div>
