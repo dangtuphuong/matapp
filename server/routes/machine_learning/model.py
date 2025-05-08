@@ -30,6 +30,8 @@ load_dotenv()
 # Get API key from environment
 openai_api_key = os.getenv("OPENAI_API_KEY")
 
+# "gpt-4o-mini" -> $0.60, "gpt-4.1-nano" -> $0.40, "gpt-4.1-mini" -> $1.6
+
 llm = ChatOpenAI(temperature=0, model="gpt-4o-mini", openai_api_key=openai_api_key)
 embeddings = OpenAIEmbeddings(
     model="text-embedding-3-small", openai_api_key=openai_api_key
