@@ -1,3 +1,4 @@
+// import React and other necessary libraries
 import React, { useEffect, useState } from "react";
 import {
   Container,
@@ -14,15 +15,16 @@ import {
   Download,
   Group,
   OpenInNew,
+  Delete,
 } from "@mui/icons-material";
 import { getUserProfile } from "../services/user-service";
 import { useNavigate } from "react-router-dom";
 import NavbarPrivate from "./NavbarPrivate";
 import { ROLES, ROLE_LABELS } from "../constants";
 import "./styles/Profile.css";
-
 import axios from "axios";
 
+// Function to fetch user profile and bookmarks
 const ProfilePage = () => {
   const [profile, setProfile] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
@@ -55,6 +57,7 @@ const ProfilePage = () => {
       });
   }, [navigate]);
 
+  // Function to handle profile save
   const handleSave = async () => {
     try {
       const token = localStorage.getItem("access_token");
@@ -82,6 +85,7 @@ const ProfilePage = () => {
     }
   };
 
+  // Function to render role-specific buttons
   const renderRoleButtons = (role) => {
     switch (role) {
       case ROLES.NORMAL_USER:
@@ -121,9 +125,25 @@ const ProfilePage = () => {
     }
   };
 
+  // Function to handle bookmark deletion
+  const handleDeleteBookmark = async (matGUID) => {
+    const token = localStorage.getItem("access_token");
+    try {
+      await axios.delete(`/api/bookmarks/${matGUID}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      setBookmarks((prev) => prev.filter((b) => b.matGUID !== matGUID));
+    } catch (error) {
+      console.error("Failed to delete bookmark", error);
+    }
+  };
+
+
   return (
     <>
-      <NavbarPrivate />
+      <NavbarPrivate /> 
 
       <main className="profile-main">
         {/* Left Sidebar */}
@@ -212,16 +232,18 @@ const ProfilePage = () => {
                 bookmarks.map((bookmark, index) => (
                   <div key={index} className="bookmark-item">
                     <span className="bookmark-title">
-                      {bookmark["Material Name"]}
+                      {`${index + 1}. ${bookmark["Material Name"]}`}
                     </span>
                     <div className="bookmark-actions">
-                      <div className="bookmark-buttons">
-                        <IconButton
-                          onClick={() => navigate(`/material/${bookmark.matGUID}`)}
-                        >
-                          <OpenInNew fontSize="small" />
-                        </IconButton>
-                      </div>
+                      <span className="bookmark-date">
+                        Saved on {bookmark.saved_at ? new Date(bookmark.saved_at).toLocaleDateString() : "N/A"}
+                      </span>
+                      <IconButton onClick={() => navigate(`/material/${bookmark.matGUID}`)}>
+                        <OpenInNew fontSize="small" />
+                      </IconButton>
+                      <IconButton onClick={() => handleDeleteBookmark(bookmark.matGUID)}>
+                        <Delete fontSize="small" />
+                      </IconButton>
                     </div>
                   </div>
                 ))

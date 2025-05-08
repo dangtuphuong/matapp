@@ -15,6 +15,7 @@ import {
   Skeleton,
   Button,
 } from "@mui/material";
+import { Bookmark, BookmarkBorder } from "@mui/icons-material";
 import CategoryIcon from "@mui/icons-material/Category";
 import PrecisionManufacturingIcon from "@mui/icons-material/PrecisionManufacturing";
 import EditNoteIcon from "@mui/icons-material/EditNote";
@@ -112,24 +113,27 @@ const MaterialPage = () => {
       {isLoading ? (
         <LoadingComponent />
       ) : (
-        
+
+        //BOOKMARK BUTTON
         <Container className="mat-container">
           <div style={{ textAlign: "right", marginTop: "10px" }}>
-          <Button
-            variant={isBookmarked ? "outlined" : "contained"}
-            onClick={handleBookmark}
-            disabled={isBookmarked}
-            sx={{
-              backgroundColor: isBookmarked ? "transparent" : "#023e8a",
-              color: isBookmarked ? "#023e8a" : "#fff",
-              border: "1px solid #023e8a",
-              "&:hover": {
-                backgroundColor: isBookmarked ? "#e3f2fd" : "#0353a4",
-              },
-            }}
+            <Button
+              onClick={handleBookmark}
+              disabled={isBookmarked}
+              sx={{
+                backgroundColor: isBookmarked ? "transparent" : "#3d4650",
+                color: isBookmarked ? "#023e8a" : "#fff",
+                border: "1px solid #023e8a",
+                minWidth: 40,
+                height: 40,
+                borderRadius: "50%",
+                "&:hover": {
+                  backgroundColor: isBookmarked ? "#e3f2fd" : "#0353a4",
+                },
+              }}
             >
-            {isBookmarked ? "Bookmarked" : "Add Bookmark"}
-          </Button>
+              {isBookmarked ? <Bookmark /> : <BookmarkBorder />}
+            </Button>
           </div>
 
           <div ref={contentRef}>

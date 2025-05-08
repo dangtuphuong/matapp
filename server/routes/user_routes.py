@@ -7,6 +7,8 @@ from flask_jwt_extended import (
 from datetime import timedelta
 from models.user_model import User
 from utils.auth import hash_password, check_password
+from datetime import datetime
+
 
 user_bp = Blueprint("user", __name__)
 VALID_ROLES = {"admin", "normal_user", "premium_user"}
@@ -205,10 +207,13 @@ def add_bookmark():
     if not mat_guid:
         return jsonify({"message": "matGUID is required"}), 400
 
-    # Initialize bookmarks if not present
     bookmarks = user.get("bookmarks", [])
-    if mat_guid not in bookmarks:
-        bookmarks.append(mat_guid)
+
+    if not any(b == mat_guid or (isinstance(b, dict) and b.get("matGUID") == mat_guid) for b in bookmarks):
+        bookmarks.append({
+            "matGUID": mat_guid,
+            "saved_at": datetime.utcnow().isoformat()
+        })
         User.update_user(user["_id"], {"bookmarks": bookmarks})
 
     return jsonify({"message": "Bookmark added successfully"}), 200
@@ -223,14 +228,60 @@ def get_bookmarks():
     if not user:
         return jsonify({"message": "User not found"}), 404
 
-    from models.material_model import MaterialModel  # ✅ safe import
+    from models.material_model import MaterialModel
+    bookmarks = user.get("bookmarks", [])
+    result = []
+
+    for bm in bookmarks:
+        mat_guid = bm["matGUID"] if isinstance(bm, dict) else bm
+        saved_at = bm.get("saved_at") if isinstance(bm, dict) else None
+
+        material = MaterialModel.get_material_by_guid(mat_guid)
+        if material:
+            if saved_at:
+                material["saved_at"] = saved_at
+            result.append(material)
+
+    return jsonify(result), 200
+
+
+@user_bp.route("/bookmarks/<mat_guid>", methods=["DELETE"])
+@jwt_required()
+def delete_bookmark(mat_guid):
+    current_user_email = get_jwt_identity()
+    user = User.find_by_email(current_user_email)
+
+    if not user:
+        return jsonify({"message": "User not found"}), 404
 
     bookmarks = user.get("bookmarks", [])
-    materials = [
-        MaterialModel.get_material_by_guid(guid)
-        for guid in bookmarks
-        if MaterialModel.get_material_by_guid(guid)
-    ]
 
-    return jsonify(materials), 200
+    updated_bookmarks = [bm for bm in bookmarks if bm.get("matGUID") != mat_guid]
 
+    if len(updated_bookmarks) == len(bookmarks):
+        return jsonify({"message": "Bookmark not found"}), 404
+
+    User.update_user(user["_id"], {"bookmarks": updated_bookmarks})
+    return jsonify({"message": "Bookmark removed successfully"}), 200
+
+
+# ------------ Update Profile Page ------------
+
+@user_bp.route("/profile/update", methods=["PUT"])
+@jwt_required()
+def update_profile():
+    current_user_email = get_jwt_identity()
+    user = User.find_by_email(current_user_email)
+
+    if not user:
+        return jsonify({"message": "User not found"}), 404
+
+    data = request.get_json()
+    update_fields = {
+        "firstName": data.get("firstName", user.get("firstName")),
+        "lastName": data.get("lastName", user.get("lastName")),
+        "email": data.get("email", user.get("email")),
+    }
+
+    User.update_user(user["_id"], update_fields)
+    return jsonify({"message": "Profile updated successfully"}), 200
