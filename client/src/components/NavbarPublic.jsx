@@ -2,7 +2,7 @@ import React from "react";
 import { AppBar, Toolbar, Typography, Box, Button } from "@mui/material";
 import { Link } from "react-router-dom";
 import logo from "../img/onlylogo.png";
-import "./styles/navbar.css";
+import "./styles/Navbar.css";
 import HomeOutlinedIcon from "@mui/icons-material/HomeOutlined";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 

@@ -17,11 +17,11 @@ import {
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import { loginUser } from "../services/user-service";
-import "./styles/login.css";
+import "./styles/Login.css";
 import img from "../img/steels.jpg";
 import logo from "../img/logo.png";
 import onlylogo from "../img/onlylogo.png";
-import "./styles/navbar.css";
+import "./styles/Navbar.css";
 import { Link } from "react-router-dom";
 
 const Login = () => {
