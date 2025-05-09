@@ -35,6 +35,7 @@ def create_app():
     app.register_blueprint(deepseek_bp, url_prefix="/api")
     app.register_blueprint(gemini_bp, url_prefix="/api")
 
+    # Client (React) route
     @app.route("/")
     def index():
         return send_from_directory(app.static_folder, "index.html")
