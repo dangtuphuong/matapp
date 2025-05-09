@@ -18,6 +18,7 @@ import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import { loginUser } from "../services/user-service";
 import "./styles/login.css";
+import img from "../img/steels.jpg";
 import logo from "../img/logo.png";
 import onlylogo from "../img/onlylogo.png";
 import "./styles/navbar.css";
@@ -81,7 +82,7 @@ const Login = () => {
       <div className="login-page">
         {/* Left side with image */}
         <div className="login-left">
-          <img src="/src/img/steels.jpg" alt="login-illustration" />
+          <img src={img} alt="login-illustration" />
         </div>
 
         {/* Right side with login form */}

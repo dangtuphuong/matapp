@@ -12,3 +12,5 @@ langchain-core
 langchain-openai
 langchain-community
 langchain-google-genai
+langchain_huggingface
+gunicorn
