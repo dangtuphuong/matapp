@@ -5,11 +5,18 @@ import tailwindcss from "@tailwindcss/vite";
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react(), tailwindcss()],
-  // server: {
-  //   open: true,
-  //   port: 3000,
-  //   proxy: {
-  //     "/api": "http://127.0.0.1:5000",
-  //   },
-  // },
+  server: {
+    open: true,
+    port: 3000,
+    proxy: {
+      "/api": "http://127.0.0.1:5000",
+    },
+  },
+  build: {
+    outDir: "dist",
+    emptyOutDir: true,
+    minify: "terser",
+    sourcemap: false,
+    chunkSizeWarningLimit: 1000,
+  },
 });
