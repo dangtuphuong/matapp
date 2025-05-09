@@ -9,16 +9,11 @@ __pycache__/
 *.pyc
 *.pyo
 *.pyd
-*.egg-info/
-dist/
-build/
-*.egg
 
 # IDE and OS specific files
 .vscode/
 .idea/
 *.DS_Store
-*.directory
 
 # Local environment files (NEVER include these in the image)
 .env
