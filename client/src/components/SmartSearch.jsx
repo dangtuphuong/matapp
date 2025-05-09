@@ -154,16 +154,40 @@ const SmartSearch = () => {
   return (
     <div className="smart-search-page-container">
       <NavbarPrivate />
-      <Typography align="center" variant="h4" sx={{ mt: 3, mb: 2 }}>
+      <Typography
+        align="center"
+        variant="h4"
+        sx={{
+          mt: 3,
+          mb: 2,
+          fontSize: {
+            xs: "1.5rem", // Mobile
+            sm: "2rem", // Small tablets
+            md: "2.5rem", // Desktops
+          },
+        }}
+      >
         Material Smart Search
       </Typography>
+
       <Container>
         {!isAllowed ? (
           <PremiumInfo />
         ) : (
           <>
             {/* Main Search Section */}
-            <Box sx={{ display: "flex", justifySelf: "center", width: "70%" }}>
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: { xs: "column", sm: "row" },
+                alignItems: "center",
+                justifyContent: "center",
+                gap: 2,
+                width: "100%",
+                mt: 2,
+                mb: 3,
+              }}
+            >
               <FormControl size="small" style={{ width: 160 }}>
                 <InputLabel id="model-select-label">Search Mode</InputLabel>
                 <Select
@@ -240,11 +264,20 @@ const SmartSearch = () => {
                     key={id}
                     variant="outlined"
                     sx={{
-                      p: "15px 30px",
+                      p: {
+                        xs: "12px 16px", // Mobile
+                        sm: "14px 24px", // Tablet
+                        md: "15px 30px", // Desktop
+                      },
                       cursor: "pointer",
                       "&:hover": {
                         backgroundColor: "#f5fbff",
                         borderColor: "#424242",
+                      },
+                      fontSize: {
+                        xs: "0.85rem", // Scale all text inside if not overridden
+                        sm: "0.95rem",
+                        md: "1rem",
                       },
                     }}
                     component={Link}
@@ -252,20 +285,58 @@ const SmartSearch = () => {
                   >
                     <Typography
                       variant="h6"
-                      noWrap
-                      sx={{ fontWeight: 600, mb: 1 }}
+                      sx={{
+                        fontWeight: 600,
+                        mb: 1,
+                        wordBreak: "break-word",
+                        fontSize: {
+                          xs: "1rem", // very small screens
+                          sm: "1.1rem", // ≥600px
+                          md: "1.15rem", // ≥900px
+                          lg: "1.2rem", // ≥1200px
+                        },
+                        "@media (max-width:1080px)": {
+                          fontSize: "1rem",
+                        },
+                      }}
                     >
                       {material?.["Material Name"] || material?._id}
                     </Typography>
 
                     {material?.["Categories"]?.length > 0 && (
-                      <Typography variant="body1">
+                      <Typography
+                        variant="body1"
+                        sx={{
+                          fontSize: {
+                            xs: "0.85rem",
+                            sm: "0.9rem",
+                            md: "0.95rem",
+                            lg: "1rem",
+                          },
+                          "@media (max-width:1080px)": {
+                            fontSize: "0.9rem",
+                          },
+                        }}
+                      >
                         Categories: {material?.["Categories"]?.join(", ")}
                       </Typography>
                     )}
 
                     {material?.["Material Notes"] && (
-                      <Typography variant="body1" noWrap>
+                      <Typography
+                        variant="body1"
+                        sx={{
+                          fontSize: {
+                            xs: "0.85rem", // <600px
+                            sm: "0.95rem", // ≥600px
+                            md: "1rem", // ≥900px
+                            lg: "1.05rem", // ≥1200px
+                          },
+                          "@media (max-width:1080px)": {
+                            fontSize: "0.9rem", // scale down for <1080px
+                          },
+                        }}
+                      >
                         Notes: {material?.["Material Notes"]}
                       </Typography>
                     )}
