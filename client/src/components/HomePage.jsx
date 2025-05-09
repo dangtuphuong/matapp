@@ -24,6 +24,7 @@ const HomePage = () => {
   const [username, setUsername] = useState(
     localStorage.getItem("username") || "User"
   );
+
   const [currentImage, setCurrentImage] = useState(img1);
 
   useEffect(() => {
@@ -33,12 +34,13 @@ const HomePage = () => {
       localStorage.setItem("first_login", "false");
     }
 
+    // initialize the image carousel
     const images = [img1, img2];
     let index = 0;
     const interval = setInterval(() => {
       index = (index + 1) % images.length;
       setCurrentImage(images[index]);
-    }, 10000);
+    }, 10000); // 10 seconds
 
     return () => clearInterval(interval);
   }, []);
@@ -46,18 +48,36 @@ const HomePage = () => {
   return (
     <>
       <NavbarPrivate />
+
       <Box
+        sx={{
+          backgroundImage: `url(${currentImage})`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          borderRadius: "20px",
+          margin: "30px",
+          padding: "30px",
+          height: "50%",
+        }}
         className="background-wrapper"
-        style={{ backgroundImage: `url(${currentImage})` }}
       >
         <Container className="landing-container">
           <Box className="landing-hero">
-            <Typography variant="h2" className="landing-hero-title">
+            <Typography
+              variant="h2"
+              className="landing-hero-title"
+              sx={{
+                textTransform: "uppercase",
+                letterSpacing: 5,
+                fontFamily: "Monospace",
+              }}
+            >
               Smart Material Selection
             </Typography>
             <Typography
               variant="body1"
               className="landing-hero-subtitle typing-text"
+              sx={{ color: "#fff" }}
             >
               <span>
                 Browse, compare, and select the best materials for your
@@ -67,7 +87,18 @@ const HomePage = () => {
 
             <Button
               variant="contained"
-              className="search-button"
+              className="search"
+              sx={{
+                backgroundColor: "#023e8a",
+                marginTop: "20px",
+                padding: "10px 20px",
+                fontWeight: "800",
+                borderRadius: "20px",
+
+                "&:hover": {
+                  backgroundColor: "#0077b6",
+                },
+              }}
               component={Link}
               to="/search"
             >
@@ -76,7 +107,14 @@ const HomePage = () => {
           </Box>
 
           <Box className="how-it-works">
-            <Typography className="material-title">
+            <Typography
+              className="material-title"
+              sx={{
+                fontFamily: "Monospace",
+                letterSpacing: 5,
+                textTransform: "uppercase",
+              }}
+            >
               <span>Explore Material Categories</span>
             </Typography>
 
@@ -128,6 +166,43 @@ const HomePage = () => {
             </Box>
           </Box>
 
+          {/*<Box className="about-project">
+            <Typography variant="h6" className="section-title">
+              About the Project
+            </Typography>
+            <Box className="about-points">
+              {[
+                {
+                  icon: "🔍",
+                  title: "Our Mission",
+                  text: "To simplify the complex process of material selection.",
+                },
+                {
+                  icon: "🧠",
+                  title: "The Challenge",
+                  text: "Engineers often sift through outdated datasheets.",
+                },
+                {
+                  icon: "💡",
+                  title: "The Solution",
+                  text: "MatApp centralizes data with intuitive tools.",
+                },
+                {
+                  icon: "🚀",
+                  title: "Why It Matters",
+                  text: "Better material choices lead to smarter designs.",
+                },
+              ].map((point, idx) => (
+                <Box key={idx} className="about-point-row">
+                  <span className="about-icon">{point.icon}</span>
+                  <Typography variant="body1">
+                    <strong>{point.title}:</strong> {point.text}
+                  </Typography>
+                </Box>
+              ))}
+            </Box>
+          </Box>*/}
+
           <Snackbar
             open={openSnackbar}
             autoHideDuration={4000}
@@ -137,7 +212,15 @@ const HomePage = () => {
             <Alert
               onClose={() => setOpenSnackbar(false)}
               severity="success"
-              className="welcome-alert"
+              sx={{
+                width: "100%",
+                fontSize: "1.2rem",
+                textAlign: "center",
+                "@media (max-width: 360px)": {
+                  fontSize: "0.9rem", // Smaller font size on mobile
+                  padding: "8px", // Adjust padding for a smaller alert box
+                },
+              }}
             >
               Welcome, {username}! You are logged in successfully!
             </Alert>

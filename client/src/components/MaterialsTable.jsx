@@ -93,74 +93,96 @@ const MaterialsTable = ({ searchCategories, searchProperties }) => {
           onChange={handleSearchChange}
         />
       </Box>
-      <Table sx={{ border: "1px solid #ccc" }}>
-        <TableHead>
-          <TableRow>
-            <TableCell sx={{ ...headerStyle, flex: 1 }}>Name</TableCell>
-            <TableCell sx={{ ...headerStyle, width: "30%" }}>
-              Category
-            </TableCell>
-            {!!propsCol?.length && (
-              <TableCell sx={{ ...headerStyle, width: "20%" }}>
-                Filtered Props
-              </TableCell>
-            )}
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {isLoading ? (
-            Array.from({ length: limit }).map((_, index) => (
-              <TableRow key={index}>
-                <TableCell>
-                  <Skeleton variant="text" width="100%" />
-                </TableCell>
-                <TableCell>
-                  <Skeleton variant="text" width="60%" />
-                </TableCell>
-              </TableRow>
-            ))
-          ) : materials?.length > 0 ? (
-            materials?.map((material) => (
-              <TableRow
-                key={material?._id}
-                onClick={() => onRowClick(material?.matGUID)}
-                sx={{ cursor: "pointer" }}
-              >
-                <TableCell sx={{ flex: 1 }}>
-                  {material?.["Material Name"]}
-                </TableCell>
-                <TableCell sx={{ width: "30%" }}>
-                  {material?.Categories?.join(", ")}
-                </TableCell>
-                {!!propsCol?.length && (
-                  <TableCell sx={{ width: "20%" }}>
-                    {propsCol?.map(({ group, property, unit }) => {
-                      const items =
-                        material?.["Properties"]?.[group]?.[property];
-                      const item = items?.[items.length - 1] || {};
-                      return (
-                        <p key={property}>
-                          {`${property}: ${
-                            item?.English
-                              ? item?.English?.includes(unit)
-                                ? item?.English
-                                : item.Metric
-                              : item
-                          }`}
-                        </p>
-                      );
-                    })}
-                  </TableCell>
-                )}
-              </TableRow>
-            ))
-          ) : (
+      <Box sx={{ overflowX: "auto", width: "100%" }}>
+        <Table
+          sx={{ border: "1px solid #ccc", tableLayout: "fixed", width: "100%" }}
+        >
+          <TableHead>
             <TableRow>
-              <TableCell>No results found.</TableCell>
+              <TableCell sx={{ ...headerStyle, flex: 1 }}>Name</TableCell>
+              <TableCell sx={{ ...headerStyle, width: "30%" }}>
+                Category
+              </TableCell>
+              {!!propsCol?.length && (
+                <TableCell sx={{ ...headerStyle, width: "20%" }}>
+                  Filtered Props
+                </TableCell>
+              )}
             </TableRow>
-          )}
-        </TableBody>
-      </Table>
+          </TableHead>
+          <TableBody>
+            {isLoading ? (
+              Array.from({ length: limit }).map((_, index) => (
+                <TableRow key={index}>
+                  <TableCell>
+                    <Skeleton variant="text" width="100%" />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton variant="text" width="60%" />
+                  </TableCell>
+                </TableRow>
+              ))
+            ) : materials?.length > 0 ? (
+              materials?.map((material) => (
+                <TableRow
+                  key={material?._id}
+                  onClick={() => onRowClick(material?.matGUID)}
+                  sx={{ cursor: "pointer" }}
+                >
+                  <TableCell
+                    sx={{
+                      flex: 1,
+                      maxWidth: "10px", // You can limit the width if necessary
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                      whiteSpace: "normal", // This will allow wrapping of text
+                    }}
+                  >
+                    {material?.["Material Name"]}
+                  </TableCell>
+
+                  <TableCell
+                    sx={{
+                      width: "30%",
+                      maxWidth: "150px", // limit width
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                      whiteSpace: "normal", // OR "normal" to wrap text
+                    }}
+                  >
+                    {material?.Categories?.join(", ")}
+                  </TableCell>
+
+                  {!!propsCol?.length && (
+                    <TableCell sx={{ width: "20%" }}>
+                      {propsCol?.map(({ group, property, unit }) => {
+                        const items =
+                          material?.["Properties"]?.[group]?.[property];
+                        const item = items?.[items.length - 1] || {};
+                        return (
+                          <p key={property}>
+                            {`${property}: ${
+                              item?.English
+                                ? item?.English?.includes(unit)
+                                  ? item?.English
+                                  : item.Metric
+                                : item
+                            }`}
+                          </p>
+                        );
+                      })}
+                    </TableCell>
+                  )}
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell>No results found.</TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </Box>
 
       {totalPages > 0 && (
         <Pagination

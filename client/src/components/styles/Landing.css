@@ -249,16 +249,16 @@
 
 /* --- Responsive Adjustments --- */
 
-@media (max-width: 1130px) {
+@media (max-width: 1140px) {
   .background-wrapper {
-    height: 450px !important;
+    height: 400px !important;
   }
 }
 
 
 @media (max-width: 810px) {
   .background-wrapper {
-    height: 450px !important;
+    height: 410px !important;
   }
 }
 

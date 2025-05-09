@@ -41,7 +41,7 @@ const Navbar = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const isMobile = useMediaQuery("(max-width: 900px)");
+  const isMobile = useMediaQuery("(max-width: 1160px)");
 
   const [username, setUsername] = useState(
     localStorage.getItem("username") || ""
@@ -115,7 +115,7 @@ const Navbar = () => {
               variant="h6"
               className="navbar-logo-text"
               sx={{
-                display: { xs: "none", md: "block" }, 
+                display: { xs: "none", md: "block" },
                 fontSize: "1.25rem",
                 whiteSpace: "nowrap",
                 color: "white",
@@ -176,8 +176,12 @@ const Navbar = () => {
               component={Link}
               to="/profile"
               className="navbar-profile-link"
-              sx={{ display: "flex", alignItems: "center", backgroundColor: "rgb(47, 47, 47)", borderRadius: "6px",}}
-              
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                backgroundColor: "rgb(47, 47, 47)",
+                borderRadius: "6px",
+              }}
             >
               <IconButton color="inherit">
                 <AccountCircle />

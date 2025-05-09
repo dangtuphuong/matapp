@@ -11,9 +11,14 @@ import {
   Button,
   Divider,
   IconButton,
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
+  useMediaQuery,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { RichTreeView } from "@mui/x-tree-view/RichTreeView";
 
 import { getCategories, getProperties } from "../services/material-service";
@@ -167,6 +172,7 @@ const SearchPage = () => {
   const [categories, setCategories] = useState([]);
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [properties, setProperties] = useState([]);
+  const isMobile = useMediaQuery("(max-width:900px)");
   const [selectedProperties, setSelectedProperties] = useState([
     { id: Math.random().toString(36).substring(2, 10) },
   ]);
@@ -184,6 +190,8 @@ const SearchPage = () => {
       .then((data) => setProperties(convertGroupedData(data?.properties || [])))
       .catch((err) => console.error(err));
   }, []);
+
+  const [accordionExpanded, setAccordionExpanded] = useState(false);
 
   const handleSelectedCategoriesChange = (event, ids) => {
     setSelectedCategories(ids);
@@ -206,11 +214,13 @@ const SearchPage = () => {
       selectedProperties?.filter((item) => item?.id !== id)
     );
 
-  const onUpdateSearchParams = () =>
+  const onUpdateSearchParams = () => {
     setSearchParams({
       searchCategories: selectedCategories,
       searchProperties: selectedProperties,
     });
+    setAccordionExpanded(false); // collapse after search
+  };
 
   return (
     <div className="search-page-container">
@@ -218,10 +228,92 @@ const SearchPage = () => {
       <Typography align="center" variant="h4" sx={{ mt: 3, mb: 2 }}>
         Material Search
       </Typography>
-      <Container maxWidth="xl" sx={{ display: "flex" }}>
-        <Box sx={{ marginRight: "20px", width: "320px", minWidth: "320px" }}>
-          {/* Material Categories */}
-          <Box>
+      <Container
+        maxWidth="xl"
+        sx={{ display: "flex", flexDirection: isMobile ? "column" : "row" }}
+      >
+        {/* Filter Section */}
+        {isMobile ? (
+          <Accordion
+            sx={{ width: "100%" }}
+            expanded={accordionExpanded}
+            onChange={() => setAccordionExpanded((prev) => !prev)}
+          >
+            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+              <Typography variant="h6">
+                <b>Filter Materials</b>
+              </Typography>
+            </AccordionSummary>
+            <AccordionDetails>
+              <Box>
+                {/* Categories */}
+                <Typography variant="h6" sx={{ mb: "10px" }}>
+                  <b>By Categories</b>
+                </Typography>
+                <RichTreeView
+                  multiSelect
+                  checkboxSelection
+                  items={categories}
+                  selectedItems={selectedCategories}
+                  onSelectedItemsChange={handleSelectedCategoriesChange}
+                />
+
+                {/* Properties */}
+                <Divider sx={{ m: "20px 0" }} />
+                <Box>
+                  <Box
+                    display="flex"
+                    alignItems="center"
+                    justifyContent="space-between"
+                    sx={{ my: 2 }}
+                  >
+                    <Typography variant="h6">
+                      <b>By Properties</b>
+                    </Typography>
+                    <IconButton
+                      aria-label="add"
+                      size="small"
+                      onClick={() =>
+                        setSelectedProperties([
+                          ...selectedProperties,
+                          { id: Math.random().toString(36).substring(2, 10) },
+                        ])
+                      }
+                    >
+                      <AddIcon />
+                    </IconButton>
+                  </Box>
+                  <div>
+                    {selectedProperties?.map((item, index) => (
+                      <React.Fragment key={item?.id}>
+                        <PropertyFilterItem
+                          id={item?.id}
+                          properties={properties}
+                          onChange={handleSelectedProperties}
+                          onDelete={handleDeleteProp}
+                        />
+                        {index < selectedProperties.length - 1 && (
+                          <Divider
+                            sx={{ m: "20px 0", color: "#bdbdbd", fontSize: 12 }}
+                          >
+                            and
+                          </Divider>
+                        )}
+                      </React.Fragment>
+                    ))}
+                  </div>
+                </Box>
+                <Box sx={{ m: 4, display: "flex", justifyContent: "center" }}>
+                  <Button variant="contained" onClick={onUpdateSearchParams}>
+                    Search
+                  </Button>
+                </Box>
+              </Box>
+            </AccordionDetails>
+          </Accordion>
+        ) : (
+          <Box sx={{ marginRight: "20px", width: "320px", minWidth: "320px" }}>
+            {/* Non-mobile layout: Original filter section */}
             <Typography variant="h6" sx={{ mb: "10px" }}>
               <b>By Categories</b>
             </Typography>
@@ -232,61 +324,59 @@ const SearchPage = () => {
               selectedItems={selectedCategories}
               onSelectedItemsChange={handleSelectedCategoriesChange}
             />
-          </Box>
-
-          {/* Material Properties */}
-          <Divider sx={{ m: "20px 0" }} />
-          <Box>
-            <Box
-              display="flex"
-              alignItems="center"
-              justifyContent="space-between"
-              sx={{ my: 2 }}
-            >
-              <Typography variant="h6">
-                <b>By Properties</b>
-              </Typography>
-              <IconButton
-                aria-label="add"
-                size="small"
-                onClick={() =>
-                  setSelectedProperties([
-                    ...selectedProperties,
-                    { id: Math.random().toString(36).substring(2, 10) },
-                  ])
-                }
+            <Divider sx={{ m: "20px 0" }} />
+            <Box>
+              <Box
+                display="flex"
+                alignItems="center"
+                justifyContent="space-between"
+                sx={{ my: 2 }}
               >
-                <AddIcon />
-              </IconButton>
+                <Typography variant="h6">
+                  <b>By Properties</b>
+                </Typography>
+                <IconButton
+                  aria-label="add"
+                  size="small"
+                  onClick={() =>
+                    setSelectedProperties([
+                      ...selectedProperties,
+                      { id: Math.random().toString(36).substring(2, 10) },
+                    ])
+                  }
+                >
+                  <AddIcon />
+                </IconButton>
+              </Box>
+              <div>
+                {selectedProperties?.map((item, index) => (
+                  <React.Fragment key={item?.id}>
+                    <PropertyFilterItem
+                      id={item?.id}
+                      properties={properties}
+                      onChange={handleSelectedProperties}
+                      onDelete={handleDeleteProp}
+                    />
+                    {index < selectedProperties.length - 1 && (
+                      <Divider
+                        sx={{ m: "20px 0", color: "#bdbdbd", fontSize: 12 }}
+                      >
+                        and
+                      </Divider>
+                    )}
+                  </React.Fragment>
+                ))}
+              </div>
             </Box>
-            <div>
-              {selectedProperties?.map((item, index) => (
-                <React.Fragment key={item?.id}>
-                  <PropertyFilterItem
-                    key={item?.id}
-                    id={item?.id}
-                    properties={properties}
-                    onChange={handleSelectedProperties}
-                    onDelete={handleDeleteProp}
-                  />
-                  {index < selectedProperties.length - 1 && (
-                    <Divider
-                      sx={{ m: "20px 0", color: "#bdbdbd", fontSize: 12 }}
-                    >
-                      and
-                    </Divider>
-                  )}
-                </React.Fragment>
-              ))}
-            </div>
+            <Box sx={{ m: 4, display: "flex", justifyContent: "center" }}>
+              <Button variant="contained" onClick={onUpdateSearchParams}>
+                Search
+              </Button>
+            </Box>
           </Box>
+        )}
 
-          <Box sx={{ m: 4, display: "flex", justifyContent: "center" }}>
-            <Button variant="contained" onClick={onUpdateSearchParams}>
-              Search
-            </Button>
-          </Box>
-        </Box>
+        {/* Materials Table (always visible) */}
         <Box component="main" sx={{ flexGrow: 1 }}>
           <MaterialsTable
             searchCategories={searchParams?.searchCategories}
