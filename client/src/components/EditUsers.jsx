@@ -25,13 +25,8 @@ import {
 } from "../services/user-service";
 import NavbarPrivate from "./NavbarPrivate";
 import "./styles/EditUsers.css";
-
-// Role mappings
-const roleMap = {
-  0: "Admin",
-  1: "Normal User",
-  2: "Premium User",
-};
+import { ROLE_LABELS } from "../constants";
+import { MenuItem } from "@mui/material";
 
 const EditUsers = () => {
   const [users, setUsers] = useState([]);
@@ -67,12 +62,14 @@ const EditUsers = () => {
   const handleEditSave = async () => {
     try {
       const token = localStorage.getItem("access_token");
-      await updateUserInfo(token, editUser.email, {
+      await updateUserInfo(token, editUser._id, {
         firstName: editUser.firstName,
         lastName: editUser.lastName,
+        email: editUser.email,
         dateOfBirth: editUser.dateOfBirth,
         gender: editUser.gender,
-        email: editUser.email,
+        role: editUser.role,
+        // email should not be editable
       });
       setEditDialogOpen(false);
       fetchUsers(); // Refresh list
@@ -82,10 +79,11 @@ const EditUsers = () => {
   };
 
   // Reset user password
+
   const handleResetPassword = async () => {
     try {
       const token = localStorage.getItem("access_token");
-      await resetUserPassword(token, editUser.email, newPassword);
+      await resetUserPassword(token, editUser._id, newPassword);
       setResetPasswordDialogOpen(false);
       setNewPassword("");
     } catch (err) {
@@ -115,20 +113,20 @@ const EditUsers = () => {
     <>
       {/* Navbar with logged-in admin's name */}
       <NavbarPrivate />
-      <Container>
+      <Container className="edit-users-container">
         <Typography className="edit-users-title">Manage Users</Typography>
 
         {/* Users Table */}
         <Table className="user-table">
           <TableHead>
-            <TableRow>
-              <TableCell>First Name</TableCell>
-              <TableCell>Last Name</TableCell>
-              <TableCell>Email</TableCell>
-              <TableCell>Gender</TableCell>
-              <TableCell>DOB</TableCell>
-              <TableCell>Role</TableCell>
-              <TableCell align="right">Actions</TableCell>
+            <TableRow className="table-header-row">
+              <TableCell className="table-cell"><span>First Name</span></TableCell>
+              <TableCell><span>Last Name</span></TableCell>
+              <TableCell><span>Email</span></TableCell>
+              <TableCell><span>Gender</span></TableCell>
+              <TableCell><span>DOB</span></TableCell>
+              <TableCell><span>Role</span></TableCell>
+              <TableCell align="right"><span>Actions</span></TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -139,12 +137,15 @@ const EditUsers = () => {
                 <TableCell>{user.email}</TableCell>
                 <TableCell>{user.gender}</TableCell>
                 <TableCell>{user.dateOfBirth}</TableCell>
-                <TableCell>{roleMap[user.role] || "Unknown"}</TableCell>
+                <TableCell>{ROLE_LABELS[user.role] || "Unknown"}</TableCell>
                 <TableCell align="right">
-                  {/* Edit Button */}
-                  <IconButton onClick={() => handleEditClick(user)}>
-                    <Edit />
-                  </IconButton>
+                  {/* Edit Button - only show if not the current user */}
+                  {user.email !== currentEmail && (
+                    <IconButton onClick={() => handleEditClick(user)}>
+                      <Edit />
+                    </IconButton>
+                  )}
+
                   {/* Reset Password Button */}
                   <Tooltip title="Reset Password">
                     <IconButton
@@ -156,6 +157,7 @@ const EditUsers = () => {
                       <LockReset />
                     </IconButton>
                   </Tooltip>
+
                   {/* Delete Button */}
                   <IconButton onClick={() => handleDelete(user)}>
                     <Delete />
@@ -210,13 +212,32 @@ const EditUsers = () => {
             />
             <TextField
               fullWidth
+              select
               label="Gender"
               value={editUser?.gender || ""}
               onChange={(e) =>
                 setEditUser({ ...editUser, gender: e.target.value })
               }
               margin="dense"
-            />
+            >
+              <MenuItem value="male">Male</MenuItem>
+              <MenuItem value="female">Female</MenuItem>
+              <MenuItem value="other">Other</MenuItem>
+            </TextField>
+            <TextField
+              fullWidth
+              select
+              label="Role"
+              value={editUser?.role || ""}
+              onChange={(e) =>
+                setEditUser({ ...editUser, role: e.target.value })
+              }
+              margin="dense"
+            >
+              <MenuItem value="admin">Admin</MenuItem>
+              <MenuItem value="normal_user">Normal User</MenuItem>
+              <MenuItem value="premium_user">Premium User</MenuItem>
+            </TextField>
           </DialogContent>
           <DialogActions>
             <Button onClick={() => setEditDialogOpen(false)}>Cancel</Button>

@@ -1,8 +1,10 @@
+/* --- Profile Page --- */
+
 .profile-main {
   display: flex;
   width: 100%;
   background-color: #f3f4f6;
-  min-height: calc(100vh - 64px); /* minus navbar */
+  min-height: calc(100vh - 64px);
 }
 
 .profile-sidebar {
@@ -83,26 +85,25 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 12px 0;
-  border-bottom: 1px solid #e5e7eb;
+  padding: 10px 0;
+  border-bottom: 1px solid #ddd;
 }
 
 .bookmark-title {
-  color: #374151;
+  font-weight: 600;
+  flex: 1;
+  color: #666;
+  margin-left: 20px;
 }
 
 .bookmark-actions {
   display: flex;
   align-items: center;
-  gap: 24px;
+  gap: 10px;
 }
 
 .bookmark-date {
-  font-size: 0.75rem;
-  color: #6b7280;
-}
-
-.bookmark-buttons {
-  display: flex;
-  gap: 8px;
+  font-size: 0.85rem;
+  color: #666;
+  margin-right: 8px;
 }
