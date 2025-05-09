@@ -24,7 +24,7 @@ import "./styles/Navbar.css";
 import HomeOutlinedIcon from "@mui/icons-material/HomeOutlined";
 import SearchIcon from "@mui/icons-material/Search";
 import TroubleshootIcon from "@mui/icons-material/Troubleshoot";
-import CompareArrowsIcon from "@mui/icons-material/CompareArrows";
+import BarChart from "@mui/icons-material/BarChart";
 import FileUploadOutlinedIcon from "@mui/icons-material/FileUploadOutlined";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 
@@ -32,7 +32,7 @@ const navItems = [
   { label: "Home", path: "/home", icon: <HomeOutlinedIcon /> },
   { label: "Search", path: "/search", icon: <SearchIcon /> },
   { label: "Smart Search", path: "/smart-search", icon: <TroubleshootIcon /> },
-  { label: "Compare", path: "/compare", icon: <CompareArrowsIcon /> },
+  { label: "Compare", path: "/compare", icon: <BarChart /> },
   { label: "Upload", path: "/upload", icon: <FileUploadOutlinedIcon /> },
   { label: "About Us", path: "/aboutus", icon: <InfoOutlinedIcon /> },
 ];
