@@ -13,7 +13,7 @@ WORKDIR /app
 
 # 5. Copy requirements and install Python packages
 COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install -r requirements.txt
 
 # 6. Pre-download the model during image build
 # This makes startup faster on Azure as the model is part of the image.
