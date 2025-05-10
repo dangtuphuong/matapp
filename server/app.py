@@ -40,6 +40,11 @@ def create_app():
     app.register_blueprint(deepseek_bp, url_prefix="/api")
     app.register_blueprint(gemini_bp, url_prefix="/api")
 
+    # Flask Health Check Endpoint
+    @app.route("/healthz")
+    def healthz():
+        return "OK", 200
+
     # Client (React) route
     @app.route("/")
     def index():
