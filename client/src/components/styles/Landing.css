@@ -281,7 +281,7 @@
 
 @media (max-width: 360px) {
   .background-wrapper {
-    height: 400px !important;
+    height: 360px !important;
   }
 
   .landing-hero-title {
