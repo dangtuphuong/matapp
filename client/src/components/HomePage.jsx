@@ -153,16 +153,17 @@ const HomePage = () => {
 
           <Snackbar
             open={openSnackbar}
-            autoHideDuration={4000}
+            autoHideDuration={3000}
             onClose={() => setOpenSnackbar(false)}
-            anchorOrigin={{ vertical: "top", horizontal: "center" }}
+            anchorOrigin={{ vertical: "top", horizontal: "right" }}
+            sx={{ mt: 6 }}
           >
             <Alert
               onClose={() => setOpenSnackbar(false)}
               severity="success"
+              variant="filled"
               sx={{
                 width: "100%",
-                fontSize: "1.2rem",
                 textAlign: "center",
                 "@media (max-width: 360px)": {
                   fontSize: "0.9rem", // Smaller font size on mobile
