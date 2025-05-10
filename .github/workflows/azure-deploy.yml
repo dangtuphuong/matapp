@@ -85,37 +85,39 @@ jobs:
             --set-env-vars "PORT=8000"
 
       - name: Wait for new revision to become ready
-        id: check-health
         run: |
-          echo "Waiting for new healthy revision..."
+          echo "Waiting for healthy revision..."
+          LATEST_REVISION=""
+          # First get the latest revision name
           for i in {1..10}; do
-            NEW_REVISION=$(az containerapp revision list \
+            LATEST_REVISION=$(az containerapp revision list \
               --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
               --name ${{ env.CONTAINER_APP_NAME }} \
-              --query "[?contains(name, '${{ github.sha }}')].name | [0]" -o tsv)
-            if [ -n "$NEW_REVISION" ]; then
-              echo "NEW_REVISION=$NEW_REVISION" >> $GITHUB_ENV
+              --query "[?properties.active==\`true\`].name | [0]" -o tsv)
+            if [ -n "$LATEST_REVISION" ]; then
+              echo "Latest active revision: $LATEST_REVISION"
               break
             fi
             sleep 5
           done
 
+          # Then check if it's healthy
           for i in {1..30}; do
             STATUS=$(az containerapp revision show \
               --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
               --name ${{ env.CONTAINER_APP_NAME }} \
-              --revision $NEW_REVISION \
+              --revision $LATEST_REVISION \
               --query "properties.healthState" -o tsv)
             echo "Revision health status: $STATUS"
             if [ "$STATUS" == "Healthy" ]; then
-              echo "REVISION_HEALTHY=true" >> $GITHUB_ENV
+              echo "✅ Revision is healthy"
               exit 0
             fi
             sleep 10
           done
+          echo "❌ Revision failed to become healthy in time"
 
-          echo "Revision did not become healthy"
-          echo "REVISION_HEALTHY=false" >> $GITHUB_ENV
+
           exit 1
 
       - name: Set 100% traffic to new revision if healthy
