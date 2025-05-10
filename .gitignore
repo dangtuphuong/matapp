@@ -3,3 +3,4 @@ venv
 # server/.env
 __pycache__
 myenv
+build

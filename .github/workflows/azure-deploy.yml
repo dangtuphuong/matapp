@@ -1,0 +1,98 @@
+name: Build Client, Build Server Docker Image, and Deploy to Azure
+
+on:
+  push:
+    branches: ["production"]
+  workflow_dispatch:
+
+env:
+  AZURE_WEBAPP_NAME: ${{ secrets.WEB_APP_NAME }}
+  ACR_LOGIN_SERVER: ${{ secrets.ACR_LOGIN_SERVER }}
+  IMAGE_NAME: ${{ secrets.IMAGE_NAME }}
+
+  SENTENCE_TRANSFORMER_MODEL: "all-MiniLM-L6-v2"
+
+  # Paths
+  CLIENT_DIR: ./client
+  SERVER_DIR: ./server
+  CLIENT_DIST_DIR: ./client/dist
+  SERVER_BUILD_TARGET_DIR: ./server/build
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # ---------------------------
+      # Build React Vite Client
+      # ---------------------------
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install client dependencies and build
+        working-directory: ${{ env.CLIENT_DIR }}
+        run: |
+          npm install
+          npm run build
+
+      # ------------------------------------------------------------
+      # Copy client build output to server's static assets location
+      # ------------------------------------------------------------
+      - name: Create server build target directory
+        run: mkdir -p ${{ env.SERVER_BUILD_TARGET_DIR }}
+
+      - name: Copy client dist to server build directory
+        run: cp -a ${{ env.CLIENT_DIST_DIR }}/. ${{ env.SERVER_BUILD_TARGET_DIR }}/
+
+      # ---------------------------------------------
+      # Login to Azure and Azure Container Registry
+      # ---------------------------------------------
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Azure
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Log in to Azure Container Registry
+        uses: azure/docker-login@v1
+        with:
+          login-server: ${{ env.ACR_LOGIN_SERVER }}
+          username: ${{ secrets.ACR_USERNAME }}
+          password: ${{ secrets.ACR_PASSWORD }}
+
+      # ------------------------------------------
+      # Build and Push Server Docker Image
+      # ------------------------------------------
+      - name: Build and push server Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: ${{ env.SERVER_DIR }}
+          file: ${{ env.SERVER_DIR }}/Dockerfile
+          push: true
+          tags: ${{ env.ACR_LOGIN_SERVER }}/${{ env.IMAGE_NAME }}:${{ github.sha }}, ${{ env.ACR_LOGIN_SERVER }}/${{ env.IMAGE_NAME }}:latest
+          platforms: linux/amd64
+          build-args: |
+            SENTENCE_TRANSFORMER_MODEL_ARG=${{ env.SENTENCE_TRANSFORMER_MODEL }}
+
+      # ----------------------------------
+      # Deploy to Azure Web App
+      # ----------------------------------
+      - name: Deploy to Azure Web App
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: ${{ env.AZURE_WEBAPP_NAME }}
+          images: "${{ env.ACR_LOGIN_SERVER }}/${{ env.IMAGE_NAME }}:${{ github.sha }}"
+
+      - name: Azure logout
+        run: |
+          az logout
+          az cache purge
+          az account clear
+        if: always()

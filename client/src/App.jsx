@@ -10,7 +10,7 @@ import Landing from "./components/LandingPage";
 import Profile from "./components/ProfilePage";
 import EditUsers from "./components/EditUsers";
 import Material from "./components/MaterialPage";
-import Search from "./components/SearchPage";
+import Search from "./components/Searchpage";
 import SmartSearch from "./components/SmartSearch";
 import ComparisonPage from "./components/MaterialComparisonPage";
 import AboutUs from "./components/AboutUsPage";

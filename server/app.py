@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, send_from_directory
 from extensions import mongo, jwt, bcrypt, cors
 from config import Config
 from routes.user_routes import user_bp
@@ -15,7 +15,7 @@ from routes.machine_learning.gemini_search import gemini_bp
 
 
 def create_app():
-    app = Flask(__name__)
+    app = Flask(__name__, static_folder="build", static_url_path="/")
     app.config.from_object(Config)
 
     # Initialize extensions
@@ -34,6 +34,11 @@ def create_app():
     app.register_blueprint(upload_bp, url_prefix="/api")
     app.register_blueprint(deepseek_bp, url_prefix="/api")
     app.register_blueprint(gemini_bp, url_prefix="/api")
+
+    # Client (React) route
+    @app.route("/")
+    def index():
+        return send_from_directory(app.static_folder, "index.html")
 
     # Test DB connection
     with app.app_context():
