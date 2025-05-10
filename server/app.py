@@ -1,4 +1,4 @@
-from flask import Flask, send_from_directory
+from flask import Flask, send_from_directory, render_template
 from extensions import mongo, jwt, bcrypt, cors
 from config import Config
 from routes.user_routes import user_bp
@@ -15,7 +15,12 @@ from routes.machine_learning.gemini_search import gemini_bp
 
 
 def create_app():
-    app = Flask(__name__, static_folder="build", static_url_path="/")
+    app = Flask(
+        __name__,
+        static_url_path="",
+        static_folder="build",
+        template_folder="build",
+    )
     app.config.from_object(Config)
 
     # Initialize extensions
@@ -39,6 +44,10 @@ def create_app():
     @app.route("/")
     def index():
         return send_from_directory(app.static_folder, "index.html")
+
+    @app.errorhandler(404)
+    def not_found(e):
+        return render_template("index.html")
 
     # Test DB connection
     with app.app_context():
