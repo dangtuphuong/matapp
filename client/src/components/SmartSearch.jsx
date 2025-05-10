@@ -139,6 +139,7 @@ const SmartSearch = () => {
     // Show cards only when input is empty
     if (newQuery === "") {
       setShowCards(true);
+      setSearchResult([])
     } else {
       setShowCards(false);
     }

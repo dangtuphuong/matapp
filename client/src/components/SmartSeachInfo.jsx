@@ -32,7 +32,7 @@ const SmartSeachInfo = () => (
     display="grid"
     gridTemplateColumns={{ xs: "1fr", sm: "1fr 1fr" }}
     gap={3}
-    mt={5}
+    mt={4}
     sx={{ px: { xs: 2, sm: 6 } }}
   >
     {MODELS.map((tool, idx) => (
