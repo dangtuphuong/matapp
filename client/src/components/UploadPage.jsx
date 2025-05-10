@@ -152,7 +152,7 @@ const UploadPage = () => {
         Upload Material Files
       </Typography>
       <Container>
-        <Box sx={{ maxWidth: 800, mx: "auto", p: 3 }}>
+        <Box sx={{ maxWidth: 800, mx: "auto", p: 2 }}>
           {error && (
             <Alert severity="error" sx={{ mb: 3 }}>
               {error}

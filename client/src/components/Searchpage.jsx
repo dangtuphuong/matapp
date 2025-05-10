@@ -235,7 +235,7 @@ const SearchPage = () => {
         {/* Filter Section */}
         {isMobile ? (
           <Accordion
-            sx={{ width: "100%" }}
+            sx={{ width: "100%", marginBottom: 2 }}
             expanded={accordionExpanded}
             onChange={() => setAccordionExpanded((prev) => !prev)}
           >
@@ -303,7 +303,7 @@ const SearchPage = () => {
                     ))}
                   </div>
                 </Box>
-                <Box sx={{ m: 4, display: "flex", justifyContent: "center" }}>
+                <Box sx={{ m: 2, display: "flex", justifyContent: "center" }}>
                   <Button variant="contained" onClick={onUpdateSearchParams}>
                     Search
                   </Button>

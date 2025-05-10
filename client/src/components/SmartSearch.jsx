@@ -163,7 +163,6 @@ const SmartSearch = () => {
           fontSize: {
             xs: "1.5rem", // Mobile
             sm: "2rem", // Small tablets
-            md: "2.5rem", // Desktops
           },
         }}
       >
@@ -177,18 +176,19 @@ const SmartSearch = () => {
           <>
             {/* Main Search Section */}
             <Box
+              px={6}
               sx={{
                 display: "flex",
                 flexDirection: { xs: "column", sm: "row" },
                 alignItems: "center",
                 justifyContent: "center",
-                gap: 2,
                 width: "100%",
-                mt: 2,
+                gap: { xs: 2, sm: 0 },
+                mt: 3,
                 mb: 3,
               }}
             >
-              <FormControl size="small" style={{ width: 160 }}>
+              <FormControl size="small" sx={{ width: { xs: "100%", sm: 160 } }}>
                 <InputLabel id="model-select-label">Search Mode</InputLabel>
                 <Select
                   labelId="model-select-label"
@@ -206,7 +206,7 @@ const SmartSearch = () => {
               <TextField
                 size="small"
                 label="Search Query"
-                sx={{ m: "0 10px", flex: 1 }}
+                sx={{ m: "0 10px", flex: 1, width: { xs: "100%" } }}
                 placeholder="Enter what you want to search for here"
                 variant="outlined"
                 value={query}

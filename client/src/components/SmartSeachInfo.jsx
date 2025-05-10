@@ -32,8 +32,8 @@ const SmartSeachInfo = () => (
     display="grid"
     gridTemplateColumns={{ xs: "1fr", sm: "1fr 1fr" }}
     gap={3}
-    mt={6}
-    px={6}
+    mt={5}
+    sx={{ px: { xs: 2, sm: 6 } }}
   >
     {MODELS.map((tool, idx) => (
       <Card key={idx} variant="outlined" sx={{ p: 2, bgcolor: "#f9f9f9" }}>
