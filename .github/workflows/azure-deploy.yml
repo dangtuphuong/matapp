@@ -11,7 +11,6 @@ env:
   AZURE_RESOURCE_GROUP: ${{ secrets.AZURE_RESOURCE_GROUP }}
   CONTAINER_APP_NAME: ${{ secrets.CONTAINER_APP_NAME }}
 
-  SENTENCE_TRANSFORMER_MODEL: "all-MiniLM-L6-v2"
   CLIENT_DIR: ./client
   SERVER_DIR: ./server
   CLIENT_DIST_DIR: ./client/dist
@@ -69,73 +68,78 @@ jobs:
           tags: ${{ env.ACR_LOGIN_SERVER }}/${{ env.IMAGE_NAME }}:${{ github.sha }}, ${{ env.ACR_LOGIN_SERVER }}/${{ env.IMAGE_NAME }}:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
-          build-args: |
-            SENTENCE_TRANSFORMER_MODEL_ARG=${{ env.SENTENCE_TRANSFORMER_MODEL }}
 
-      - name: Update Azure Container App with new image
+      - name: Set revision mode to multiple
+        run: |
+          az containerapp revision set-mode \
+            --name ${{ env.CONTAINER_APP_NAME }} \
+            --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
+            --mode multiple
+
+      - name: Deploy new revision (0% traffic)
         run: |
           az containerapp update \
             --name ${{ env.CONTAINER_APP_NAME }} \
             --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
             --image ${{ env.ACR_LOGIN_SERVER }}/${{ env.IMAGE_NAME }}:${{ github.sha }} \
-            --set-env-vars "SENTENCE_TRANSFORMER_MODEL=${{ env.SENTENCE_TRANSFORMER_MODEL }}" "PORT=8000"
+            --set-env-vars "PORT=8000"
 
       - name: Wait for new revision to become ready
+        id: check-health
         run: |
-          echo "Waiting for healthy revision..."
-          LATEST_REVISION=""
-          # First get the latest revision name
+          echo "Waiting for new healthy revision..."
           for i in {1..10}; do
-            LATEST_REVISION=$(az containerapp revision list \
+            NEW_REVISION=$(az containerapp revision list \
               --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
               --name ${{ env.CONTAINER_APP_NAME }} \
-              --query "[?properties.active==\`true\`].name | [0]" -o tsv)
-            if [ -n "$LATEST_REVISION" ]; then
-              echo "Latest active revision: $LATEST_REVISION"
+              --query "[?contains(name, '${{ github.sha }}')].name | [0]" -o tsv)
+            if [ -n "$NEW_REVISION" ]; then
+              echo "NEW_REVISION=$NEW_REVISION" >> $GITHUB_ENV
               break
             fi
             sleep 5
           done
 
-          # Then check if it's healthy
           for i in {1..30}; do
             STATUS=$(az containerapp revision show \
               --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
               --name ${{ env.CONTAINER_APP_NAME }} \
-              --revision $LATEST_REVISION \
+              --revision $NEW_REVISION \
               --query "properties.healthState" -o tsv)
             echo "Revision health status: $STATUS"
             if [ "$STATUS" == "Healthy" ]; then
-              echo "✅ Revision is healthy"
+              echo "REVISION_HEALTHY=true" >> $GITHUB_ENV
               exit 0
             fi
             sleep 10
           done
-          echo "❌ Revision failed to become healthy in time"
+
+          echo "Revision did not become healthy"
+          echo "REVISION_HEALTHY=false" >> $GITHUB_ENV
           exit 1
 
-      - name: Roll back if new revision is unhealthy
-        if: failure()
+      - name: Set 100% traffic to new revision if healthy
+        if: env.REVISION_HEALTHY == 'true'
         run: |
-          echo "Rolling back to previous healthy revision..."
-          PREV_REVISION=$(az containerapp revision list \
+          az containerapp ingress traffic set \
             --name ${{ env.CONTAINER_APP_NAME }} \
             --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
-            --query "[?properties.healthState=='Healthy' && properties.active==\`false\`] | [0].name" -o tsv)
-
-          if [ -n "$PREV_REVISION" ]; then
-            az containerapp revision activate \
-              --name ${{ env.CONTAINER_APP_NAME }} \
+            --traffic revisionName=$(az containerapp revision list \
               --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
-              --revision $PREV_REVISION
-            echo "✅ Rolled back to $PREV_REVISION"
-          else
-            echo "⚠️ No previous healthy revision found"
-          fi
+              --name ${{ env.CONTAINER_APP_NAME }} \
+              --query "[?contains(name, '${{ github.sha }}')].name | [0]" -o tsv),weight=100
+
+          echo "✅ Traffic sent 100% to new revision"
+
+      - name: Fail workflow if revision is unhealthy
+        if: env.REVISION_HEALTHY == 'false'
+        run: |
+          echo "❌ Deployment failed: new revision is unhealthy"
+          exit 1
 
       - name: Azure logout
+        if: always()
         run: |
           az logout
           az cache purge
           az account clear
-        if: always()
