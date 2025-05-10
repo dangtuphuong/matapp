@@ -58,7 +58,6 @@ const HomePage = () => {
           backgroundPosition: "center",
           padding: "30px",
           marginTop: "-1px",
-          height: "50%",
         }}
         className="background-wrapper"
       >
