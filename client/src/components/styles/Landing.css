@@ -224,13 +224,6 @@
 }
 
 /* --- Misc. Typography --- */
-.material-title span {
-  font-weight: bold !important;
-  color: #023e8a !important;
-  text-align: center !important;
-  font-size: 22px !important;
-}
-
 .home-title {
   margin-bottom: 24px;
   margin-top: 32px;

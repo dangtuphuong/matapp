@@ -1,4 +1,5 @@
 import NavbarPrivate from "./NavbarPrivate";
+import NavbarPublic from "./NavbarPublic";
 import React, { useState, useEffect } from "react";
 import {
   Typography,
@@ -23,7 +24,7 @@ import m4 from "../img/materials/m4.png";
 const HomePage = () => {
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [username, setUsername] = useState(
-    localStorage.getItem("username") || "User"
+    localStorage.getItem("username")
   );
 
   const [currentImage, setCurrentImage] = useState(img1);
@@ -48,16 +49,15 @@ const HomePage = () => {
 
   return (
     <>
-      <NavbarPrivate />
+     {!username ? <NavbarPublic /> : <NavbarPrivate />}
 
       <Box
         sx={{
           backgroundImage: `url(${currentImage})`,
           backgroundSize: "cover",
           backgroundPosition: "center",
-          borderRadius: "20px",
-          margin: "30px",
           padding: "30px",
+          marginTop: "-1px",
           height: "50%",
         }}
         className="background-wrapper"
@@ -73,7 +73,7 @@ const HomePage = () => {
                 fontFamily: "Monospace",
               }}
             >
-              Smart Material Selection
+              Smart Material Selections
             </Typography>
             <Typography
               variant="body1"
@@ -90,15 +90,9 @@ const HomePage = () => {
               variant="contained"
               className="search"
               sx={{
-                backgroundColor: "#023e8a",
                 marginTop: "20px",
                 padding: "10px 20px",
-                fontWeight: "800",
-                borderRadius: "20px",
-
-                "&:hover": {
-                  backgroundColor: "#0077b6",
-                },
+                fontWeight: "600",
               }}
               component={Link}
               to="/search"
@@ -108,16 +102,7 @@ const HomePage = () => {
           </Box>
 
           <Box className="how-it-works">
-            <Typography
-              className="material-title"
-              sx={{
-                fontFamily: "Monospace",
-                letterSpacing: 5,
-                textTransform: "uppercase",
-              }}
-            >
-              <span>Explore Material Categories</span>
-            </Typography>
+            <h2 className="material-title"><span>Explore Material Categories</span></h2>
 
             <Box className="steps-grid">
               {[
@@ -166,43 +151,6 @@ const HomePage = () => {
               ))}
             </Box>
           </Box>
-
-          {/*<Box className="about-project">
-            <Typography variant="h6" className="section-title">
-              About the Project
-            </Typography>
-            <Box className="about-points">
-              {[
-                {
-                  icon: "🔍",
-                  title: "Our Mission",
-                  text: "To simplify the complex process of material selection.",
-                },
-                {
-                  icon: "🧠",
-                  title: "The Challenge",
-                  text: "Engineers often sift through outdated datasheets.",
-                },
-                {
-                  icon: "💡",
-                  title: "The Solution",
-                  text: "MatApp centralizes data with intuitive tools.",
-                },
-                {
-                  icon: "🚀",
-                  title: "Why It Matters",
-                  text: "Better material choices lead to smarter designs.",
-                },
-              ].map((point, idx) => (
-                <Box key={idx} className="about-point-row">
-                  <span className="about-icon">{point.icon}</span>
-                  <Typography variant="body1">
-                    <strong>{point.title}:</strong> {point.text}
-                  </Typography>
-                </Box>
-              ))}
-            </Box>
-          </Box>*/}
 
           <Snackbar
             open={openSnackbar}

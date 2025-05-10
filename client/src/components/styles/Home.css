@@ -56,10 +56,11 @@
 }
 
 .material-title span{
-  font-weight: bold !important;
-  color: #023e8a !important;
-  text-align: center !important;
-  font-size: 22px !important;
+  color: #2E2E2E;
+  text-align: center;
+  font-size: 32px;
+  margin-bottom: 16px;
+  font-weight: bold;
 }
 
 

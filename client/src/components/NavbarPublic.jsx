@@ -16,7 +16,7 @@ import {
 import MenuIcon from "@mui/icons-material/Menu";
 import HomeOutlinedIcon from "@mui/icons-material/HomeOutlined";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import logo from "../img/onlylogo.png";
 import "./styles/Navbar.css";
 
@@ -26,6 +26,7 @@ const navItems = [
 ];
 
 const NavbarPublic = () => {
+  const location = useLocation();
   const [drawerOpen, setDrawerOpen] = React.useState(false);
   const isMobile = useMediaQuery("(max-width: 900px)");
 
@@ -85,6 +86,8 @@ const NavbarPublic = () => {
                   style={{
                     padding: "11px 20px 11px 16px",
                     borderRadius: "6px",
+                    backgroundColor:
+                      location?.pathname === path ? "#2F2F2F" : "transparent",
                   }}
                 >
                   {React.cloneElement(icon, {

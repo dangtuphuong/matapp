@@ -6,20 +6,17 @@ import "./App.css";
 import Register from "./components/RegisterPage";
 import Login from "./components/LoginPage";
 import Home from "./components/HomePage";
-import Landing from "./components/LandingPage";
 import Profile from "./components/ProfilePage";
 import EditUsers from "./components/EditUsers";
 import Material from "./components/MaterialPage";
 import Search from "./components/Searchpage";
 import SmartSearch from "./components/SmartSearch";
 import ComparisonPage from "./components/MaterialComparisonPage";
-import AboutUs from "./components/AboutUsPage";
 import UploadPage from "./components/UploadPage";
 
 import ProtectedRoute from "./components/ProtectedRoute";
 import PublicRoute from "./components/PublicRoute";
 import FlexibleRoute from "./components/FlexibleRoute";
-import SessionTimeout from "./components/SessionTimeout";
 import AboutUsPage from "./components/AboutUsPage";
 
 function App() {
@@ -120,7 +117,7 @@ function App() {
         />
 
         {/* Public landing page (root route) */}
-        <Route path="/" element={<Landing />} />
+        <Route path="/" element={<Home />} />
       </Routes>
     </Router>
   );
