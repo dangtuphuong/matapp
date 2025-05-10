@@ -120,18 +120,12 @@ jobs:
 
           exit 1
 
-      - name: Set 100% traffic to new revision if healthy
-        if: env.REVISION_HEALTHY == 'true'
+      - name: Set revision mode to single
         run: |
-          az containerapp ingress traffic set \
+          az containerapp revision set-mode \
             --name ${{ env.CONTAINER_APP_NAME }} \
             --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
-            --traffic revisionName=$(az containerapp revision list \
-              --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
-              --name ${{ env.CONTAINER_APP_NAME }} \
-              --query "[?contains(name, '${{ github.sha }}')].name | [0]" -o tsv),weight=100
-
-          echo "✅ Traffic sent 100% to new revision"
+            --mode single
 
       - name: Fail workflow if revision is unhealthy
         if: env.REVISION_HEALTHY == 'false'
