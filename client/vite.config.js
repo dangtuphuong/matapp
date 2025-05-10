@@ -12,11 +12,4 @@ export default defineConfig({
       "/api": "http://127.0.0.1:5000",
     },
   },
-  build: {
-    outDir: "dist",
-    emptyOutDir: true,
-    minify: "terser",
-    sourcemap: false,
-    chunkSizeWarningLimit: 1000,
-  },
 });
