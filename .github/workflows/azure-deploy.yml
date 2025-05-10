@@ -72,8 +72,6 @@ jobs:
           tags: ${{ env.ACR_LOGIN_SERVER }}/${{ env.IMAGE_NAME }}:${{ github.sha }}, ${{ env.ACR_LOGIN_SERVER }}/${{ env.IMAGE_NAME }}:latest
           build-args: |
             SENTENCE_TRANSFORMER_MODEL_ARG=${{ env.SENTENCE_TRANSFORMER_MODEL }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
 
       - name: Update Azure Container App with new image
         run: |
