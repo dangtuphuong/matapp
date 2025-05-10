@@ -9,10 +9,10 @@ env:
   AZURE_WEBAPP_NAME: ${{ secrets.WEB_APP_NAME }}
   ACR_LOGIN_SERVER: ${{ secrets.ACR_LOGIN_SERVER }}
   IMAGE_NAME: ${{ secrets.IMAGE_NAME }}
+  AZURE_RESOURCE_GROUP: ${{ secrets.AZURE_RESOURCE_GROUP }}
 
   SENTENCE_TRANSFORMER_MODEL: "all-MiniLM-L6-v2"
 
-  # Paths
   CLIENT_DIR: ./client
   SERVER_DIR: ./server
   CLIENT_DIST_DIR: ./client/dist
@@ -82,14 +82,44 @@ jobs:
             SENTENCE_TRANSFORMER_MODEL_ARG=${{ env.SENTENCE_TRANSFORMER_MODEL }}
 
       # ----------------------------------
-      # Deploy to Azure Web App
+      # Deploy to Azure Web App (Staging)
       # ----------------------------------
-      - name: Deploy to Azure Web App
+      - name: Deploy to Azure Staging Slot
         uses: azure/webapps-deploy@v2
         with:
           app-name: ${{ env.AZURE_WEBAPP_NAME }}
+          slot-name: staging
           images: "${{ env.ACR_LOGIN_SERVER }}/${{ env.IMAGE_NAME }}:${{ github.sha }}"
 
+      # --------------------------
+      # Wait for Health (Optional)
+      # --------------------------
+      - name: Wait for staging slot to become healthy
+        run: |
+          for i in {1..10}; do
+            STATUS=$(curl -s -o /dev/null -w "%{http_code}" https://${{ env.AZURE_WEBAPP_NAME }}-staging.azurewebsites.net/healthz)
+            if [ "$STATUS" == "200" ]; then
+              echo "Staging slot is ready."
+              break
+            fi
+            echo "Waiting for readiness... ($i/10)"
+            sleep 10
+          done
+
+      # --------------------------
+      # Swap Staging → Production
+      # --------------------------
+      - name: Swap staging slot to production
+        run: |
+          az webapp deployment slot swap \
+            --name ${{ env.AZURE_WEBAPP_NAME }} \
+            --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
+            --slot staging \
+            --target-slot production
+
+      # ----------------------
+      # Clean Up Azure Session
+      # ----------------------
       - name: Azure logout
         run: |
           az logout
