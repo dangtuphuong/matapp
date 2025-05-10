@@ -29,11 +29,13 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: "20"
+          cache: "npm"
+          cache-dependency-path: "${{ env.CLIENT_DIR }}/package-lock.json"
 
       - name: Install client dependencies and build
         working-directory: ${{ env.CLIENT_DIR }}
         run: |
-          npm install
+          npm ci
           npm run build
 
       - name: Prepare server build directory
@@ -74,16 +76,32 @@ jobs:
             --name ${{ env.CONTAINER_APP_NAME }} \
             --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
             --image ${{ env.ACR_LOGIN_SERVER }}/${{ env.IMAGE_NAME }}:${{ github.sha }} \
-            --set-env-vars SENTENCE_TRANSFORMER_MODEL=${{ env.SENTENCE_TRANSFORMER_MODEL }}
+            --set-env-vars "SENTENCE_TRANSFORMER_MODEL=${{ env.SENTENCE_TRANSFORMER_MODEL }}" "PORT=8000"
 
       - name: Wait for new revision to become ready
         run: |
           echo "Waiting for healthy revision..."
-          for i in {1..30}; do
-            STATUS=$(az containerapp revision list \
+          LATEST_REVISION=""
+          # First get the latest revision name
+          for i in {1..10}; do
+            LATEST_REVISION=$(az containerapp revision list \
               --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
               --name ${{ env.CONTAINER_APP_NAME }} \
-              --query "[0].properties.healthState" -o tsv)
+              --query "[?properties.active==\`true\`].name | [0]" -o tsv)
+            if [ -n "$LATEST_REVISION" ]; then
+              echo "Latest active revision: $LATEST_REVISION"
+              break
+            fi
+            sleep 5
+          done
+
+          # Then check if it's healthy
+          for i in {1..30}; do
+            STATUS=$(az containerapp revision show \
+              --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
+              --name ${{ env.CONTAINER_APP_NAME }} \
+              --revision $LATEST_REVISION \
+              --query "properties.healthState" -o tsv)
             echo "Revision health status: $STATUS"
             if [ "$STATUS" == "Healthy" ]; then
               echo "✅ Revision is healthy"
@@ -101,7 +119,7 @@ jobs:
           PREV_REVISION=$(az containerapp revision list \
             --name ${{ env.CONTAINER_APP_NAME }} \
             --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
-            --query "[?properties.healthState=='Healthy'] | [1].name" -o tsv)
+            --query "[?properties.healthState=='Healthy' && properties.active==\`false\`] | [0].name" -o tsv)
 
           if [ -n "$PREV_REVISION" ]; then
             az containerapp revision activate \
