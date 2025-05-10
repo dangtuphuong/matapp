@@ -28,4 +28,4 @@ EXPOSE 8000
 
 # 9. Command to Run the Application
 # Use Gunicorn for production.
-CMD ["gunicorn", "--bind", "0.0.0.0:8000", "app:create_app()"]
+CMD ["gunicorn", "--factory", "--bind", "0.0.0.0:8000", "app:create_app"]
