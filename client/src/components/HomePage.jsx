@@ -8,7 +8,9 @@ import {
   Button,
   Snackbar,
   Alert,
+  useMediaQuery,
 } from "@mui/material";
+import { useTheme } from "@mui/material/styles";
 import { Link } from "react-router-dom";
 import "./styles/Navbar.css";
 import "./styles/Home.css";
@@ -23,11 +25,12 @@ import m4 from "../img/materials/m4.png";
 
 const HomePage = () => {
   const [openSnackbar, setOpenSnackbar] = useState(false);
-  const [username, setUsername] = useState(
-    localStorage.getItem("username")
-  );
+  const [username, setUsername] = useState(localStorage.getItem("username"));
 
   const [currentImage, setCurrentImage] = useState(img1);
+
+  const theme = useTheme();
+  const isLargeScreen = useMediaQuery(theme.breakpoints.up("sm"));
 
   useEffect(() => {
     const isFirstLogin = localStorage.getItem("first_login");
@@ -49,7 +52,7 @@ const HomePage = () => {
 
   return (
     <>
-     {!username ? <NavbarPublic /> : <NavbarPrivate />}
+      {!username ? <NavbarPublic /> : <NavbarPrivate />}
 
       <Box
         sx={{
@@ -76,7 +79,9 @@ const HomePage = () => {
             </Typography>
             <Typography
               variant="body1"
-              className="landing-hero-subtitle typing-text"
+              className={`landing-hero-subtitle ${
+                isLargeScreen ? "typing-text" : ""
+              }`}
               sx={{ color: "#fff" }}
             >
               <span>
@@ -101,7 +106,9 @@ const HomePage = () => {
           </Box>
 
           <Box className="how-it-works">
-            <h2 className="material-title"><span>Explore Material Categories</span></h2>
+            <h2 className="material-title">
+              <span>Explore Material Categories</span>
+            </h2>
 
             <Box className="steps-grid">
               {[
