@@ -28,15 +28,6 @@ import BarChart from "@mui/icons-material/BarChart";
 import FileUploadOutlinedIcon from "@mui/icons-material/FileUploadOutlined";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 
-const navItems = [
-  { label: "Home", path: "/home", icon: <HomeOutlinedIcon /> },
-  { label: "Search", path: "/search", icon: <SearchIcon /> },
-  { label: "Smart Search", path: "/smart-search", icon: <TroubleshootIcon /> },
-  { label: "Compare", path: "/compare", icon: <BarChart /> },
-  { label: "Upload", path: "/upload", icon: <FileUploadOutlinedIcon /> },
-  { label: "About Us", path: "/aboutus", icon: <InfoOutlinedIcon /> },
-];
-
 const Navbar = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -45,6 +36,32 @@ const Navbar = () => {
 
   const [username, setUsername] = useState(
     localStorage.getItem("username") || ""
+  );
+
+  const [userRole, setUserRole] = useState(
+    localStorage.getItem("user_role") || ""
+  );
+
+  const rawNavItems = [
+    { label: "Home", path: "/home", icon: <HomeOutlinedIcon /> },
+    { label: "Search", path: "/search", icon: <SearchIcon /> },
+    {
+      label: "Smart Search",
+      path: "/smart-search",
+      icon: <TroubleshootIcon />,
+    },
+    { label: "Compare", path: "/compare", icon: <BarChart /> },
+    {
+      label: "Upload",
+      path: "/upload",
+      icon: <FileUploadOutlinedIcon />,
+      adminOnly: true,
+    },
+    { label: "About Us", path: "/aboutus", icon: <InfoOutlinedIcon /> },
+  ];
+
+  const navItems = rawNavItems.filter(
+    (item) => !(item.adminOnly && userRole !== "admin")
   );
 
   useEffect(() => {
