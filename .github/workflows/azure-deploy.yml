@@ -43,11 +43,6 @@ jobs:
           mkdir -p ${{ env.SERVER_BUILD_TARGET_DIR }}
           cp -a ${{ env.CLIENT_DIST_DIR }}/. ${{ env.SERVER_BUILD_TARGET_DIR }}/
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-        with:
-          version: latest
-
       - name: Log in to Azure
         uses: azure/login@v1
         with:
@@ -60,15 +55,20 @@ jobs:
           username: ${{ secrets.ACR_USERNAME }}
           password: ${{ secrets.ACR_PASSWORD }}
 
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+        with:
+          version: latest
+
       - name: Build and push Docker image
         uses: docker/build-push-action@v6
         with:
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
           context: ${{ env.SERVER_DIR }}
           file: ${{ env.SERVER_DIR }}/Dockerfile
           push: true
           tags: ${{ env.ACR_LOGIN_SERVER }}/${{ env.IMAGE_NAME }}:${{ github.sha }}, ${{ env.ACR_LOGIN_SERVER }}/${{ env.IMAGE_NAME }}:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
           build-args: |
             SENTENCE_TRANSFORMER_MODEL_ARG=${{ env.SENTENCE_TRANSFORMER_MODEL }}
 
