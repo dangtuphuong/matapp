@@ -58,3 +58,26 @@
   font-size: 14px;
   font-weight: bold;
 }
+
+@media (max-width: 810px) {
+  .chart-wrapper {
+    transform: scale(0.9);
+    transform-origin: top center;
+  }
+}
+
+@media (max-width: 360px) {
+  .compare-header {
+    font-size: 1.5rem;
+  }
+
+  .chart-wrapper {
+    transform: scale(0.8);
+    transform-origin: top center;
+  }
+
+  .select-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}

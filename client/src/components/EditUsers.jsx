@@ -117,56 +117,72 @@ const EditUsers = () => {
         <Typography className="edit-users-title">Manage Users</Typography>
 
         {/* Users Table */}
-        <Table className="user-table">
-          <TableHead>
-            <TableRow className="table-header-row">
-              <TableCell className="table-cell"><span>First Name</span></TableCell>
-              <TableCell><span>Last Name</span></TableCell>
-              <TableCell><span>Email</span></TableCell>
-              <TableCell><span>Gender</span></TableCell>
-              <TableCell><span>DOB</span></TableCell>
-              <TableCell><span>Role</span></TableCell>
-              <TableCell align="right"><span>Actions</span></TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {users.map((user) => (
-              <TableRow key={user._id}>
-                <TableCell>{user.firstName}</TableCell>
-                <TableCell>{user.lastName}</TableCell>
-                <TableCell>{user.email}</TableCell>
-                <TableCell>{user.gender}</TableCell>
-                <TableCell>{user.dateOfBirth}</TableCell>
-                <TableCell>{ROLE_LABELS[user.role] || "Unknown"}</TableCell>
+        <div style={{ overflowX: "auto" }}>
+          <Table className="user-table">
+            <TableHead>
+              <TableRow className="table-header-row">
+                <TableCell className="table-cell">
+                  <span>First Name</span>
+                </TableCell>
+                <TableCell>
+                  <span>Last Name</span>
+                </TableCell>
+                <TableCell>
+                  <span>Email</span>
+                </TableCell>
+                <TableCell>
+                  <span>Gender</span>
+                </TableCell>
+                <TableCell>
+                  <span>DOB</span>
+                </TableCell>
+                <TableCell>
+                  <span>Role</span>
+                </TableCell>
                 <TableCell align="right">
-                  {/* Edit Button - only show if not the current user */}
-                  {user.email !== currentEmail && (
-                    <IconButton onClick={() => handleEditClick(user)}>
-                      <Edit />
-                    </IconButton>
-                  )}
-
-                  {/* Reset Password Button */}
-                  <Tooltip title="Reset Password">
-                    <IconButton
-                      onClick={() => {
-                        setEditUser(user);
-                        setResetPasswordDialogOpen(true);
-                      }}
-                    >
-                      <LockReset />
-                    </IconButton>
-                  </Tooltip>
-
-                  {/* Delete Button */}
-                  <IconButton onClick={() => handleDelete(user)}>
-                    <Delete />
-                  </IconButton>
+                  <span>Actions</span>
                 </TableCell>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+            </TableHead>
+            <TableBody>
+              {users.map((user) => (
+                <TableRow key={user._id}>
+                  <TableCell>{user.firstName}</TableCell>
+                  <TableCell>{user.lastName}</TableCell>
+                  <TableCell>{user.email}</TableCell>
+                  <TableCell>{user.gender}</TableCell>
+                  <TableCell>{user.dateOfBirth}</TableCell>
+                  <TableCell>{ROLE_LABELS[user.role] || "Unknown"}</TableCell>
+                  <TableCell align="right">
+                    {/* Edit Button - only show if not the current user */}
+                    {user.email !== currentEmail && (
+                      <IconButton onClick={() => handleEditClick(user)}>
+                        <Edit />
+                      </IconButton>
+                    )}
+
+                    {/* Reset Password Button */}
+                    <Tooltip title="Reset Password">
+                      <IconButton
+                        onClick={() => {
+                          setEditUser(user);
+                          setResetPasswordDialogOpen(true);
+                        }}
+                      >
+                        <LockReset />
+                      </IconButton>
+                    </Tooltip>
+
+                    {/* Delete Button */}
+                    <IconButton onClick={() => handleDelete(user)}>
+                      <Delete />
+                    </IconButton>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
 
         {/* Edit User Dialog */}
         <Dialog open={editDialogOpen} onClose={() => setEditDialogOpen(false)}>
