@@ -86,3 +86,50 @@
   gap: 16px;
   width: 350px;
 }
+
+/* Responsive styles for small screens */
+@media (max-width: 600px) {
+  .edit-users-container {
+    padding: 16px;
+  }
+
+  .edit-users-title {
+    font-size: 1.5rem;
+    padding: 12px;
+  }
+
+  .MuiTable-root {
+    display: block;
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .MuiTableRow-root {
+    display: table;
+    width: 100%;
+    table-layout: fixed;
+  }
+
+  .MuiTableCell-root {
+    padding: 8px 12px;
+    font-size: 0.85rem;
+    white-space: nowrap;
+  }
+
+  .edit-users-modal,
+  .reset-password-modal {
+    width: 100%;
+    padding: 16px;
+  }
+
+  .MuiDialogActions-root {
+    flex-direction: column;
+    gap: 10px;
+    align-items: stretch;
+  }
+
+  .MuiTextField-root {
+    font-size: 0.875rem;
+  }
+}
