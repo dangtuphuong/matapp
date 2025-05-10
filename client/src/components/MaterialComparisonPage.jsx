@@ -2,27 +2,61 @@
 
 import React, { useState, useEffect } from "react";
 import {
-  Typography, Select, MenuItem, Button, FormControl,
-  InputLabel, Tabs, Tab, Box, Table, TableHead, TableRow,
-  TableCell, TableBody, Paper, TableContainer
+  Typography,
+  Select,
+  MenuItem,
+  Button,
+  FormControl,
+  InputLabel,
+  Tabs,
+  Tab,
+  Box,
+  Table,
+  TableHead,
+  TableRow,
+  TableCell,
+  TableBody,
+  Paper,
+  TableContainer,
 } from "@mui/material";
 import { Radar, Bar } from "react-chartjs-2";
-import { getAllMaterials, getMaterialByMatGUID } from "../services/material-service";
+import {
+  getAllMaterials,
+  getMaterialByMatGUID,
+} from "../services/material-service";
 import NavbarPrivate from "./NavbarPrivate";
 import {
-  Chart as ChartJS, RadialLinearScale, PointElement, LineElement,
-  Filler, Tooltip, Legend, CategoryScale, LinearScale, BarElement
+  Chart as ChartJS,
+  RadialLinearScale,
+  PointElement,
+  LineElement,
+  Filler,
+  Tooltip,
+  Legend,
+  CategoryScale,
+  LinearScale,
+  BarElement,
 } from "chart.js";
 import "./styles/MaterialComparisonPage.css";
 
 ChartJS.register(
-  RadialLinearScale, PointElement, LineElement, Filler,
-  Tooltip, Legend, CategoryScale, LinearScale, BarElement
+  RadialLinearScale,
+  PointElement,
+  LineElement,
+  Filler,
+  Tooltip,
+  Legend,
+  CategoryScale,
+  LinearScale,
+  BarElement
 );
 
 const propertiesToCompare = [
-  "Density", "Compressive Strength", "Thermal Conductivity",
-  "Elastic Modulus", "Tensile Strength",
+  "Density",
+  "Compressive Strength",
+  "Thermal Conductivity",
+  "Elastic Modulus",
+  "Tensile Strength",
 ];
 
 const MaterialComparisonPage = () => {
@@ -41,7 +75,13 @@ const MaterialComparisonPage = () => {
   };
 
   useEffect(() => {
-    getAllMaterials({ page: 1, limit: 100, searchTerm: "", searchCategories: [], searchProperties: [] })
+    getAllMaterials({
+      page: 1,
+      limit: 100,
+      searchTerm: "",
+      searchCategories: [],
+      searchProperties: [],
+    })
       .then((data) => setMaterials(data.materials || []))
       .catch((err) => console.error("API error:", err));
   }, []);
@@ -65,7 +105,9 @@ const MaterialComparisonPage = () => {
       for (const category in material?.Properties) {
         for (const prop in material.Properties[category]) {
           if (prop.toLowerCase().includes(targetProp.toLowerCase())) {
-            const val = parseFloat(material.Properties[category][prop][0]?.Metric);
+            const val = parseFloat(
+              material.Properties[category][prop][0]?.Metric
+            );
             return isNaN(val) ? 0 : val;
           }
         }
@@ -112,15 +154,39 @@ const MaterialComparisonPage = () => {
   return (
     <>
       <NavbarPrivate />
-      <Box sx={{ px: 4, py: 3, width: '100%' }}>
+      <Box
+        sx={{
+          px: { xs: 1, sm: 2, md: 4 },
+          py: 3,
+          width: "100%",
+          maxWidth: "1200px",
+          mx: "auto",
+          transform: {
+            xs: "scale(0.9)",
+            sm: "scale(0.95)",
+            md: "scale(1)",
+          },
+          transformOrigin: "top center",
+        }}
+      >
         <Typography variant="h4" align="center" className="compare-header">
           <span>Material Comparison</span>
         </Typography>
 
         <div className="select-row">
-          <FormControl sx={{ minWidth: 400, maxWidth: 400 }}>
+          <FormControl
+            sx={{
+              minWidth: { xs: 200, sm: 300, md: 400 },
+              mx: 1,
+              mb: { xs: 2, md: 0 },
+            }}
+          >
             <InputLabel>Select Material 1</InputLabel>
-            <Select value={material1Id} onChange={(e) => setMaterial1Id(e.target.value)} label="Select Material 1">
+            <Select
+              value={material1Id}
+              onChange={(e) => setMaterial1Id(e.target.value)}
+              label="Select Material 1"
+            >
               {materials.map((mat) => (
                 <MenuItem key={mat.matGUID} value={mat.matGUID}>
                   {mat["Material Name"]}
@@ -129,9 +195,19 @@ const MaterialComparisonPage = () => {
             </Select>
           </FormControl>
 
-          <FormControl sx={{ minWidth: 400, maxWidth: 400, mx: 2 }}>
+          <FormControl
+            sx={{
+              minWidth: { xs: 200, sm: 300, md: 400 },
+              mx: 1,
+              mb: { xs: 2, md: 0 },
+            }}
+          >
             <InputLabel>Select Material 2</InputLabel>
-            <Select value={material2Id} onChange={(e) => setMaterial2Id(e.target.value)} label="Select Material 2">
+            <Select
+              value={material2Id}
+              onChange={(e) => setMaterial2Id(e.target.value)}
+              label="Select Material 2"
+            >
               {materials.map((mat) => (
                 <MenuItem key={mat.matGUID} value={mat.matGUID}>
                   {mat["Material Name"]}
@@ -140,13 +216,22 @@ const MaterialComparisonPage = () => {
             </Select>
           </FormControl>
 
-          <Button variant="contained" onClick={fetchMaterialDetails} disabled={!material1Id || !material2Id}>
+          <Button
+            variant="contained"
+            onClick={fetchMaterialDetails}
+            disabled={!material1Id || !material2Id}
+          >
             <span>Compare</span>
           </Button>
         </div>
 
         {showTabs && (
-          <Tabs value={activeTab} onChange={(_, val) => setActiveTab(val)} centered sx={{ mt: 2, mb: 4 }}>
+          <Tabs
+            value={activeTab}
+            onChange={(_, val) => setActiveTab(val)}
+            centered
+            sx={{ mt: 2, mb: 4 }}
+          >
             <Tab label="Table View" />
             <Tab label="Radar Chart" />
             <Tab label="Bar Chart" />
@@ -158,34 +243,57 @@ const MaterialComparisonPage = () => {
             <Box className="table-comparison-horizontal">
               {[material1, material2].map((material, idx) => (
                 <Box className="table-wrapper" key={idx}>
-                  <Typography variant="h6" align="center" sx={{ mb: 2 }} fontWeight="bold">
+                  <Typography
+                    variant="h6"
+                    align="center"
+                    sx={{ mb: 2 }}
+                    fontWeight="bold"
+                  >
                     {material["Material Name"]}
                   </Typography>
                   <TableContainer component={Paper}>
-                    {Object.entries(material?.["Properties"] ?? {}).map(([key, items]) => (
-                      <Table key={key}>
-                        <TableHead>
-                          <TableRow>
-                            <TableCell sx={headerStyle}>{key}</TableCell>
-                            <TableCell sx={headerStyle} align="right">Metric</TableCell>
-                            <TableCell sx={headerStyle} align="right">English</TableCell>
-                            <TableCell sx={headerStyle} align="right">Comments</TableCell>
-                          </TableRow>
-                        </TableHead>
-                        <TableBody>
-                          {Object.entries(items).map(([property, values]) =>
-                            values.map((value, index) => (
-                              <TableRow key={`${property}-${index}`}>
-                                {index === 0 && <TableCell rowSpan={values.length}>{property}</TableCell>}
-                                <TableCell align="right">{value.Metric}</TableCell>
-                                <TableCell align="right">{value.English}</TableCell>
-                                <TableCell align="right">{value.Comments}</TableCell>
-                              </TableRow>
-                            ))
-                          )}
-                        </TableBody>
-                      </Table>
-                    ))}
+                    {Object.entries(material?.["Properties"] ?? {}).map(
+                      ([key, items]) => (
+                        <Table key={key}>
+                          <TableHead>
+                            <TableRow>
+                              <TableCell sx={headerStyle}>{key}</TableCell>
+                              <TableCell sx={headerStyle} align="right">
+                                Metric
+                              </TableCell>
+                              <TableCell sx={headerStyle} align="right">
+                                English
+                              </TableCell>
+                              <TableCell sx={headerStyle} align="right">
+                                Comments
+                              </TableCell>
+                            </TableRow>
+                          </TableHead>
+                          <TableBody>
+                            {Object.entries(items).map(([property, values]) =>
+                              values.map((value, index) => (
+                                <TableRow key={`${property}-${index}`}>
+                                  {index === 0 && (
+                                    <TableCell rowSpan={values.length}>
+                                      {property}
+                                    </TableCell>
+                                  )}
+                                  <TableCell align="right">
+                                    {value.Metric}
+                                  </TableCell>
+                                  <TableCell align="right">
+                                    {value.English}
+                                  </TableCell>
+                                  <TableCell align="right">
+                                    {value.Comments}
+                                  </TableCell>
+                                </TableRow>
+                              ))
+                            )}
+                          </TableBody>
+                        </Table>
+                      )
+                    )}
                   </TableContainer>
                 </Box>
               ))}
@@ -193,7 +301,13 @@ const MaterialComparisonPage = () => {
           )}
 
           {activeTab === 1 && material1 && material2 && (
-            <Box sx={{ width: 800, height: 600, mx: "auto" }}>
+            <Box
+              sx={{
+                width: { xs: "100%", sm: "90%", md: 700, lg: 800 },
+                height: { xs: 300, sm: 400, md: 500, lg: 600 },
+                mx: "auto",
+              }}
+            >
               <Radar
                 data={radarData}
                 options={{
@@ -224,7 +338,13 @@ const MaterialComparisonPage = () => {
           )}
 
           {activeTab === 2 && material1 && material2 && (
-            <Box sx={{ width: 800, height: 500, mx: "auto" }}>
+            <Box
+              sx={{
+                width: { xs: "100%", sm: "90%", md: 700, lg: 800 },
+                height: { xs: 300, sm: 400, md: 500, lg: 600 },
+                mx: "auto",
+              }}
+            >
               <Bar
                 data={barData}
                 options={{
@@ -253,8 +373,6 @@ const MaterialComparisonPage = () => {
               />
             </Box>
           )}
-
-
         </Box>
       </Box>
     </>
