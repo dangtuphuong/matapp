@@ -139,7 +139,7 @@ const SmartSearch = () => {
     // Show cards only when input is empty
     if (newQuery === "") {
       setShowCards(true);
-      setSearchResult([])
+      setSearchResult([]);
     } else {
       setShowCards(false);
     }
@@ -232,7 +232,11 @@ const SmartSearch = () => {
                 }}
               />
 
-              <Button variant="contained" onClick={onSearch}>
+              <Button
+                disabled={isLoading}
+                variant="contained"
+                onClick={onSearch}
+              >
                 Search
               </Button>
             </Box>
