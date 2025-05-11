@@ -1,4 +1,4 @@
-name: Build and Deploy to Azure Container App
+name: Build and Deploy to Azure Web App and Azure Container App
 
 on:
   push:
@@ -69,7 +69,14 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-      - name: Set revision mode to multiple
+      - name: Deploy to Azure Web App
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: ${{ env.AZURE_WEBAPP_NAME }}
+
+          images: "${{ env.ACR_LOGIN_SERVER }}/${{ env.IMAGE_NAME }}:${{ github.sha }}"
+
+      - name: Set Azure Container Apps to use multiple revision mode
         run: |
           az containerapp revision set-mode \
             --name ${{ env.CONTAINER_APP_NAME }} \
