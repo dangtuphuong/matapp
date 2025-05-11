@@ -12,7 +12,8 @@ import {
   Paper,
   Card,
   Skeleton,
-  Button,
+  IconButton,
+  Tooltip,
 } from "@mui/material";
 import { Bookmark, BookmarkBorder } from "@mui/icons-material";
 import CategoryIcon from "@mui/icons-material/Category";
@@ -22,6 +23,7 @@ import KeyIcon from "@mui/icons-material/Key";
 
 import NavbarPrivate from "./NavbarPrivate";
 import { getMaterialByMatGUID } from "../services/material-service";
+import { toggleBookmark } from "../services/user-service";
 import { exportElementToPDF } from "../utils/pdfExporter";
 import { exportPropertiesToCSV } from "../utils/csvExporter";
 import "./styles/MaterialPage.css";
@@ -70,7 +72,15 @@ const MaterialPage = () => {
   const [isLoading, setLoading] = useState(false);
   const [material, setMaterial] = useState(null);
   const contentRef = useRef();
+  const [currentUser, setCurrentUser] = useState(null);
   const [isBookmarked, setBookmarked] = useState(false);
+
+  useEffect(() => {
+    const isBookmarked = currentUser?.bookmarks?.some(
+      (bookmark) => bookmark?.matGUID === matGUID
+    );
+    setBookmarked(isBookmarked);
+  }, [currentUser?.bookmarks, matGUID]);
 
   useEffect(() => {
     setLoading(true);
@@ -91,16 +101,9 @@ const MaterialPage = () => {
 
   const handleBookmark = async () => {
     try {
-      const token = localStorage.getItem("access_token");
-      await fetch("/api/bookmarks", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ matGUID }),
+      toggleBookmark(matGUID).then((data) => {
+        setBookmarked(data?.is_bookmarked);
       });
-      setBookmarked(true);
     } catch (err) {
       console.error("Failed to bookmark material", err);
     }
@@ -108,31 +111,26 @@ const MaterialPage = () => {
 
   return (
     <div>
-      <NavbarPrivate />
+      <NavbarPrivate onSetUser={(user) => setCurrentUser(user)} />
       {isLoading ? (
         <LoadingComponent />
       ) : (
         //BOOKMARK BUTTON
         <Container className="mat-container">
           <div style={{ textAlign: "right", marginTop: "10px" }}>
-            <Button
-              onClick={handleBookmark}
-              disabled={isBookmarked}
-              sx={{
-                float: "right",
-                backgroundColor: isBookmarked ? "transparent" : "#3d4650",
-                color: isBookmarked ? "#023e8a" : "#fff",
-                border: "1px solid #023e8a",
-                minWidth: 40,
-                height: 40,
-                borderRadius: "50%",
-                "&:hover": {
-                  backgroundColor: isBookmarked ? "#e3f2fd" : "#0353a4",
-                },
-              }}
+            <Tooltip
+              title={`${isBookmarked ? "Remove" : "Add"} Bookmark`}
+              placement="top"
             >
-              {isBookmarked ? <Bookmark /> : <BookmarkBorder />}
-            </Button>
+              <IconButton
+                aria-label="bookmark"
+                sx={{ float: "right" }}
+                color={isBookmarked ? "primary" : "default"}
+                onClick={handleBookmark}
+              >
+                <Bookmark />
+              </IconButton>
+            </Tooltip>
           </div>
 
           <div ref={contentRef}>

@@ -28,7 +28,7 @@ import BarChart from "@mui/icons-material/BarChart";
 import FileUploadOutlinedIcon from "@mui/icons-material/FileUploadOutlined";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 
-const Navbar = () => {
+const Navbar = ({ onSetUser }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -75,6 +75,9 @@ const Navbar = () => {
       .then((data) => {
         setUsername(data.firstName);
         localStorage.setItem("username", data.firstName);
+        if (onSetUser) {
+          onSetUser(data || null);
+        }
       })
       .catch(() => {
         setUsername("User");

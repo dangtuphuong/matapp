@@ -4,10 +4,9 @@ from flask_jwt_extended import (
     jwt_required,
     get_jwt_identity,
 )
-from datetime import timedelta
+from datetime import timedelta, datetime, timezone
 from models.user_model import User
 from utils.auth import hash_password, check_password
-from datetime import datetime
 
 
 user_bp = Blueprint("user", __name__)
@@ -51,7 +50,7 @@ def register():
             "lastName": last_name,
             "dateOfBirth": dob,
             "gender": gender,
-            "bookmarks": []
+            "bookmarks": [],
         }
     )
 
@@ -78,12 +77,14 @@ def login():
         return jsonify({"message": "Invalid credentials!"}), 401
 
     access_token = create_access_token(identity=email, expires_delta=timedelta(days=7))
-    return jsonify(
-    access_token=access_token,
-    firstName=user.get("firstName", ""),
-    role=user.get("role", "")
-), 200
-
+    return (
+        jsonify(
+            access_token=access_token,
+            firstName=user.get("firstName", ""),
+            role=user.get("role", ""),
+        ),
+        200,
+    )
 
 
 # ------------ User Routes ------------
@@ -98,16 +99,7 @@ def profile():
     if not user:
         return jsonify({"message": "User not found"}), 404
 
-    return jsonify(
-        {
-            "email": user["email"],
-            "role": user["role"],
-            "firstName": user.get("firstName", ""),
-            "lastName": user.get("lastName", ""),
-            "dateOfBirth": user.get("dateOfBirth", ""),
-            "gender": user.get("gender", ""),
-        }
-    )
+    return jsonify({"_id": str(user["_id"]), **user})
 
 
 @user_bp.route("/users", methods=["GET"])
@@ -192,9 +184,10 @@ def delete_user(user_id):
 
 # ------------ Bookmarks ------------
 
+
 @user_bp.route("/bookmarks", methods=["POST"])
 @jwt_required()
-def add_bookmark():
+def toggle_bookmark():
     current_user_email = get_jwt_identity()
     user = User.find_by_email(current_user_email)
 
@@ -209,14 +202,37 @@ def add_bookmark():
 
     bookmarks = user.get("bookmarks", [])
 
-    if not any(b == mat_guid or (isinstance(b, dict) and b.get("matGUID") == mat_guid) for b in bookmarks):
-        bookmarks.append({
-            "matGUID": mat_guid,
-            "saved_at": datetime.utcnow().isoformat()
-        })
-        User.update_user(user["_id"], {"bookmarks": bookmarks})
+    # Check if the bookmark already exists
+    existing_index = next(
+        (
+            i
+            for i, b in enumerate(bookmarks)
+            if b == mat_guid or (isinstance(b, dict) and b.get("matGUID") == mat_guid)
+        ),
+        None,
+    )
 
-    return jsonify({"message": "Bookmark added successfully"}), 200
+    if existing_index is not None:
+        # Remove existing bookmark
+        bookmarks.pop(existing_index)
+        action = "removed"
+        is_bookmarked = False
+    else:
+        # Add new bookmark
+        bookmarks.append({"matGUID": mat_guid, "saved_at": datetime.now(timezone.utc)})
+        action = "added"
+        is_bookmarked = True
+
+    User.update_user(user["_id"], {"bookmarks": bookmarks})
+    return (
+        jsonify(
+            {
+                "message": f"Bookmark {action} successfully",
+                "is_bookmarked": is_bookmarked,
+            }
+        ),
+        200,
+    )
 
 
 @user_bp.route("/bookmarks", methods=["GET"])
@@ -229,6 +245,7 @@ def get_bookmarks():
         return jsonify({"message": "User not found"}), 404
 
     from models.material_model import MaterialModel
+
     bookmarks = user.get("bookmarks", [])
     result = []
 
@@ -266,6 +283,7 @@ def delete_bookmark(mat_guid):
 
 
 # ------------ Update Profile Page ------------
+
 
 @user_bp.route("/profile/update", methods=["PUT"])
 @jwt_required()

@@ -88,17 +88,24 @@ export const getUserBookmarks = async (token) =>
     .then((res) => res.data);
 
 // Add a material to bookmarks
-export const addBookmark = async (matGUID) => {
+export const toggleBookmark = async (matGUID) => {
   const token = localStorage.getItem("access_token");
-  await axios.post(
-    "/api/bookmarks",
-    { matGUID },
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }
-  );
+
+  try {
+    const response = await axios.post(
+      "/api/bookmarks",
+      { matGUID },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching material:", error);
+    throw error;
+  }
 };
 
 // Get all bookmarked materials
