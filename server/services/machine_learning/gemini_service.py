@@ -2,7 +2,12 @@ import os
 import json
 from dotenv import load_dotenv
 from langchain_google_genai import ChatGoogleGenerativeAI, GoogleGenerativeAIEmbeddings
-from langchain_core.prompts import ChatPromptTemplate, FewShotChatMessagePromptTemplate
+from langchain_core.prompts import (
+    ChatPromptTemplate,
+    SystemMessagePromptTemplate,
+    HumanMessagePromptTemplate,
+    FewShotChatMessagePromptTemplate,
+)
 from langchain_community.vectorstores import FAISS
 from langchain_core.example_selectors import SemanticSimilarityExampleSelector
 
@@ -80,6 +85,7 @@ def get_few_shot_prompt():
             ),
             input_variables=["user_query"],
         )
+    return few_shot_prompt
 
 
 def get_prompt(user_query):
@@ -118,12 +124,11 @@ def generate_mongodb_query(user_query):
     try:
         instruction_prompt = get_prompt(user_query)
 
+        system_msg = SystemMessagePromptTemplate.from_template(instruction_prompt)
+        human_msg = HumanMessagePromptTemplate.from_template("{user_query}")
+
         prompt = ChatPromptTemplate.from_messages(
-            [
-                ("system", instruction_prompt),
-                get_few_shot_prompt(),
-                ("human", "{user_query}"),
-            ]
+            [system_msg, get_few_shot_prompt(), human_msg]
         )
 
         chain = prompt | get_llm()
