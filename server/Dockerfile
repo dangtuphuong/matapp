@@ -9,10 +9,9 @@ WORKDIR /app
 
 # Copy requirements and install Python packages
 COPY requirements.txt .
-RUN pip install -r requirements.txt
-
-# Install gunicorn separately (deployment-only)
-RUN pip install gunicorn
+RUN pip install --no-cache-dir -r requirements.txt && \
+    pip install --no-cache-dir gunicorn && \
+    rm -rf /root/.cache /root/.config
 
 # Pre-download the model during image build
 ARG SENTENCE_TRANSFORMER_MODEL_ARG=all-MiniLM-L6-v2

@@ -106,35 +106,3 @@ jobs:
           LATEST_REVISION=$(gcloud run services describe ${{ env.CLOUD_RUN_SERVICE_NAME }} --platform managed --region ${{ env.CLOUD_RUN_REGION }} --format 'value(status.latestReadyRevisionName)')
           echo "Cloud Run Service URL: $SERVICE_URL"
           echo "Latest Ready Revision: $LATEST_REVISION"
-
-      - name: Roll back Cloud Run service on failure
-        if: failure() && steps.deploy.outcome == 'failure'
-        run: |
-          set -eo pipefail
-          echo "Deployment failed. Attempting to roll back to the last known good revision..."
-
-          REVISIONS_INFO=$(gcloud run revisions list \
-            --service=${{ env.CLOUD_RUN_SERVICE_NAME }} \
-            --region=${{ env.CLOUD_RUN_REGION }} \
-            --platform=managed \
-            --sort-by="~metadata.creationTimestamp" \
-            --format="json")
-
-          # Find a "Ready" revision whose image is NOT the one we just attempted to deploy.
-          PREVIOUS_GOOD_REVISION=$(echo "$REVISIONS_INFO" | jq -r \
-            --arg attempted_image_with_sha "${{ env.GAR_IMAGE_PATH }}:${{ github.sha }}" \
-            '.[] | select(.spec.containers[0].image != $attempted_image_with_sha) | select(.status.conditions[] | select(.type == "Ready" and .status == "True")) | .metadata.name' | head -n 1)
-
-          if [ -n "$PREVIOUS_GOOD_REVISION" ]; then
-            echo "Found previous good revision: $PREVIOUS_GOOD_REVISION. Rolling back traffic..."
-            gcloud run services update-traffic ${{ env.CLOUD_RUN_SERVICE_NAME }} \
-              --to-revisions=${PREVIOUS_GOOD_REVISION}=100 \
-              --region=${{ env.CLOUD_RUN_REGION }} \
-              --platform=managed \
-              --quiet
-            echo "✅ Traffic rolled back to revision $PREVIOUS_GOOD_REVISION."
-            exit 0
-          else
-            echo "⚠️ Could not automatically determine a previous good revision for rollback. Manual intervention may be required."
-            exit 1
-          fi
