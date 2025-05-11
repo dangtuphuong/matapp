@@ -6,11 +6,6 @@ on:
   workflow_dispatch:
 
 env:
-  ACR_LOGIN_SERVER: ${{ secrets.ACR_LOGIN_SERVER }}
-  IMAGE_NAME: ${{ secrets.IMAGE_NAME }}
-  AZURE_RESOURCE_GROUP: ${{ secrets.AZURE_RESOURCE_GROUP }}
-  CONTAINER_APP_NAME: ${{ secrets.CONTAINER_APP_NAME }}
-
   CLIENT_DIR: ./client
   SERVER_DIR: ./server
   CLIENT_DIST_DIR: ./client/dist
@@ -50,7 +45,7 @@ jobs:
       - name: Log in to ACR
         uses: azure/docker-login@v1
         with:
-          login-server: ${{ env.ACR_LOGIN_SERVER }}
+          login-server: ${{ secrets.ACR_LOGIN_SERVER }}
           username: ${{ secrets.ACR_USERNAME }}
           password: ${{ secrets.ACR_PASSWORD }}
 
@@ -65,30 +60,30 @@ jobs:
           context: ${{ env.SERVER_DIR }}
           file: ${{ env.SERVER_DIR }}/Dockerfile
           push: true
-          tags: ${{ env.ACR_LOGIN_SERVER }}/${{ env.IMAGE_NAME }}:${{ github.sha }}, ${{ env.ACR_LOGIN_SERVER }}/${{ env.IMAGE_NAME }}:latest
+          tags: ${{ secrets.ACR_LOGIN_SERVER }}/${{ secrets.IMAGE_NAME }}:${{ github.sha }}, ${{ secrets.ACR_LOGIN_SERVER }}/${{ secrets.IMAGE_NAME }}:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v2
         with:
-          app-name: ${{ env.AZURE_WEBAPP_NAME }}
+          app-name: ${{ secrets.AZURE_WEBAPP_NAME }}
 
-          images: "${{ env.ACR_LOGIN_SERVER }}/${{ env.IMAGE_NAME }}:${{ github.sha }}"
+          images: "${{ secrets.ACR_LOGIN_SERVER }}/${{ secrets.IMAGE_NAME }}:${{ github.sha }}"
 
       - name: Set Azure Container Apps to use multiple revision mode
         run: |
           az containerapp revision set-mode \
-            --name ${{ env.CONTAINER_APP_NAME }} \
-            --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
+            --name ${{ secrets.CONTAINER_APP_NAME }} \
+            --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} \
             --mode multiple
 
       - name: Deploy new revision (0% traffic)
         run: |
           az containerapp update \
-            --name ${{ env.CONTAINER_APP_NAME }} \
-            --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
-            --image ${{ env.ACR_LOGIN_SERVER }}/${{ env.IMAGE_NAME }}:${{ github.sha }} \
+            --name ${{ secrets.CONTAINER_APP_NAME }} \
+            --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} \
+            --image ${{ secrets.ACR_LOGIN_SERVER }}/${{ secrets.IMAGE_NAME }}:${{ github.sha }} \
             --set-env-vars "PORT=8000"
 
       - name: Wait for new revision to become ready
@@ -98,8 +93,8 @@ jobs:
           # First get the latest revision name
           for i in {1..10}; do
             LATEST_REVISION=$(az containerapp revision list \
-              --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
-              --name ${{ env.CONTAINER_APP_NAME }} \
+              --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} \
+              --name ${{ secrets.CONTAINER_APP_NAME }} \
               --query "[?properties.active==\`true\`].name | [0]" -o tsv)
             if [ -n "$LATEST_REVISION" ]; then
               echo "Latest active revision: $LATEST_REVISION"
@@ -111,8 +106,8 @@ jobs:
           # Then check if it's healthy
           for i in {1..30}; do
             STATUS=$(az containerapp revision show \
-              --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
-              --name ${{ env.CONTAINER_APP_NAME }} \
+              --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} \
+              --name ${{ secrets.CONTAINER_APP_NAME }} \
               --revision $LATEST_REVISION \
               --query "properties.healthState" -o tsv)
             echo "Revision health status: $STATUS"
@@ -130,8 +125,8 @@ jobs:
       - name: Set revision mode to single
         run: |
           az containerapp revision set-mode \
-            --name ${{ env.CONTAINER_APP_NAME }} \
-            --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
+            --name ${{ secrets.CONTAINER_APP_NAME }} \
+            --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} \
             --mode single
 
       - name: Fail workflow if revision is unhealthy
