@@ -9,7 +9,6 @@ env:
   # Google Cloud Configuration
   GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
   GAR_LOCATION: ${{ secrets.GAR_LOCATION }}
-  GCLOUD_IMAGE_NAME: ${{ secrets.GCLOUD_IMAGE_NAME }}
   CLOUD_RUN_SERVICE_NAME: ${{ secrets.CLOUD_RUN_SERVICE_NAME }}
   CLOUD_RUN_REGION: ${{ secrets.CLOUD_RUN_REGION }}
 
@@ -21,7 +20,7 @@ env:
 
   # Derived: Full image path in Google Artifact Registry
   # Format: <location>-docker.pkg.dev/<project-id>/<repository-name>/<image-name>
-  GAR_IMAGE_PATH: ${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.GCP_PROJECT_ID }}/${{ env.GCLOUD_IMAGE_NAME }}/${{ env.GCLOUD_IMAGE_NAME }}
+  GAR_IMAGE_PATH: ${{ secrets.GAR_LOCATION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.GCLOUD_IMAGE_NAME }}/${{ secrets.GCLOUD_IMAGE_NAME }}
 
 jobs:
   build-and-deploy:
