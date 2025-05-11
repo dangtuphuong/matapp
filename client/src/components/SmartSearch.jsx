@@ -244,7 +244,9 @@ const SmartSearch = () => {
             {!isLoading && !searchResult?.length && isSearched && (
               <Alert
                 severity="error"
+                px={6}
                 sx={{
+                  m: 6,
                   mb: 3,
                   mt: 3,
                   display: "flex",

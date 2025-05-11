@@ -1,17 +1,27 @@
 from flask import Blueprint, jsonify, request, Response
 from flask_jwt_extended import jwt_required
-from sentence_transformers import SentenceTransformer
+from utils.llm import get_embeddings_model
 from bson.json_util import dumps
 
 from extensions import mongo
 
-model = SentenceTransformer('sentence-transformers/all-MiniLM-L6-v2')
-print("Successfully import embedding model")
+
+embedding_model = None
+
+
+def get_model():
+    global embedding_model
+    if embedding_model is None:
+        embedding_model = get_embeddings_model()
+    return embedding_model
+
 
 def get_embedding(data, precision="float32"):
-   return model.encode(data, precision=precision).tolist()
+    model = get_model()
+    return model.encode(data, precision=precision).tolist()
 
 def get_embedding_for_new_material(data):
+    model = get_model()
     return model.encode(data)
 
 vt_bp = Blueprint("vt_bp", __name__)

@@ -1,7 +1,6 @@
 import os
 import json
 from dotenv import load_dotenv
-from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_openai import ChatOpenAI
 from langchain_core.prompts import (
     ChatPromptTemplate,
@@ -11,19 +10,23 @@ from langchain_core.prompts import (
 )
 from langchain_community.vectorstores import FAISS
 from langchain_core.example_selectors import SemanticSimilarityExampleSelector
-from langchain.chains import LLMChain
+from utils.llm import get_embeddings_model
 
-
-# Load environment variables
+# Load environment
 load_dotenv()
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
 
 # ================= DeepSeek API Configuration =================
-DEEPSEEK_API_KEY = os.getenv("DEEPSEEK_API_KEY")
-DEEPSEEK_API_BASE = "https://api.deepseek.com/v1"
-DEEPSEEK_MODEL = "deepseek-chat"
+deepseek_api_key = os.getenv("DEEPSEEK_API_KEY")
+deepseek_api_base = "https://api.deepseek.com/v1"
+deepseek_model = "deepseek-chat"
 
-# ================= Load Example Data =================
+if not deepseek_api_key:
+    raise EnvironmentError(
+        "DEEPSEEK_API_KEY is missing. Set it in your environment or .env file."
+    )
+
+# ================= Load Static Resources =================
 example_data = []
 with open("resource/prompts.json", "r", encoding="utf-8") as f:
     example_data = json.load(f)
@@ -33,29 +36,52 @@ structure = ""
 with open("resource/schema.json", "r", encoding="utf-8") as input_file:
     structure = input_file.read()
 
-# ================= Embedding Configuration =================
-embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
+# ================= Lazy Load Globals =================
+embeddings = None
+llm = None
+example_selector = None
+few_shot_prompt = None
 
-# DeepSeek LLM (OpenAI-compatible)
-llm = ChatOpenAI(
-    model=DEEPSEEK_MODEL,
-    temperature=0,
-    openai_api_key=DEEPSEEK_API_KEY,
-    openai_api_base=DEEPSEEK_API_BASE,
-)
 
-# ================= Few-Shot Setup =================
-example_selector = SemanticSimilarityExampleSelector.from_examples(
-    example_data, embeddings, FAISS, k=4, input_keys=["user_query"]
-)
+def get_embeddings():
+    global embeddings
+    if embeddings is None:
+        embeddings = get_embeddings_model()
+    return embeddings
 
-few_shot_prompt = FewShotChatMessagePromptTemplate(
-    example_selector=example_selector,
-    example_prompt=ChatPromptTemplate.from_messages(
-        [("human", "{user_query}"), ("ai", "{mongo_query}")]
-    ),
-    input_variables=["user_query"],
-)
+
+def get_llm():
+    global llm
+    if llm is None:
+        llm = ChatOpenAI(
+            model=deepseek_model,
+            temperature=0,
+            openai_api_key=deepseek_api_key,
+            openai_api_base=deepseek_api_base,
+        )
+    return llm
+
+
+def get_example_selector():
+    global example_selector
+    if example_selector is None:
+        example_selector = SemanticSimilarityExampleSelector.from_examples(
+            example_data, get_embeddings(), FAISS, k=4, input_keys=["user_query"]
+        )
+    return example_selector
+
+
+def get_few_shot_prompt():
+    global few_shot_prompt
+    if few_shot_prompt is None:
+        few_shot_prompt = FewShotChatMessagePromptTemplate(
+            example_selector=get_example_selector(),
+            example_prompt=ChatPromptTemplate.from_messages(
+                [("human", "{user_query}"), ("ai", "{mongo_query}")]
+            ),
+            input_variables=["user_query"],
+        )
+    return few_shot_prompt
 
 
 def get_prompt(user_query):
@@ -98,17 +124,14 @@ def generate_mongodb_query(user_query):
         human_msg = HumanMessagePromptTemplate.from_template("{user_query}")
 
         chat_prompt = ChatPromptTemplate.from_messages(
-            [system_msg, few_shot_prompt, human_msg]
+            [system_msg, get_few_shot_prompt(), human_msg]
         )
 
-        chain = chat_prompt | llm
+        chain = chat_prompt | get_llm()
         response = chain.invoke({"user_query": user_query})
 
         return {"success": True, "content": response.content}
 
     except Exception as e:
         print(f"Error generating MongoDB query: {str(e)}")
-        return {
-            "success": False,
-            "error": str(e),
-        }
+        return {"success": False, "error": str(e)}
