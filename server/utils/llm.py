@@ -1,7 +1,7 @@
 import json
 import re
 import ast
-from langchain_huggingface import HuggingFaceEmbeddings
+from sentence_transformers import SentenceTransformer
 
 
 def clean_and_parse_pipeline(pipeline_str):
@@ -24,8 +24,6 @@ embeddings_model = None
 def get_embeddings_model():
     global embeddings_model
     if embeddings_model is None:
-        embeddings_model = HuggingFaceEmbeddings(
-            model_name="sentence-transformers/all-MiniLM-L6-v2"
-        )
-        print("Successfully loaded embedding model")
+        embeddings_model = SentenceTransformer("all-MiniLM-L6-v2")
+        print("Successfully loaded SentenceTransformer model")
     return embeddings_model

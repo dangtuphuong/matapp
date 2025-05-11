@@ -10,7 +10,8 @@ from langchain_core.prompts import (
 )
 from langchain_community.vectorstores import FAISS
 from langchain_core.example_selectors import SemanticSimilarityExampleSelector
-from utils.llm import get_embeddings_model
+from langchain_google_genai import GoogleGenerativeAIEmbeddings
+
 
 # Load environment
 load_dotenv()
@@ -43,10 +44,19 @@ example_selector = None
 few_shot_prompt = None
 
 
+GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
+
+
 def get_embeddings():
     global embeddings
     if embeddings is None:
-        embeddings = get_embeddings_model()
+        # Check if the Google API key is missing
+        if GOOGLE_API_KEY is None:
+            raise ValueError("Google API Key is missing. It is required for embedding.")
+
+        embeddings = GoogleGenerativeAIEmbeddings(
+            model="models/embedding-001", google_api_key=GOOGLE_API_KEY
+        )
     return embeddings
 
 
