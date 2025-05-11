@@ -15,6 +15,7 @@ import {
   AccordionSummary,
   AccordionDetails,
   useMediaQuery,
+  Tooltip,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -103,14 +104,16 @@ const PropertyFilterItem = ({ id, properties, onChange, onDelete }) => {
           )}
           onChange={onSelectProperty}
         />
-        <IconButton
-          aria-label="delete"
-          size="small"
-          sx={{ color: "info", "&:hover": { color: "error.main" } }}
-          onClick={() => onDelete(id)}
-        >
-          <DeleteIcon />
-        </IconButton>
+        <Tooltip title="Remove this property filter">
+          <IconButton
+            aria-label="delete"
+            size="small"
+            sx={{ color: "info", "&:hover": { color: "error.main" } }}
+            onClick={() => onDelete(id)}
+          >
+            <DeleteIcon />
+          </IconButton>
+        </Tooltip>
       </Box>
 
       {selectedProperty &&
@@ -335,18 +338,20 @@ const SearchPage = () => {
                 <Typography variant="h6">
                   <b>By Properties</b>
                 </Typography>
-                <IconButton
-                  aria-label="add"
-                  size="small"
-                  onClick={() =>
-                    setSelectedProperties([
-                      ...selectedProperties,
-                      { id: Math.random().toString(36).substring(2, 10) },
-                    ])
-                  }
-                >
-                  <AddIcon />
-                </IconButton>
+                <Tooltip title="Add more property filter">
+                  <IconButton
+                    aria-label="add"
+                    size="small"
+                    onClick={() =>
+                      setSelectedProperties([
+                        ...selectedProperties,
+                        { id: Math.random().toString(36).substring(2, 10) },
+                      ])
+                    }
+                  >
+                    <AddIcon />
+                  </IconButton>
+                </Tooltip>
               </Box>
               <div>
                 {selectedProperties?.map((item, index) => (

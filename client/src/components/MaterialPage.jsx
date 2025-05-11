@@ -118,10 +118,7 @@ const MaterialPage = () => {
         //BOOKMARK BUTTON
         <Container className="mat-container">
           <div style={{ textAlign: "right", marginTop: "10px" }}>
-            <Tooltip
-              title={`${isBookmarked ? "Remove" : "Add"} Bookmark`}
-              placement="top"
-            >
+            <Tooltip title={`${isBookmarked ? "Remove" : "Add"} Bookmark`}>
               <IconButton
                 aria-label="bookmark"
                 sx={{ float: "right" }}
