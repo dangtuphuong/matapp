@@ -96,7 +96,6 @@ jobs:
             --region ${{ env.CLOUD_RUN_REGION }} \
             --allow-unauthenticated \
             --port 8000 \
-            --tag "g-${{ github.sha }}" \
             --quiet
           echo "✅ Deployment to Cloud Run successful. Service is updating."
 
