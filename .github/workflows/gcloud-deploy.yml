@@ -94,7 +94,6 @@ jobs:
             --image ${{ env.GAR_IMAGE_PATH }}:${{ github.sha }} \
             --platform managed \
             --region ${{ env.CLOUD_RUN_REGION }} \
-            --set-env-vars "PORT=8000" \
             --allow-unauthenticated \
             --port 8000 \
             --tag "g-${{ github.sha }}" \
@@ -135,7 +134,8 @@ jobs:
               --platform=managed \
               --quiet
             echo "✅ Traffic rolled back to revision $PREVIOUS_GOOD_REVISION."
+            exit 0
           else
             echo "⚠️ Could not automatically determine a previous good revision for rollback. Manual intervention may be required."
-            # Consider exit 1 if rollback failure is critical
+            exit 1
           fi
