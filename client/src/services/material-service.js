@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_URL = "localhost:8000";
+const API_URL = "localhost:8000/api";
 
 export const getAllMaterials = async ({
   page,

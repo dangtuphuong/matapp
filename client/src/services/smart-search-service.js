@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_URL = "localhost:8000";
+const API_URL = "localhost:8000/api";
 
 export const vectorSearch = async (query, limit, skip) => {
   const token = localStorage.getItem("access_token");
