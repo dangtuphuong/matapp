@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_URL = "/api";
+const API_URL = "http://127.0.0.1:5000/api";
 
 // Register a new user
 export const registerUser = async ({
@@ -80,7 +80,7 @@ export const deleteUser = async (token, email) =>
 // Fetch bookmarked materials
 export const getUserBookmarks = async (token) =>
   await axios
-    .get("/api/bookmarks", {
+    .get(`${API_URL}/api/bookmarks`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -93,7 +93,7 @@ export const toggleBookmark = async (matGUID) => {
 
   try {
     const response = await axios.post(
-      "/api/bookmarks",
+      `${API_URL}/api/bookmarks`,
       { matGUID },
       {
         headers: {
@@ -111,7 +111,7 @@ export const toggleBookmark = async (matGUID) => {
 // Get all bookmarked materials
 export const getBookmarks = async () => {
   const token = localStorage.getItem("access_token");
-  const response = await axios.get("/api/bookmarks", {
+  const response = await axios.get(`${API_URL}/api/bookmarks`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
