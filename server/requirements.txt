@@ -12,4 +12,3 @@ langchain-openai
 langchain-community
 langchain-google-genai
 sentence_transformers
-torch==2.1.0+cpu
