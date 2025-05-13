@@ -121,7 +121,7 @@ const ProfilePage = () => {
 
   return (
     <>
-      <NavbarPrivate /> 
+      <NavbarPrivate />
 
       <main className="profile-main">
         {/* Left Sidebar */}
@@ -132,7 +132,7 @@ const ProfilePage = () => {
             </Avatar>
           </div>
           <h2 className="sidebar-name">{profile?.firstName || "Test User"}</h2>
-          <p className="sidebar-email">{profile?.email || "user@example.com"}</p>
+           <p className="sidebar-email">{profile?.email || "user@example.com"}</p>
         </div>
 
         {/* Main Content */}
@@ -183,6 +183,7 @@ const ProfilePage = () => {
               />
 
               <div className="profile-buttons">
+                {renderRoleButtons(profile?.role)}
                 {!isEditing ? (
                   <Button variant="contained" onClick={() => setIsEditing(true)}>
                     Update Profile
@@ -197,7 +198,6 @@ const ProfilePage = () => {
                     </Button>
                   </>
                 )}
-                {renderRoleButtons(profile?.role)}
               </div>
             </form>
           </section>

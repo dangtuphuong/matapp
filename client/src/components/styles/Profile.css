@@ -65,6 +65,7 @@
   display: flex;
   gap: 16px;
   margin-top: 24px;
+  justify-content: space-between;
 }
 
 .update-profile-button {

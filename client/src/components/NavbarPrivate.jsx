@@ -18,6 +18,7 @@ import { AccountCircle } from "@mui/icons-material";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import logo from "../img/onlylogo.png";
 import { getUserProfile } from "../services/user-service";
+import SettingMenu from "./SettingMenu";
 import "./styles/Navbar.css";
 
 // Icons
@@ -195,32 +196,7 @@ const Navbar = ({ onSetUser }) => {
               marginLeft: "auto",
             }}
           >
-            <Box
-              component={Link}
-              to="/profile"
-              className="navbar-profile-link"
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                backgroundColor: "rgb(47, 47, 47)",
-                borderRadius: "6px",
-              }}
-            >
-              <IconButton color="inherit">
-                <AccountCircle />
-              </IconButton>
-              <Typography
-                variant="body1"
-                className="navbar-username"
-                sx={{
-                  display: { xs: "none", sm: "block" },
-                  whiteSpace: "nowrap",
-                  marginRight: "20px",
-                }}
-              >
-                {username}
-              </Typography>
-            </Box>
+            <SettingMenu username={username} isAdmin={userRole == "admin"} />
 
             <Button
               variant="outlined"
