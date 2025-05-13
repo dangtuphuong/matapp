@@ -21,6 +21,7 @@ import {
 } from "@mui/material";
 import Collapse from "@mui/material/Collapse";
 import IconButton from "@mui/material/IconButton";
+import DeleteIcon from "@mui/icons-material/Delete";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import { Radar, Bar, Bubble } from "react-chartjs-2";
@@ -92,7 +93,7 @@ function getCommonProperties(materials) {
   return common;
 }
 
-function Row({ material }) {
+function Row({ material, onDelete }) {
   const [open, setOpen] = React.useState(false);
 
   return (
@@ -109,6 +110,14 @@ function Row({ material }) {
             onClick={() => setOpen(!open)}
           >
             {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
+          </IconButton>
+          <IconButton
+            aria-label="delete"
+            size="small"
+            sx={{ marginLeft: "10px" }}
+            onClick={() => onDelete(material?.matGUID)}
+          >
+            <DeleteIcon />
           </IconButton>
         </TableCell>
       </TableRow>
@@ -162,13 +171,13 @@ function Row({ material }) {
   );
 }
 
-function CollapsibleTable({ rows }) {
+function CollapsibleTable({ rows, onDelete }) {
   return (
     <TableContainer component={Paper}>
       <Table aria-label="collapsible table">
         <TableBody>
           {rows.map((row) => (
-            <Row key={row?.matGUID} material={row} />
+            <Row key={row?.matGUID} material={row} onDelete={onDelete} />
           ))}
         </TableBody>
       </Table>
@@ -176,7 +185,7 @@ function CollapsibleTable({ rows }) {
   );
 }
 
-const MaterialComparisonPage = () => {
+const ComparePage = () => {
   const [inputValue, setInputValue] = React.useState("");
   const [materials, setMaterials] = useState([]);
   const [selectedMat, setSelectedMat] = useState(null);
@@ -265,18 +274,24 @@ const MaterialComparisonPage = () => {
     setSelectedMats([...selectedMats, selectedMat]);
     setSelectedMat(null);
     setInputValue("");
-    const props = Object.entries(selectedMat?.Properties)
-      ?.map(([k, v]) => {
-        if (k === "Descriptive Properties") {
-          return {};
-        }
-        return v;
-      })
-      ?.map(Object.keys)
-      ?.flat();
-    const allProps = [...new Set([...selectedProps, ...props])];
-    setSelectedProps(allProps);
   };
+
+  useEffect(() => {
+    let allProps = [];
+    selectedMats?.forEach((mat) => {
+      const props = Object.entries(mat?.Properties ?? {})
+        ?.map(([k, v]) => {
+          if (k === "Descriptive Properties") {
+            return {};
+          }
+          return v;
+        })
+        ?.map(Object.keys)
+        ?.flat();
+      allProps = [...new Set([...allProps, ...props])];
+    });
+    setSelectedProps(allProps);
+  }, [selectedMats?.length]);
 
   const onChangeProps = (event, prop) => {
     const checked = event?.target?.checked;
@@ -286,6 +301,10 @@ const MaterialComparisonPage = () => {
     } else {
       setFilteredProps((prev) => prev.filter((p) => p !== prop));
     }
+  };
+
+  const handleDeleteMat = (id) => {
+    setSelectedMats(selectedMats?.filter(({ matGUID }) => matGUID !== id));
   };
 
   useEffect(() => {
@@ -347,20 +366,25 @@ const MaterialComparisonPage = () => {
         <Box sx={{ m: "20px 0" }}>
           {selectedMats?.length > 0 && (
             <Box className="table-comparison-horizontal">
-              <CollapsibleTable rows={selectedMats} />
+              <CollapsibleTable
+                rows={selectedMats}
+                onDelete={handleDeleteMat}
+              />
             </Box>
           )}
         </Box>
-        <Tabs
-          value={activeTab}
-          onChange={(_, val) => setActiveTab(val)}
-          centered
-          sx={{ mt: 2, mb: 4 }}
-        >
-          <Tab label="Radar Chart" />
-          <Tab label="Bar Chart" />
-          <Tab label="Bubble Chart" />
-        </Tabs>
+        {selectedMats?.length > 0 && (
+          <Tabs
+            value={activeTab}
+            onChange={(_, val) => setActiveTab(val)}
+            centered
+            sx={{ mt: 2, mb: 4 }}
+          >
+            <Tab label="Radar Chart" />
+            <Tab label="Bar Chart" />
+            <Tab label="Bubble Chart" />
+          </Tabs>
+        )}
         <Box sx={{ display: "flex", gap: 2 }}>
           {selectedMats?.length > 0 && (
             <Box sx={{ width: 250 }}>
@@ -487,4 +511,4 @@ const MaterialComparisonPage = () => {
   );
 };
 
-export default MaterialComparisonPage;
+export default ComparePage;
