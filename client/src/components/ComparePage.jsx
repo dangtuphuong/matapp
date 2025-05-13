@@ -98,7 +98,7 @@ function Row({ material, onDelete }) {
 
   return (
     <React.Fragment>
-      <TableRow sx={{}}>
+      <TableRow sx={{ backgroundColor: "#FAFAFA" }}>
         <TableCell component="th" scope="row">
           {material?.["Material Name"]}
         </TableCell>
@@ -378,7 +378,7 @@ const ComparePage = () => {
             value={activeTab}
             onChange={(_, val) => setActiveTab(val)}
             centered
-            sx={{ mt: 2, mb: 4 }}
+            sx={{ m: 4 }}
           >
             <Tab label="Radar Chart" />
             <Tab label="Bar Chart" />
