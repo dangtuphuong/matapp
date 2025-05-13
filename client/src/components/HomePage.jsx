@@ -31,6 +31,7 @@ const HomePage = () => {
 
   const theme = useTheme();
   const isLargeScreen = useMediaQuery(theme.breakpoints.up("sm"));
+  const isLogin = localStorage.getItem("access_token");
 
   useEffect(() => {
     const isFirstLogin = localStorage.getItem("first_login");
@@ -52,7 +53,7 @@ const HomePage = () => {
 
   return (
     <>
-      {!username ? <NavbarPublic /> : <NavbarPrivate />}
+      {!isLogin ? <NavbarPublic /> : <NavbarPrivate />}
 
       <Box
         sx={{

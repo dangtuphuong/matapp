@@ -1,6 +1,6 @@
 venv
 .venv
-# server/.env
+server/.env
 __pycache__
 myenv
 build
