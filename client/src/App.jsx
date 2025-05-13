@@ -109,7 +109,7 @@ function App() {
           }
         />
         <Route
-          path="/data"
+          path="/compare-page"
           element={
             <ProtectedRoute>
               <ComparePage />
