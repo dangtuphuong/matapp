@@ -28,6 +28,8 @@ import BarChart from "@mui/icons-material/BarChart";
 import FileUploadOutlinedIcon from "@mui/icons-material/FileUploadOutlined";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 
+import { ROLES } from "../constants";
+
 const Navbar = ({ onSetUser }) => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -75,6 +77,7 @@ const Navbar = ({ onSetUser }) => {
       .then((data) => {
         setUsername(data.firstName);
         localStorage.setItem("username", data.firstName);
+        localStorage.setItem("user_role", data?.role ?? ROLES.NORMAL_USER);
         if (onSetUser) {
           onSetUser(data || null);
         }

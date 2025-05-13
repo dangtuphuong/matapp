@@ -24,6 +24,8 @@ import onlylogo from "../img/onlylogo.png";
 import "./styles/Navbar.css";
 import { Link } from "react-router-dom";
 
+import { ROLES } from "../constants";
+
 const Login = () => {
   const navigate = useNavigate();
 
@@ -42,15 +44,12 @@ const Login = () => {
     try {
       const response = await loginUser({ email, password });
 
-      // Log the full response to verify the role
-      console.log(response.data); // Check if role is present in response.data
-
       // Store tokens and user info in localStorage
       localStorage.setItem("access_token", response.data.access_token);
       localStorage.setItem("username", response.data.firstName);
 
       // Store the user role
-      localStorage.setItem("user_role", response.data.role); // Store the user's role
+      localStorage.setItem("user_role", response?.data?.role ?? ROLES.NORMAL_USER); // Store the user's role
 
       // Set the first_login flag if it’s not already set
       if (!localStorage.getItem("first_login")) {
