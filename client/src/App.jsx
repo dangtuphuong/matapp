@@ -13,6 +13,7 @@ import Search from "./components/Searchpage";
 import SmartSearch from "./components/SmartSearch";
 import ComparisonPage from "./components/MaterialComparisonPage";
 import UploadPage from "./components/UploadPage";
+import ComparePage from "./components/ComparePage";
 
 import ProtectedRoute from "./components/ProtectedRoute";
 import PublicRoute from "./components/PublicRoute";
@@ -104,6 +105,14 @@ function App() {
           element={
             <ProtectedRoute>
               <ComparisonPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/data"
+          element={
+            <ProtectedRoute>
+              <ComparePage />
             </ProtectedRoute>
           }
         />
