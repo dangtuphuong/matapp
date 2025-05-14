@@ -132,7 +132,7 @@ const ProfilePage = () => {
             </Avatar>
           </div>
           <h2 className="sidebar-name">{profile?.firstName || "Test User"}</h2>
-           <p className="sidebar-email">{profile?.email || "user@example.com"}</p>
+          <p className="sidebar-email">{profile?.email || "user@example.com"}</p>
         </div>
 
         {/* Main Content */}
@@ -190,12 +190,17 @@ const ProfilePage = () => {
                   </Button>
                 ) : (
                   <>
-                    <Button variant="contained" onClick={handleSave}>
-                      Save
-                    </Button>
-                    <Button variant="outlined" onClick={() => setIsEditing(false)}>
-                      Cancel
-                    </Button>
+                    <Box display="flex" gap={2}>
+                      <Button
+                        variant="outlined"
+                        onClick={() => setIsEditing(false)}
+                      >
+                        Cancel
+                      </Button>
+                      <Button variant="contained" onClick={handleSave}>
+                        Save
+                      </Button>
+                    </Box>
                   </>
                 )}
               </div>
@@ -219,7 +224,7 @@ const ProfilePage = () => {
                       <IconButton onClick={() => navigate(`/material/${bookmark.matGUID}`)}>
                         <OpenInNew fontSize="small" />
                       </IconButton>
-                      <IconButton onClick={() => handleDeleteBookmark(bookmark.matGUID)}>
+                       <IconButton onClick={() => handleDeleteBookmark(bookmark.matGUID)}>
                         <Delete fontSize="small" />
                       </IconButton>
                     </div>
