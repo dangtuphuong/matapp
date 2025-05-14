@@ -4,7 +4,7 @@ from flask_jwt_extended import (
     jwt_required,
     get_jwt_identity,
 )
-from datetime import timedelta, datetime, timezone
+from datetime import timedelta, datetime
 from models.user_model import User
 from utils.auth import hash_password, check_password
 
@@ -219,7 +219,9 @@ def toggle_bookmark():
         is_bookmarked = False
     else:
         # Add new bookmark
-        bookmarks.append({"matGUID": mat_guid, "saved_at": datetime.now(timezone.utc)})
+        bookmarks.append(
+            {"matGUID": mat_guid, "saved_at": datetime.utcnow().isoformat()}
+        )
         action = "added"
         is_bookmarked = True
 

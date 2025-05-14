@@ -80,7 +80,7 @@ export const deleteUser = async (token, email) =>
 // Fetch bookmarked materials
 export const getUserBookmarks = async (token) =>
   await axios
-    .get(`${API_URL}/api/bookmarks`, {
+    .get(`${API_URL}/bookmarks`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -93,7 +93,7 @@ export const toggleBookmark = async (matGUID) => {
 
   try {
     const response = await axios.post(
-      `${API_URL}/api/bookmarks`,
+      `${API_URL}/bookmarks`,
       { matGUID },
       {
         headers: {
@@ -111,7 +111,7 @@ export const toggleBookmark = async (matGUID) => {
 // Get all bookmarked materials
 export const getBookmarks = async () => {
   const token = localStorage.getItem("access_token");
-  const response = await axios.get(`${API_URL}/api/bookmarks`, {
+  const response = await axios.get(`${API_URL}/bookmarks`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
