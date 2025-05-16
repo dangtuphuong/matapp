@@ -19,6 +19,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import PublicRoute from "./components/PublicRoute";
 import FlexibleRoute from "./components/FlexibleRoute";
 import AboutUsPage from "./components/AboutUsPage";
+import BubbleChartPage from "./components/BubbleChart";
 
 function App() {
   return (
@@ -121,6 +122,15 @@ function App() {
           element={
             <ProtectedRoute>
               <UploadPage />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/bubblechart"
+          element={
+            <ProtectedRoute>
+              <BubbleChartPage />
             </ProtectedRoute>
           }
         />
