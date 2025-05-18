@@ -53,7 +53,7 @@ const Navbar = ({ onSetUser }) => {
       path: "/smart-search",
       icon: <TroubleshootIcon />,
     },
-    { label: "Compare", path: "/compare", icon: <BarChart /> },
+    { label: "Compare", path: "/compare-page", icon: <BarChart /> },
     {
       label: "Upload",
       path: "/upload",

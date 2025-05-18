@@ -25,6 +25,8 @@ import { RichTreeView } from "@mui/x-tree-view/RichTreeView";
 import { getCategories, getProperties } from "../services/material-service";
 import NavbarPrivate from "./NavbarPrivate";
 import MaterialsTable from "./MaterialsTable";
+import { useNavigate } from "react-router-dom";
+import BubbleChartIcon from '@mui/icons-material/BubbleChart';
 
 const convertTreeData = (data) =>
   data?.map(({ name, children }) => ({
@@ -183,6 +185,17 @@ const SearchPage = () => {
     searchCategories: [],
     searchProperties: [],
   });
+
+  const navigate = useNavigate();
+
+  const handleBubbleChartRedirect = () => {
+    navigate("/bubblechart", {
+      state: {
+        searchCategories: searchParams?.searchCategories,
+        searchProperties: searchParams?.searchProperties,
+      },
+    });
+  };
 
   useEffect(() => {
     getCategories()
@@ -373,9 +386,22 @@ const SearchPage = () => {
                 ))}
               </div>
             </Box>
+
             <Box sx={{ m: 4, display: "flex", justifyContent: "center" }}>
               <Button variant="contained" onClick={onUpdateSearchParams}>
                 Search
+              </Button>
+            </Box>
+
+            <Box sx={{ m: 2 }}>
+              <Button
+                fullWidth
+                variant="outlined"
+                color="secondary"
+                startIcon={<BubbleChartIcon />}
+                onClick={handleBubbleChartRedirect}
+              >
+                View Bubble Chart
               </Button>
             </Box>
           </Box>
