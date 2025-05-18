@@ -77,8 +77,8 @@ const SmartSearch = () => {
   const isAllowed = userRole === "admin" || userRole === "premium_user";
 
   const [isLoading, setLoading] = useState(false);
-  const [options, setOptions] = useState([]);
-  const [model, setModel] = useState("");
+  const [options, setOptions] = useState([MODELS.VECTOR]);
+  const [model, setModel] = useState(MODELS.VECTOR);
   const [skip, setSkip] = useState(0);
   const [limit, setLimit] = useState(10);
   const [query, setQuery] = useState("");
@@ -97,7 +97,7 @@ const SmartSearch = () => {
           (key) => data?.settings?.smart_search[key]
         );
         setOptions(result);
-        setModel(result[0]);
+        setModel(result[0] ?? "");
       })
       .catch((err) => console.error(err));
   }, []);
