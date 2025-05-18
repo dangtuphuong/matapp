@@ -26,7 +26,7 @@ import { getCategories, getProperties } from "../services/material-service";
 import NavbarPrivate from "./NavbarPrivate";
 import MaterialsTable from "./MaterialsTable";
 import { useNavigate } from "react-router-dom";
-import BubbleChartIcon from '@mui/icons-material/BubbleChart';
+import BubbleChartIcon from "@mui/icons-material/BubbleChart";
 
 const convertTreeData = (data) =>
   data?.map(({ name, children }) => ({
@@ -330,8 +330,25 @@ const SearchPage = () => {
         ) : (
           <Box sx={{ marginRight: "20px", width: "320px", minWidth: "320px" }}>
             {/* Non-mobile layout: Original filter section */}
-            <Typography variant="h6" sx={{ mb: "10px" }}>
+            <Typography
+              variant="h6"
+              sx={{
+                mb: "10px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+              }}
+            >
               <b>By Categories</b>
+              <Tooltip title="Visualize data grouped by category">
+                <IconButton
+                  sx={{ "&:hover": { color: "primary.main" } }}
+                  size="small"
+                  onClick={handleBubbleChartRedirect}
+                >
+                  <BubbleChartIcon />
+                </IconButton>
+              </Tooltip>
             </Typography>
             <RichTreeView
               multiSelect
@@ -390,18 +407,6 @@ const SearchPage = () => {
             <Box sx={{ m: 4, display: "flex", justifyContent: "center" }}>
               <Button variant="contained" onClick={onUpdateSearchParams}>
                 Search
-              </Button>
-            </Box>
-
-            <Box sx={{ m: 2 }}>
-              <Button
-                fullWidth
-                variant="outlined"
-                color="secondary"
-                startIcon={<BubbleChartIcon />}
-                onClick={handleBubbleChartRedirect}
-              >
-                View Bubble Chart
               </Button>
             </Box>
           </Box>
