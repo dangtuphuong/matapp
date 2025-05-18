@@ -98,7 +98,10 @@ function Row({ material, onDelete }) {
 
   return (
     <React.Fragment>
-      <TableRow sx={{ backgroundColor: "#FAFAFA" }}>
+      <TableRow
+        sx={{ backgroundColor: "#FAFAFA" }}
+        onClick={() => setOpen(!open)}
+      >
         <TableCell component="th" scope="row">
           {material?.["Material Name"]}
         </TableCell>
@@ -171,10 +174,25 @@ function Row({ material, onDelete }) {
   );
 }
 
+const tableHeaderStyle = {
+  ...headerStyle,
+  backgroundColor: "#424242",
+  color: "white",
+};
+
 function CollapsibleTable({ rows, onDelete }) {
   return (
     <TableContainer component={Paper}>
-      <Table aria-label="collapsible table">
+      <Table sx={{ border: "1px solid #ccc" }}>
+        <TableHead>
+          <TableRow>
+            <TableCell sx={tableHeaderStyle}>Material Name</TableCell>
+            <TableCell sx={tableHeaderStyle}>Categories</TableCell>
+            <TableCell sx={tableHeaderStyle} align="right">
+              Actions
+            </TableCell>
+          </TableRow>
+        </TableHead>
         <TableBody>
           {rows.map((row) => (
             <Row key={row?.matGUID} material={row} onDelete={onDelete} />
@@ -188,7 +206,6 @@ function CollapsibleTable({ rows, onDelete }) {
 const ComparePage = () => {
   const [inputValue, setInputValue] = React.useState("");
   const [materials, setMaterials] = useState([]);
-  const [selectedMat, setSelectedMat] = useState(null);
   const [selectedMats, setSelectedMats] = useState([]);
   const [selectedProps, setSelectedProps] = useState([]);
   const [activeTab, setActiveTab] = useState(0);
@@ -266,13 +283,8 @@ const ComparePage = () => {
   };
 
   const onSelectMat = (event, selectedOption) => {
-    setSelectedMat(selectedOption);
-  };
-
-  const onSelectMats = () => {
-    if (!selectedMat) return;
-    setSelectedMats([...selectedMats, selectedMat]);
-    setSelectedMat(null);
+    if (!selectedOption) return;
+    setSelectedMats([...selectedMats, selectedOption]);
     setInputValue("");
   };
 
@@ -339,28 +351,17 @@ const ComparePage = () => {
         <Box sx={{ display: "flex", gap: 3, mt: 3 }}>
           <Autocomplete
             fullWidth
-            key={selectedMat?.label}
+            key={selectedMats?.length}
             size="small"
             options={materials}
             renderInput={(p) => (
-              <TextField
-                {...p}
-                label={selectedMat?.label || "Search for a material"}
-              />
+              <TextField {...p} label={"Search for a material"} />
             )}
             onInputChange={(event, newInputValue) => {
               setInputValue(newInputValue);
             }}
             onChange={onSelectMat}
           />
-
-          <Button
-            variant="contained"
-            onClick={onSelectMats}
-            disabled={!selectedMat}
-          >
-            <span>Add</span>
-          </Button>
         </Box>
 
         <Box sx={{ m: "20px 0" }}>
