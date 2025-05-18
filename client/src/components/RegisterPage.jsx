@@ -257,11 +257,11 @@ const Register = () => {
                   control={<Radio />}
                   label="Premium User"
                 />
-                <FormControlLabel
+                {/* <FormControlLabel
                   value={String(ROLES.ADMIN)}
                   control={<Radio />}
                   label="Admin"
-                />
+                /> */}
               </RadioGroup>
             </FormControl>
 
