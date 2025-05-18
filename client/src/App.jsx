@@ -13,7 +13,7 @@ import Search from "./components/Searchpage";
 import SmartSearch from "./components/SmartSearch";
 import ComparisonPage from "./components/MaterialComparisonPage";
 import UploadPage from "./components/UploadPage";
-import ComparePage from "./components/ComparePage";
+import ComparePage from "./components/compare-page/ComparePage";
 
 import ProtectedRoute from "./components/ProtectedRoute";
 import PublicRoute from "./components/PublicRoute";
