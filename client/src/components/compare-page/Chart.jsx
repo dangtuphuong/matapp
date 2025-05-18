@@ -152,7 +152,7 @@ const Chart = ({ show = false, chartType, materials, properties }) => {
   }, [properties?.length, max]);
 
   return !show ? null : (
-    <Box sx={{ display: "flex", gap: 2 }}>
+    <Box sx={{ display: "flex", gap: 2, minHeight: 500 }}>
       {materials?.length > 0 && (
         <Box sx={{ width: 250 }}>
           {properties?.map((prop) => {
@@ -190,7 +190,6 @@ const Chart = ({ show = false, chartType, materials, properties }) => {
               maintainAspectRatio: false,
               scales: {
                 r: {
-                  beginAtZero: true,
                   pointLabels: {
                     color: "#333",
                     font: { size: 14 },
@@ -231,7 +230,6 @@ const Chart = ({ show = false, chartType, materials, properties }) => {
                   grid: { color: "#f2f2f2" },
                 },
                 y: {
-                  beginAtZero: true,
                   ticks: { color: "#333" },
                   grid: { color: "#f2f2f2" },
                 },
