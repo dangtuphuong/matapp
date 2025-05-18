@@ -221,7 +221,7 @@ const Chart = ({ show = false, chartType, materials, properties }) => {
               plugins: {
                 legend: {
                   position: "top",
-                  labels: { color: "#444" },
+                  labels: { color: "#444", font: { weight: "bold" } },
                 },
               },
               scales: {
@@ -248,7 +248,7 @@ const Chart = ({ show = false, chartType, materials, properties }) => {
               plugins: {
                 legend: {
                   position: "top",
-                  labels: { color: "#444" },
+                  labels: { color: "#444", font: { weight: "bold" } },
                 },
                 tooltip: {
                   callbacks: {

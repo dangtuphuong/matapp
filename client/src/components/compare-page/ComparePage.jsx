@@ -100,24 +100,26 @@ const ComparePage = () => {
           <span>Material Comparison</span>
         </Typography>
 
-        <Box sx={{ display: "flex", gap: 3, mt: 3 }}>
-          <Autocomplete
-            fullWidth
-            key={selectedMats?.length}
-            loading={loading}
-            size="small"
-            options={materials}
-            renderInput={(p) => (
-              <TextField {...p} label={"Search for a material"} />
-            )}
-            onInputChange={(event, newInputValue) =>
-              setInputValue(newInputValue)
-            }
-            onChange={onSelectMat}
-          />
+        <Box sx={{ display: "flex", justifyContent: "center", mt: 3 }}>
+          <Box sx={{ width: 800 }}>
+            <Autocomplete
+              fullWidth
+              key={selectedMats?.length}
+              loading={loading}
+              size="small"
+              options={materials}
+              renderInput={(p) => (
+                <TextField {...p} label={"Start typing to find a material"} />
+              )}
+              onInputChange={(event, newInputValue) =>
+                setInputValue(newInputValue)
+              }
+              onChange={onSelectMat}
+            />
+          </Box>
         </Box>
 
-        <Box sx={{ m: "20px 0" }}>
+        <Box sx={{ m: "30px 0" }}>
           {selectedMats?.length > 0 && (
             <Box className="table-comparison-horizontal">
               <CollapsibleTable
