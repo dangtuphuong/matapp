@@ -29,13 +29,7 @@ import {
   deepseekSearch,
   geminiSearch,
 } from "../services/smart-search-service";
-
-const MODELS = {
-  VECTOR: "vector",
-  LLM: "llm",
-  DEEPSEEK: "deepseek",
-  GEMINI: "gemini",
-};
+import { MODELS, MODELS_LABELS } from "../constants";
 
 const LoadingCards = () =>
   Array.from({ length: 3 }, (_, i) => (
@@ -197,10 +191,18 @@ const SmartSearch = () => {
                   value={model}
                   onChange={(e) => setModel(e?.target?.value)}
                 >
-                  <MenuItem value={MODELS.VECTOR}>Vector Search</MenuItem>
-                  <MenuItem value={MODELS.LLM}>OpenAI</MenuItem>
-                  <MenuItem value={MODELS.DEEPSEEK}>DeepSeek</MenuItem>
-                  <MenuItem value={MODELS.GEMINI}>Google Gemini</MenuItem>
+                  <MenuItem value={MODELS.VECTOR}>
+                    {MODELS_LABELS[MODELS.VECTOR]}
+                  </MenuItem>
+                  <MenuItem value={MODELS.LLM}>
+                    {MODELS_LABELS[MODELS.LLM]}
+                  </MenuItem>
+                  <MenuItem value={MODELS.DEEPSEEK}>
+                    {MODELS_LABELS[MODELS.DEEPSEEK]}
+                  </MenuItem>
+                  <MenuItem value={MODELS.GEMINI}>
+                    {MODELS_LABELS[MODELS.GEMINI]}
+                  </MenuItem>
                 </Select>
               </FormControl>
 

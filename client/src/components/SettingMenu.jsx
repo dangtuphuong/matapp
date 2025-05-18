@@ -84,6 +84,11 @@ export default function SettingMenu({ username, isAdmin }) {
             Manage Users
           </MenuItem>
         )}
+        {isAdmin && (
+          <MenuItem sx={ItemStyle} component={Link} to="/settings">
+            Settings
+          </MenuItem>
+        )}
       </Menu>
     </div>
   );
