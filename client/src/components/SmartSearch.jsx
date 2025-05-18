@@ -29,6 +29,7 @@ import {
   deepseekSearch,
   geminiSearch,
 } from "../services/smart-search-service";
+import { getSettings } from "../services/user-service";
 import { MODELS, MODELS_LABELS } from "../constants";
 
 const LoadingCards = () =>
@@ -76,7 +77,8 @@ const SmartSearch = () => {
   const isAllowed = userRole === "admin" || userRole === "premium_user";
 
   const [isLoading, setLoading] = useState(false);
-  const [model, setModel] = useState(MODELS.VECTOR);
+  const [options, setOptions] = useState([]);
+  const [model, setModel] = useState("");
   const [skip, setSkip] = useState(0);
   const [limit, setLimit] = useState(10);
   const [query, setQuery] = useState("");
@@ -87,6 +89,18 @@ const SmartSearch = () => {
   const [resErr, setResErr] = useState(null);
 
   const isVectorSearch = model === MODELS.VECTOR;
+
+  useEffect(() => {
+    getSettings()
+      .then((data) => {
+        const result = Object.keys(data?.settings?.smart_search).filter(
+          (key) => data?.settings?.smart_search[key]
+        );
+        setOptions(result);
+        setModel(result[0]);
+      })
+      .catch((err) => console.error(err));
+  }, []);
 
   const handleSearch = async () => {
     if (!query) return setSearchResult([]);
@@ -191,18 +205,11 @@ const SmartSearch = () => {
                   value={model}
                   onChange={(e) => setModel(e?.target?.value)}
                 >
-                  <MenuItem value={MODELS.VECTOR}>
-                    {MODELS_LABELS[MODELS.VECTOR]}
-                  </MenuItem>
-                  <MenuItem value={MODELS.LLM}>
-                    {MODELS_LABELS[MODELS.LLM]}
-                  </MenuItem>
-                  <MenuItem value={MODELS.DEEPSEEK}>
-                    {MODELS_LABELS[MODELS.DEEPSEEK]}
-                  </MenuItem>
-                  <MenuItem value={MODELS.GEMINI}>
-                    {MODELS_LABELS[MODELS.GEMINI]}
-                  </MenuItem>
+                  {options?.map((option) => (
+                    <MenuItem key={option} value={option}>
+                      {MODELS_LABELS[option]}
+                    </MenuItem>
+                  ))}
                 </Select>
               </FormControl>
 
