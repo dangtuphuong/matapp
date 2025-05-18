@@ -9,21 +9,38 @@ import {
   Legend,
   Title,
 } from "chart.js";
-import { Container, Typography, Box } from "@mui/material";
+import { Link } from "react-router-dom";
+import {
+  Container,
+  Typography,
+  Box,
+  IconButton,
+  Tooltip as IconTooltip,
+} from "@mui/material";
+import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
 import NavbarPrivate from "./NavbarPrivate";
 import { getAllMaterials } from "../services/material-service";
 
 ChartJS.register(LinearScale, PointElement, Tooltip, Legend, Title);
 
 const COLORS = [
-  "#4dc9f6", "#f67019", "#f53794", "#537bc4", "#acc236",
-  "#ffa600", "#8dd3c7", "#e7298a", "#66a61e", "#ff7f00",
+  "#4dc9f6",
+  "#f67019",
+  "#f53794",
+  "#537bc4",
+  "#acc236",
+  "#ffa600",
+  "#8dd3c7",
+  "#e7298a",
+  "#66a61e",
+  "#ff7f00",
 ];
 
 const BubbleChart = () => {
   const [materials, setMaterials] = useState([]);
   const location = useLocation();
-  const { searchCategories = [], searchProperties = [] } = location?.state || {};
+  const { searchCategories = [], searchProperties = [] } =
+    location?.state || {};
 
   useEffect(() => {
     getAllMaterials({
@@ -58,8 +75,8 @@ const BubbleChart = () => {
       data: [
         {
           x: grouped[cat],
-          y: cat,        
-          r: Math.sqrt(grouped[cat]) * 3, 
+          y: cat,
+          r: Math.sqrt(grouped[cat]) * 3,
         },
       ],
       backgroundColor: COLORS[i % COLORS.length],
@@ -73,41 +90,49 @@ const BubbleChart = () => {
       legend: { display: true },
       title: {
         display: true,
-        text: "Materials per Category"
-      }
+        text: "Materials per Category",
+      },
     },
-    
+
     scales: {
       x: {
-        type: 'linear',
+        type: "linear",
         title: {
           display: true,
-          text: 'Material Count'
+          text: "Material Count",
         },
         beginAtZero: true,
         ticks: { stepSize: 1 },
         grid: {
-          display: false
-        }
+          display: false,
+        },
       },
       y: {
-        type: 'category',
+        type: "category",
         title: {
           display: true,
-          text: 'Category'
+          text: "Category",
         },
         labels: categoryNames,
         grid: {
-          display: false
-        }
-      }
-    }
-
+          display: false,
+        },
+      },
+    },
   };
 
   return (
     <>
       <NavbarPrivate />
+      <div style={{ position: "relative" }}>
+        <div style={{ position: "absolute", top: 20, left: 20 }}>
+          <IconTooltip title={"Back to search page"}>
+            <IconButton component={Link} sx={{ float: "left" }} to="/search">
+              <KeyboardBackspaceIcon />
+            </IconButton>
+          </IconTooltip>
+        </div>
+      </div>
       <Container
         maxWidth={false}
         disableGutters
