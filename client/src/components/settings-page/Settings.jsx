@@ -11,15 +11,18 @@ import {
   CircularProgress,
   Box,
 } from "@mui/material";
+import TroubleshootIcon from "@mui/icons-material/Troubleshoot";
 import NavbarPrivate from "../NavbarPrivate";
 import { MODELS_LABELS, MODELS } from "../../constants";
 import { getSettings, updateSettings } from "../../services/user-service";
+
+const options = [MODELS.VECTOR, MODELS.LLM, MODELS.DEEPSEEK, MODELS.GEMINI];
 
 const SettingsPage = () => {
   const [loading, setLoading] = useState(false);
   const [settings, setSettings] = useState({});
 
-  const options = [MODELS.VECTOR, MODELS.LLM, MODELS.DEEPSEEK, MODELS.GEMINI];
+  const canSubmit = Object.keys(settings)?.length > 0;
 
   useEffect(() => {
     setLoading(true);
@@ -31,10 +34,12 @@ const SettingsPage = () => {
 
   const handleConfirm = () => {
     setLoading(true);
-    updateSettings({ settings })
-      .then((data) => setSettings(data?.settings?.smart_search ?? {}))
-      .catch((err) => console.error(err))
-      .finally(() => setLoading(false));
+    if (canSubmit) {
+      updateSettings({ settings })
+        .then((data) => setSettings(data?.settings?.smart_search ?? {}))
+        .catch((err) => console.error(err))
+        .finally(() => setLoading(false));
+    }
   };
 
   return (
@@ -50,10 +55,23 @@ const SettingsPage = () => {
           variant="outlined"
           sx={{ p: 2, mb: 3, mt: 3, backgroundColor: "#f9f9f9" }}
         >
-          <Typography sx={{ fontWeight: 600 }} variant="h6" gutterBottom>
-            Enable Smart Search
+          <Typography
+            sx={{ display: "flex", alignItems: "center" }}
+            variant="h6"
+            gutterBottom
+          >
+            <TroubleshootIcon />
+            <Box
+              sx={{
+                fontWeight: 600,
+                display: "inline-block",
+                marginLeft: "10px",
+              }}
+            >
+              Enable Smart Search
+            </Box>
           </Typography>
-          <List dense sx={{ padding: "0 40px" }}>
+          <List dense sx={{ padding: "0 50px" }}>
             {options.map((optionKey) => (
               <ListItem key={optionKey} disablePadding>
                 <FormControlLabel
@@ -78,7 +96,7 @@ const SettingsPage = () => {
         <Box align="center">
           <Button
             variant="contained"
-            disabled={loading}
+            disabled={loading || !canSubmit}
             onClick={handleConfirm}
           >
             {loading ? <CircularProgress size={24} /> : "Confirm"}
