@@ -5,6 +5,7 @@ from routes.user_routes import user_bp
 from routes.material_routes import material_bp
 from routes.category_routes import category_bp
 from routes.property_routes import property_bp
+from routes.setting_routes import setting_bp
 
 from routes.upload.material import upload_bp
 
@@ -32,6 +33,7 @@ def create_app():
     # Register Blueprints
     app.register_blueprint(user_bp, url_prefix="/api")
     app.register_blueprint(material_bp, url_prefix="/api")
+    app.register_blueprint(setting_bp, url_prefix="/api")
     app.register_blueprint(vt_bp, url_prefix="/api")
     app.register_blueprint(ml_bp, url_prefix="/api")
     app.register_blueprint(category_bp, url_prefix="/api")

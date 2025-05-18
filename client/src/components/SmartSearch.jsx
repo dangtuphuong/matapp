@@ -29,13 +29,8 @@ import {
   deepseekSearch,
   geminiSearch,
 } from "../services/smart-search-service";
-
-const MODELS = {
-  VECTOR: "vector",
-  LLM: "llm",
-  DEEPSEEK: "deepseek",
-  GEMINI: "gemini",
-};
+import { getSettings } from "../services/user-service";
+import { MODELS, MODELS_LABELS } from "../constants";
 
 const LoadingCards = () =>
   Array.from({ length: 3 }, (_, i) => (
@@ -82,7 +77,8 @@ const SmartSearch = () => {
   const isAllowed = userRole === "admin" || userRole === "premium_user";
 
   const [isLoading, setLoading] = useState(false);
-  const [model, setModel] = useState(MODELS.VECTOR);
+  const [options, setOptions] = useState([]);
+  const [model, setModel] = useState("");
   const [skip, setSkip] = useState(0);
   const [limit, setLimit] = useState(10);
   const [query, setQuery] = useState("");
@@ -93,6 +89,18 @@ const SmartSearch = () => {
   const [resErr, setResErr] = useState(null);
 
   const isVectorSearch = model === MODELS.VECTOR;
+
+  useEffect(() => {
+    getSettings()
+      .then((data) => {
+        const result = Object.keys(data?.settings?.smart_search).filter(
+          (key) => data?.settings?.smart_search[key]
+        );
+        setOptions(result);
+        setModel(result[0]);
+      })
+      .catch((err) => console.error(err));
+  }, []);
 
   const handleSearch = async () => {
     if (!query) return setSearchResult([]);
@@ -197,10 +205,11 @@ const SmartSearch = () => {
                   value={model}
                   onChange={(e) => setModel(e?.target?.value)}
                 >
-                  <MenuItem value={MODELS.VECTOR}>Vector Search</MenuItem>
-                  <MenuItem value={MODELS.LLM}>OpenAI</MenuItem>
-                  <MenuItem value={MODELS.DEEPSEEK}>DeepSeek</MenuItem>
-                  <MenuItem value={MODELS.GEMINI}>Google Gemini</MenuItem>
+                  {options?.map((option) => (
+                    <MenuItem key={option} value={option}>
+                      {MODELS_LABELS[option]}
+                    </MenuItem>
+                  ))}
                 </Select>
               </FormControl>
 
@@ -260,7 +269,7 @@ const SmartSearch = () => {
             )}
 
             {/* Add the card section here for premium/admin users */}
-            {showCards && <SmartSeachInfo />}
+            {showCards && <SmartSeachInfo options={options} />}
 
             <Box px={6} display="flex" flexDirection="column" gap={2} mt={4}>
               {isLoading ? (
