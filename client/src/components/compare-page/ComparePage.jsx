@@ -128,39 +128,39 @@ const ComparePage = () => {
           )}
         </Box>
         {selectedMats?.length > 0 && (
-          <Tabs
-            value={activeTab}
-            onChange={(_, val) => setActiveTab(val)}
-            centered
-            sx={{ m: 4 }}
-          >
-            <Tab label="Radar Chart" />
-            <Tab label="Bar Chart" />
-            <Tab label="Bubble Chart" />
-          </Tabs>
-        )}
+          <>
+            <Tabs
+              value={activeTab}
+              onChange={(_, val) => setActiveTab(val)}
+              centered
+              sx={{ m: 4 }}
+            >
+              <Tab label="Radar Chart" />
+              <Tab label="Bar Chart" />
+              <Tab label="Bubble Chart" />
+            </Tabs>
 
-        {activeTab === 0 && selectedMats?.length > 0 && (
-          <Chart
-            chartType={CHART_TYPES.RADAR}
-            materials={selectedMats}
-            properties={selectedProps}
-          />
-        )}
+            <Chart
+              show={activeTab === 0}
+              chartType={CHART_TYPES.RADAR}
+              materials={selectedMats}
+              properties={selectedProps}
+            />
 
-        {activeTab === 1 && selectedMats?.length > 0 && (
-          <Chart
-            chartType={CHART_TYPES.BAR}
-            materials={selectedMats}
-            properties={selectedProps}
-          />
-        )}
-        {activeTab === 2 && selectedMats?.length > 0 && (
-          <Chart
-            chartType={CHART_TYPES.BUBBLE}
-            materials={selectedMats}
-            properties={selectedProps}
-          />
+            <Chart
+              show={activeTab === 1}
+              chartType={CHART_TYPES.BAR}
+              materials={selectedMats}
+              properties={selectedProps}
+            />
+
+            <Chart
+              show={activeTab === 2}
+              chartType={CHART_TYPES.BUBBLE}
+              materials={selectedMats}
+              properties={selectedProps}
+            />
+          </>
         )}
       </Container>
     </>

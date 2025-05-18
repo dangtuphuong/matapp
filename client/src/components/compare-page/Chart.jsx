@@ -63,8 +63,19 @@ function getCommonProperties(materials) {
   return common;
 }
 
-const Chart = ({ chartType, materials, properties }) => {
+const getMax = (type) => {
+  if (type === CHART_TYPES.RADAR) return 8;
+  if (type === CHART_TYPES.BUBBLE) return 3;
+  return 10;
+};
+
+const Chart = ({ show = false, chartType, materials, properties }) => {
+  const [max, setMax] = useState(null);
   const [filteredProps, setFilteredProps] = useState([]);
+
+  useEffect(() => {
+    setMax(getMax(chartType));
+  }, [chartType]);
 
   const extractPropertyValues = (material, props) =>
     props?.map((targetProp) => {
@@ -73,7 +84,7 @@ const Chart = ({ chartType, materials, properties }) => {
           if (prop.toLowerCase().includes(targetProp.toLowerCase())) {
             const metric =
               material.parsed_properties[category][prop][0]?.metric;
-            return metric?.min || metric?.max;
+            return metric?.max || metric?.min || 0;
           }
         }
       }
@@ -81,10 +92,10 @@ const Chart = ({ chartType, materials, properties }) => {
     });
 
   const radarData = {
-    labels: filteredProps?.slice(0, 3),
+    labels: max ? filteredProps?.slice(0, max) : filteredProps,
     datasets: materials?.map((mat, index) => ({
       label: mat?.["Material Name"] || `Material ${index + 1}`,
-      data: mat ? extractPropertyValues(mat, properties?.slice(0, 3)) : [],
+      data: mat ? extractPropertyValues(mat, properties?.slice(0, max)) : [],
       backgroundColor: COLORS[index],
     })),
   };
@@ -92,16 +103,16 @@ const Chart = ({ chartType, materials, properties }) => {
   const barData = {
     labels: filteredProps,
     datasets: materials?.map((mat, index) => ({
-      label: mat?.["Material Name"] || "Material 1",
+      label: mat?.["Material Name"] || `Material ${index + 1}`,
       data: mat ? extractPropertyValues(mat, filteredProps) : [],
       backgroundColor: COLORS[index],
     })),
   };
 
   const bubbleData = {
-    labels: filteredProps?.slice(0, 3),
+    labels: max ? filteredProps?.slice(0, max) : filteredProps,
     datasets: materials?.map((mat, index) => {
-      const values = extractPropertyValues(mat, filteredProps?.slice(0, 3));
+      const values = extractPropertyValues(mat, filteredProps?.slice(0, max));
       return {
         label: mat?.["Material Name"] || `Material ${index + 1}`,
         data: [{ x: values[0] ?? 0, y: values[1] ?? 0, r: values[2] ?? 0 }],
@@ -123,134 +134,132 @@ const Chart = ({ chartType, materials, properties }) => {
   useEffect(() => {
     const result = getCommonProperties(materials);
     setFilteredProps(
-      result?.length > 0 ? result?.slice(0, 3) : properties?.slice(0, 3)
+      result?.length > 0 ? result?.slice(0, max) : properties?.slice(0, max)
     );
-  }, [properties?.length]);
+  }, [properties?.length, max]);
 
-  return (
-    <>
-      <Box sx={{ display: "flex", gap: 2 }}>
-        {materials?.length > 0 && (
-          <Box sx={{ width: 250 }}>
-            {properties?.map((prop) => (
-              <Box
-                key={prop}
-                sx={{
-                  display: "flex",
-                  width: "100%",
-                  alignItems: "center",
-                }}
-              >
-                <Checkbox
-                  checked={filteredProps?.includes(prop)}
-                  onChange={(e) => onChangeProps(e, prop)}
-                />
-                <span style={{ flex: 1 }}>{prop}</span>
-              </Box>
-            ))}
-          </Box>
-        )}
+  return !show ? null : (
+    <Box sx={{ display: "flex", gap: 2 }}>
+      {materials?.length > 0 && (
+        <Box sx={{ width: 250 }}>
+          {properties?.map((prop) => (
+            <Box
+              key={prop}
+              sx={{
+                display: "flex",
+                width: "100%",
+                alignItems: "center",
+              }}
+            >
+              <Checkbox
+                checked={filteredProps?.includes(prop)}
+                onChange={(e) => onChangeProps(e, prop)}
+              />
+              <span style={{ flex: 1 }}>{prop}</span>
+            </Box>
+          ))}
+        </Box>
+      )}
 
-        {chartType === CHART_TYPES.RADAR && materials?.length > 0 && (
-          <Box sx={{ flex: 1 }}>
-            <Radar
-              data={radarData}
-              options={{
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: {
-                  r: {
-                    beginAtZero: true,
-                    pointLabels: {
-                      color: "#333",
-                      font: { size: 14 },
-                    },
-                    ticks: { color: "#666" },
-                    grid: { color: "#ccc" },
+      {chartType === CHART_TYPES.RADAR && materials?.length > 0 && (
+        <Box sx={{ flex: 1 }}>
+          <Radar
+            data={radarData}
+            options={{
+              responsive: true,
+              maintainAspectRatio: false,
+              scales: {
+                r: {
+                  beginAtZero: true,
+                  pointLabels: {
+                    color: "#333",
+                    font: { size: 14 },
+                  },
+                  ticks: { color: "#666" },
+                  grid: { color: "#ccc" },
+                },
+              },
+              plugins: {
+                legend: {
+                  labels: {
+                    color: "#444",
+                    font: { weight: "bold" },
                   },
                 },
-                plugins: {
-                  legend: {
-                    labels: {
-                      color: "#444",
-                      font: { weight: "bold" },
-                    },
-                  },
-                },
-              }}
-            />
-          </Box>
-        )}
+              },
+            }}
+          />
+        </Box>
+      )}
 
-        {chartType === CHART_TYPES.BAR && materials?.length > 0 && (
-          <Box sx={{ flex: 1 }}>
-            <Bar
-              data={barData}
-              options={{
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                  legend: {
-                    position: "top",
-                    labels: {
-                      color: "#444",
-                    },
+      {chartType === CHART_TYPES.BAR && materials?.length > 0 && (
+        <Box sx={{ flex: 1 }}>
+          <Bar
+            data={barData}
+            options={{
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: {
+                legend: {
+                  position: "top",
+                  labels: {
+                    color: "#444",
                   },
                 },
-                scales: {
-                  x: {
-                    ticks: { color: "#333" },
-                    grid: { color: "#ccc" },
-                  },
-                  y: {
-                    beginAtZero: true,
-                    ticks: { color: "#333" },
-                    grid: { color: "#ccc" },
-                  },
+              },
+              scales: {
+                x: {
+                  ticks: { color: "#333" },
+                  grid: { color: "#ccc" },
                 },
-              }}
-            />
-          </Box>
-        )}
-        {chartType === CHART_TYPES.BUBBLE && materials?.length > 0 && (
-          <Box sx={{ flex: 1 }}>
-            <Bubble
-              data={bubbleData}
-              options={{
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                  legend: {
-                    position: "top",
-                    labels: { color: "#444" },
-                  },
+                y: {
+                  beginAtZero: true,
+                  ticks: { color: "#333" },
+                  grid: { color: "#ccc" },
                 },
-                scales: {
-                  x: {
-                    title: {
-                      display: true,
-                      text: `${filteredProps[0]}`,
-                      color: "#444",
-                    },
-                    ticks: { color: "#333" },
-                    grid: { color: "#ccc" },
-                  },
-                  y: {
-                    title: {
-                      display: true,
-                      text: `${filteredProps[1]}`,
-                      color: "#444",
-                    },
-                    ticks: { color: "#333" },
-                    grid: { color: "#ccc" },
-                  },
+              },
+            }}
+          />
+        </Box>
+      )}
+      {chartType === CHART_TYPES.BUBBLE && materials?.length > 0 && (
+        <Box sx={{ flex: 1 }}>
+          <Bubble
+            data={bubbleData}
+            options={{
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: {
+                legend: {
+                  position: "top",
+                  labels: { color: "#444" },
                 },
-              }}
-            />
-          </Box>
-        )}
-      </Box>
-    </>
+              },
+              scales: {
+                x: {
+                  title: {
+                    display: true,
+                    text: `${filteredProps[0]}`,
+                    color: "#444",
+                  },
+                  ticks: { color: "#333" },
+                  grid: { color: "#ccc" },
+                },
+                y: {
+                  title: {
+                    display: true,
+                    text: `${filteredProps[1]}`,
+                    color: "#444",
+                  },
+                  ticks: { color: "#333" },
+                  grid: { color: "#ccc" },
+                },
+              },
+            }}
+          />
+        </Box>
+      )}
+    </Box>
   );
 };
 
