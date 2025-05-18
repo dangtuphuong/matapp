@@ -42,26 +42,14 @@ const COLORS = [
   "#E0BBE4", // mauve
 ];
 
-function getCommonProperties(materials) {
-  let common = [];
-
-  for (const mat of materials) {
-    const propsObj = mat?.parsed_properties;
-    let props = [];
-
-    Object.values(propsObj)?.map((v) => {
-      props = [...props, ...Object.keys(v)];
-    });
-
-    if (!common?.length) {
-      common = [...props];
-    } else {
-      common = common.filter((i) => props.includes(i));
-    }
-  }
-
-  return common;
-}
+const hexToRGBA = (hex, alpha = 1) => {
+  const cleanHex = hex.replace("#", "");
+  const bigint = parseInt(cleanHex, 16);
+  const r = (bigint >> 16) & 255;
+  const g = (bigint >> 8) & 255;
+  const b = bigint & 255;
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+};
 
 const getMax = (type) => {
   if (type === CHART_TYPES.RADAR) return 8;
@@ -92,11 +80,11 @@ const Chart = ({ show = false, chartType, materials, properties }) => {
     });
 
   const radarData = {
-    labels: max ? filteredProps?.slice(0, max) : filteredProps,
+    labels: filteredProps,
     datasets: materials?.map((mat, index) => ({
       label: mat?.["Material Name"] || `Material ${index + 1}`,
-      data: mat ? extractPropertyValues(mat, properties?.slice(0, max)) : [],
-      backgroundColor: COLORS[index],
+      data: mat ? extractPropertyValues(mat, filteredProps) : [],
+      backgroundColor: hexToRGBA(COLORS[index % COLORS.length], 0.9),
     })),
   };
 
@@ -105,18 +93,18 @@ const Chart = ({ show = false, chartType, materials, properties }) => {
     datasets: materials?.map((mat, index) => ({
       label: mat?.["Material Name"] || `Material ${index + 1}`,
       data: mat ? extractPropertyValues(mat, filteredProps) : [],
-      backgroundColor: COLORS[index],
+      backgroundColor: COLORS[index % COLORS.length],
     })),
   };
 
   const bubbleData = {
-    labels: max ? filteredProps?.slice(0, max) : filteredProps,
+    labels: filteredProps,
     datasets: materials?.map((mat, index) => {
-      const values = extractPropertyValues(mat, filteredProps?.slice(0, max));
+      const values = extractPropertyValues(mat, filteredProps);
       return {
         label: mat?.["Material Name"] || `Material ${index + 1}`,
-        data: [{ x: values[0] ?? 0, y: values[1] ?? 0, r: values[2] ?? 0 }],
-        backgroundColor: COLORS[index],
+        data: [{ x: values[0] ?? 0, y: values[1] ?? 0, r: values[2] ?? 1 }],
+        backgroundColor: hexToRGBA(COLORS[index % COLORS.length], 0.9),
       };
     }),
   };
@@ -132,32 +120,36 @@ const Chart = ({ show = false, chartType, materials, properties }) => {
   };
 
   useEffect(() => {
-    const result = getCommonProperties(materials);
-    setFilteredProps(
-      result?.length > 0 ? result?.slice(0, max) : properties?.slice(0, max)
-    );
+    setFilteredProps(properties?.slice(0, max));
   }, [properties?.length, max]);
 
   return !show ? null : (
     <Box sx={{ display: "flex", gap: 2 }}>
       {materials?.length > 0 && (
         <Box sx={{ width: 250 }}>
-          {properties?.map((prop) => (
-            <Box
-              key={prop}
-              sx={{
-                display: "flex",
-                width: "100%",
-                alignItems: "center",
-              }}
-            >
-              <Checkbox
-                checked={filteredProps?.includes(prop)}
-                onChange={(e) => onChangeProps(e, prop)}
-              />
-              <span style={{ flex: 1 }}>{prop}</span>
-            </Box>
-          ))}
+          {properties?.map((prop) => {
+            const checked = filteredProps?.includes(prop);
+            const disabled = !checked && filteredProps?.length >= max;
+            return (
+              <Box
+                key={prop}
+                sx={{
+                  display: "flex",
+                  width: "100%",
+                  alignItems: "center",
+                }}
+              >
+                <Checkbox
+                  disabled={disabled}
+                  checked={checked}
+                  onChange={(e) => onChangeProps(e, prop)}
+                />
+                <span style={{ flex: 1, color: disabled ? "gray" : "black" }}>
+                  {prop}
+                </span>
+              </Box>
+            );
+          })}
         </Box>
       )}
 
@@ -210,12 +202,12 @@ const Chart = ({ show = false, chartType, materials, properties }) => {
               scales: {
                 x: {
                   ticks: { color: "#333" },
-                  grid: { color: "#ccc" },
+                  grid: { color: "#f2f2f2" },
                 },
                 y: {
                   beginAtZero: true,
                   ticks: { color: "#333" },
-                  grid: { color: "#ccc" },
+                  grid: { color: "#f2f2f2" },
                 },
               },
             }}
@@ -243,7 +235,7 @@ const Chart = ({ show = false, chartType, materials, properties }) => {
                     color: "#444",
                   },
                   ticks: { color: "#333" },
-                  grid: { color: "#ccc" },
+                  grid: { color: "#f2f2f2" },
                 },
                 y: {
                   title: {
@@ -252,7 +244,7 @@ const Chart = ({ show = false, chartType, materials, properties }) => {
                     color: "#444",
                   },
                   ticks: { color: "#333" },
-                  grid: { color: "#ccc" },
+                  grid: { color: "#f2f2f2" },
                 },
               },
             }}

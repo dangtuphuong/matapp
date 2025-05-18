@@ -56,44 +56,55 @@ function Row({ material, onDelete }) {
           <Collapse in={open} timeout="auto" unmountOnExit>
             <TableContainer>
               {Object.entries(material?.["Properties"] ?? {}).map(
-                ([key, items]) => (
-                  <Table key={key}>
-                    <TableHead>
-                      <TableRow>
-                        <TableCell sx={headerStyle}>{key}</TableCell>
-                        <TableCell sx={headerStyle} align="right">
-                          Metric
-                        </TableCell>
-                        <TableCell sx={headerStyle} align="right">
-                          English
-                        </TableCell>
-                        <TableCell sx={headerStyle} align="right">
-                          Comments
-                        </TableCell>
-                      </TableRow>
-                    </TableHead>
-                    <TableBody>
-                      {Object.entries(items).map(([property, values]) =>
-                        values?.map((value, index) => (
-                          <TableRow key={`${property}-${index}`}>
-                            {index === 0 && (
-                              <TableCell rowSpan={values?.length}>
-                                {property}
+                ([key, items]) =>
+                  key === "Descriptive Properties" ? null : (
+                    <Table key={key}>
+                      <TableHead>
+                        <TableRow>
+                          <TableCell sx={{ ...headerStyle, width: "28%" }}>
+                            {key}
+                          </TableCell>
+                          <TableCell
+                            sx={{ ...headerStyle, width: "28%" }}
+                            align="right"
+                          >
+                            Metric
+                          </TableCell>
+                          <TableCell
+                            sx={{ ...headerStyle, width: "28%" }}
+                            align="right"
+                          >
+                            English
+                          </TableCell>
+                          <TableCell sx={headerStyle} align="right">
+                            Comments
+                          </TableCell>
+                        </TableRow>
+                      </TableHead>
+                      <TableBody>
+                        {Object.entries(items).map(([property, values]) =>
+                          values?.map((value, index) => (
+                            <TableRow key={`${property}-${index}`}>
+                              {index === 0 && (
+                                <TableCell rowSpan={values?.length}>
+                                  {property}
+                                </TableCell>
+                              )}
+                              <TableCell align="right">
+                                {value?.Metric}
                               </TableCell>
-                            )}
-                            <TableCell align="right">{value?.Metric}</TableCell>
-                            <TableCell align="right">
-                              {value?.English}
-                            </TableCell>
-                            <TableCell align="right">
-                              {value?.Comments}
-                            </TableCell>
-                          </TableRow>
-                        ))
-                      )}
-                    </TableBody>
-                  </Table>
-                )
+                              <TableCell align="right">
+                                {value?.English}
+                              </TableCell>
+                              <TableCell align="right">
+                                {value?.Comments}
+                              </TableCell>
+                            </TableRow>
+                          ))
+                        )}
+                      </TableBody>
+                    </Table>
+                  )
               )}
             </TableContainer>
           </Collapse>
