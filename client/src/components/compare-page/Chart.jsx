@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { Box, Checkbox } from "@mui/material";
 import { Radar, Bar, Bubble } from "react-chartjs-2";
 import {
@@ -30,12 +30,12 @@ ChartJS.register(
 );
 
 const COLORS = [
-  "#AEC6CF", // pastel blue
-  "#FFB347", // pastel orange
-  "#B39EB5", // pastel purple
-  "#77DD77", // pastel green
-  "#FF6961", // pastel red
-  "#FDFD96", // pastel yellow
+  "#36A2EB", // Blue
+  "#FF6384", // Red
+  "#FFCE56", // Yellow
+  "#4BC0C0", // Teal
+  "#9966FF", // Purple
+  "#FF9F40", // Orange
   "#CBAACB", // lavender
   "#D6E2E9", // soft blue-gray
   "#FFDAC1", // peach
@@ -57,6 +57,19 @@ const getMax = (type) => {
   return 10;
 };
 
+const extractPropertyValues = (material, props) =>
+  props?.map((targetProp) => {
+    for (const category in material?.parsed_properties) {
+      for (const prop in material.parsed_properties[category]) {
+        if (prop.toLowerCase().includes(targetProp.toLowerCase())) {
+          const metric = material.parsed_properties[category][prop][0]?.metric;
+          return metric?.max || metric?.min || 0;
+        }
+      }
+    }
+    return 0;
+  });
+
 const Chart = ({ show = false, chartType, materials, properties }) => {
   const [max, setMax] = useState(null);
   const [filteredProps, setFilteredProps] = useState([]);
@@ -65,49 +78,64 @@ const Chart = ({ show = false, chartType, materials, properties }) => {
     setMax(getMax(chartType));
   }, [chartType]);
 
-  const extractPropertyValues = (material, props) =>
-    props?.map((targetProp) => {
-      for (const category in material?.parsed_properties) {
-        for (const prop in material.parsed_properties[category]) {
-          if (prop.toLowerCase().includes(targetProp.toLowerCase())) {
-            const metric =
-              material.parsed_properties[category][prop][0]?.metric;
-            return metric?.max || metric?.min || 0;
-          }
-        }
-      }
-      return 0;
-    });
+  const ids = materials?.map((m) => m?._id)?.join(",");
+  const props = filteredProps?.join(",");
 
-  const radarData = {
-    labels: filteredProps,
-    datasets: materials?.map((mat, index) => ({
-      label: mat?.["Material Name"] || `Material ${index + 1}`,
-      data: mat ? extractPropertyValues(mat, filteredProps) : [],
-      backgroundColor: hexToRGBA(COLORS[index % COLORS.length], 0.9),
-    })),
-  };
-
-  const barData = {
-    labels: filteredProps,
-    datasets: materials?.map((mat, index) => ({
-      label: mat?.["Material Name"] || `Material ${index + 1}`,
-      data: mat ? extractPropertyValues(mat, filteredProps) : [],
-      backgroundColor: COLORS[index % COLORS.length],
-    })),
-  };
-
-  const bubbleData = {
-    labels: filteredProps,
-    datasets: materials?.map((mat, index) => {
-      const values = extractPropertyValues(mat, filteredProps);
-      return {
+  const radarData = useMemo(() => {
+    return {
+      labels: filteredProps,
+      datasets: materials?.map((mat, index) => ({
         label: mat?.["Material Name"] || `Material ${index + 1}`,
-        data: [{ x: values[0] ?? 0, y: values[1] ?? 0, r: values[2] ?? 1 }],
-        backgroundColor: hexToRGBA(COLORS[index % COLORS.length], 0.9),
-      };
-    }),
-  };
+        data: mat ? extractPropertyValues(mat, filteredProps) : [],
+        backgroundColor: hexToRGBA(COLORS[index % COLORS.length], 0.8),
+      })),
+    };
+  }, [ids, props]);
+
+  const barData = useMemo(() => {
+    return {
+      labels: filteredProps,
+      datasets: materials?.map((mat, index) => ({
+        label: mat?.["Material Name"] || `Material ${index + 1}`,
+        data: mat ? extractPropertyValues(mat, filteredProps) : [],
+        backgroundColor: COLORS[index % COLORS.length],
+      })),
+    };
+  }, [ids, props]);
+
+  const bubbleData = useMemo(() => {
+    const allR = materials.map(
+      (m) => extractPropertyValues(m, filteredProps)[2] ?? 1
+    );
+    const minR = Math.min(...allR);
+    const maxR = Math.max(...allR);
+    return {
+      labels: filteredProps,
+      datasets: materials?.map((mat, index) => {
+        const values = extractPropertyValues(mat, filteredProps);
+        const rawR = values[2] ?? 1;
+
+        const scaledR =
+          minR === maxR ? 10 : 10 + ((rawR - minR) / (maxR - minR)) * (50 - 10);
+
+        return {
+          label: mat?.["Material Name"] || `Material ${index + 1}`,
+          data: [
+            {
+              x: values[0] ?? 0,
+              y: values[1] ?? 0,
+              r: scaledR,
+              rawR,
+              xLabel: filteredProps[0],
+              yLabel: filteredProps[1],
+              rLabel: filteredProps[2],
+            },
+          ],
+          backgroundColor: hexToRGBA(COLORS[index % COLORS.length], 0.9),
+        };
+      }),
+    };
+  }, [ids, props]);
 
   const onChangeProps = (event, prop) => {
     const checked = event?.target?.checked;
@@ -194,9 +222,7 @@ const Chart = ({ show = false, chartType, materials, properties }) => {
               plugins: {
                 legend: {
                   position: "top",
-                  labels: {
-                    color: "#444",
-                  },
+                  labels: { color: "#444" },
                 },
               },
               scales: {
@@ -226,6 +252,15 @@ const Chart = ({ show = false, chartType, materials, properties }) => {
                   position: "top",
                   labels: { color: "#444" },
                 },
+                tooltip: {
+                  callbacks: {
+                    label: function (context) {
+                      const { x, y, rawR, xLabel, yLabel, rLabel } =
+                        context.raw;
+                      return `${xLabel}: ${x}, ${yLabel}: ${y}, ${rLabel}: ${rawR}`;
+                    },
+                  },
+                },
               },
               scales: {
                 x: {
@@ -236,6 +271,7 @@ const Chart = ({ show = false, chartType, materials, properties }) => {
                   },
                   ticks: { color: "#333" },
                   grid: { color: "#f2f2f2" },
+                  grace: "10%",
                 },
                 y: {
                   title: {
@@ -245,6 +281,7 @@ const Chart = ({ show = false, chartType, materials, properties }) => {
                   },
                   ticks: { color: "#333" },
                   grid: { color: "#f2f2f2" },
+                  grace: "10%",
                 },
               },
             }}
