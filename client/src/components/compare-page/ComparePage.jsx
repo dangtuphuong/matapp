@@ -53,7 +53,11 @@ const ComparePage = () => {
 
   const onSelectMat = (event, selectedOption) => {
     if (!selectedOption) return;
-    setSelectedMats([...selectedMats, selectedOption]);
+    const isExisted = selectedMats?.some(
+      (mat) => mat?.matGUID === selectedOption.matGUID
+    );
+    if (isExisted) return;
+    setSelectedMats((prev) => [...prev, selectedOption]);
     setInputValue("");
   };
 
