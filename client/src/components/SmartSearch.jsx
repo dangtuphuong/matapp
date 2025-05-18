@@ -269,7 +269,7 @@ const SmartSearch = () => {
             )}
 
             {/* Add the card section here for premium/admin users */}
-            {showCards && <SmartSeachInfo />}
+            {showCards && <SmartSeachInfo options={options} />}
 
             <Box px={6} display="flex" flexDirection="column" gap={2} mt={4}>
               {isLoading ? (
