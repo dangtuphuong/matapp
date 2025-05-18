@@ -9,3 +9,9 @@ export const ROLE_LABELS = {
   [ROLES.NORMAL_USER]: "Normal User",
   [ROLES.PREMIUM_USER]: "Premium User",
 };
+
+export const CHART_TYPES = {
+  RADAR: "radar",
+  BAR: "bar",
+  BUBBLE: "bubble",
+};

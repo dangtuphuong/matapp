@@ -6,72 +6,13 @@ import {
   Box,
   Autocomplete,
   Container,
-  Checkbox,
   TextField,
 } from "@mui/material";
-import { Radar, Bar, Bubble } from "react-chartjs-2";
 import { getAllMaterials } from "../../services/material-service";
 import NavbarPrivate from "../NavbarPrivate";
 import CollapsibleTable from "./CollapsibleTable";
-import {
-  Chart as ChartJS,
-  RadialLinearScale,
-  PointElement,
-  LineElement,
-  Filler,
-  Tooltip,
-  Legend,
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
-} from "chart.js";
-
-ChartJS.register(
-  RadialLinearScale,
-  PointElement,
-  LineElement,
-  Filler,
-  Tooltip,
-  Legend,
-  CategoryScale,
-  LinearScale,
-  BarElement
-);
-
-const COLORS = [
-  "#AEC6CF", // pastel blue
-  "#FFB347", // pastel orange
-  "#B39EB5", // pastel purple
-  "#77DD77", // pastel green
-  "#FF6961", // pastel red
-  "#FDFD96", // pastel yellow
-  "#CBAACB", // lavender
-  "#D6E2E9", // soft blue-gray
-  "#FFDAC1", // peach
-  "#E0BBE4", // mauve
-];
-
-function getCommonProperties(materials) {
-  let common = [];
-
-  for (const mat of materials) {
-    const propsObj = mat?.parsed_properties;
-    let props = [];
-
-    Object.values(propsObj)?.map((v) => {
-      props = [...props, ...Object.keys(v)];
-    });
-
-    if (!common?.length) {
-      common = [...props];
-    } else {
-      common = common.filter((i) => props.includes(i));
-    }
-  }
-
-  return common;
-}
+import Chart from "./Chart";
+import { CHART_TYPES } from "../../constants";
 
 const ComparePage = () => {
   const [loading, setLoading] = useState(false);
@@ -80,7 +21,6 @@ const ComparePage = () => {
   const [selectedMats, setSelectedMats] = useState([]);
   const [selectedProps, setSelectedProps] = useState([]);
   const [activeTab, setActiveTab] = useState(0);
-  const [filteredProps, setFilteredProps] = useState([]);
 
   const fetchMaterials = useCallback((params) => {
     setLoading(true);
@@ -111,50 +51,6 @@ const ComparePage = () => {
     };
   }, [inputValue]);
 
-  const extractPropertyValues = (material, props) =>
-    props?.map((targetProp) => {
-      for (const category in material?.parsed_properties) {
-        for (const prop in material.parsed_properties[category]) {
-          if (prop.toLowerCase().includes(targetProp.toLowerCase())) {
-            const metric =
-              material.parsed_properties[category][prop][0]?.metric;
-            return metric?.min || metric?.max;
-          }
-        }
-      }
-      return 0;
-    });
-
-  const radarData = {
-    labels: filteredProps?.slice(0, 3),
-    datasets: selectedMats?.map((mat, index) => ({
-      label: mat?.["Material Name"] || `Material ${index + 1}`,
-      data: mat ? extractPropertyValues(mat, selectedProps?.slice(0, 3)) : [],
-      backgroundColor: COLORS[index],
-    })),
-  };
-
-  const barData = {
-    labels: filteredProps,
-    datasets: selectedMats?.map((mat, index) => ({
-      label: mat?.["Material Name"] || "Material 1",
-      data: mat ? extractPropertyValues(mat, filteredProps) : [],
-      backgroundColor: COLORS[index],
-    })),
-  };
-
-  const bubbleData = {
-    labels: filteredProps?.slice(0, 3),
-    datasets: selectedMats?.map((mat, index) => {
-      const values = extractPropertyValues(mat, filteredProps?.slice(0, 3));
-      return {
-        label: mat?.["Material Name"] || `Material ${index + 1}`,
-        data: [{ x: values[0] ?? 0, y: values[1] ?? 0, r: values[2] ?? 0 }],
-        backgroundColor: COLORS[index],
-      };
-    }),
-  };
-
   const onSelectMat = (event, selectedOption) => {
     if (!selectedOption) return;
     setSelectedMats([...selectedMats, selectedOption]);
@@ -178,26 +74,9 @@ const ComparePage = () => {
     setSelectedProps(allProps);
   }, [selectedMats?.length]);
 
-  const onChangeProps = (event, prop) => {
-    const checked = event?.target?.checked;
-
-    if (checked) {
-      setFilteredProps((prev) => [...new Set([...prev, prop])]);
-    } else {
-      setFilteredProps((prev) => prev.filter((p) => p !== prop));
-    }
-  };
-
   const handleDeleteMat = (id) => {
     setSelectedMats(selectedMats?.filter(({ matGUID }) => matGUID !== id));
   };
-
-  useEffect(() => {
-    const result = getCommonProperties(selectedMats);
-    setFilteredProps(
-      result?.length > 0 ? result?.slice(0, 3) : selectedProps?.slice(0, 3)
-    );
-  }, [selectedProps?.length]);
 
   return (
     <>
@@ -260,127 +139,29 @@ const ComparePage = () => {
             <Tab label="Bubble Chart" />
           </Tabs>
         )}
-        <Box sx={{ display: "flex", gap: 2 }}>
-          {selectedMats?.length > 0 && (
-            <Box sx={{ width: 250 }}>
-              {selectedProps?.map((prop) => (
-                <Box
-                  key={prop}
-                  sx={{
-                    display: "flex",
-                    width: "100%",
-                    alignItems: "center",
-                  }}
-                >
-                  <Checkbox
-                    checked={filteredProps?.includes(prop)}
-                    onChange={(e) => onChangeProps(e, prop)}
-                  />
-                  <span style={{ flex: 1 }}>{prop}</span>
-                </Box>
-              ))}
-            </Box>
-          )}
 
-          {activeTab === 0 && selectedMats?.length > 0 && (
-            <Box sx={{ flex: 1 }}>
-              <Radar
-                data={radarData}
-                options={{
-                  responsive: true,
-                  maintainAspectRatio: false,
-                  scales: {
-                    r: {
-                      beginAtZero: true,
-                      pointLabels: {
-                        color: "#333",
-                        font: { size: 14 },
-                      },
-                      ticks: { color: "#666" },
-                      grid: { color: "#ccc" },
-                    },
-                  },
-                  plugins: {
-                    legend: {
-                      labels: {
-                        color: "#444",
-                        font: { weight: "bold" },
-                      },
-                    },
-                  },
-                }}
-              />
-            </Box>
-          )}
+        {activeTab === 0 && selectedMats?.length > 0 && (
+          <Chart
+            chartType={CHART_TYPES.RADAR}
+            materials={selectedMats}
+            properties={selectedProps}
+          />
+        )}
 
-          {activeTab === 1 && selectedMats?.length > 0 && (
-            <Box sx={{ flex: 1 }}>
-              <Bar
-                data={barData}
-                options={{
-                  responsive: true,
-                  maintainAspectRatio: false,
-                  plugins: {
-                    legend: {
-                      position: "top",
-                      labels: {
-                        color: "#444",
-                      },
-                    },
-                  },
-                  scales: {
-                    x: {
-                      ticks: { color: "#333" },
-                      grid: { color: "#ccc" },
-                    },
-                    y: {
-                      beginAtZero: true,
-                      ticks: { color: "#333" },
-                      grid: { color: "#ccc" },
-                    },
-                  },
-                }}
-              />
-            </Box>
-          )}
-          {activeTab === 2 && selectedMats?.length > 0 && (
-            <Box sx={{ flex: 1 }}>
-              <Bubble
-                data={bubbleData}
-                options={{
-                  responsive: true,
-                  maintainAspectRatio: false,
-                  plugins: {
-                    legend: {
-                      position: "top",
-                      labels: { color: "#444" },
-                    },
-                  },
-                  scales: {
-                    x: {
-                      title: {
-                        display: true,
-                        text: `${filteredProps[0]}`,
-                        color: "#444",
-                      },
-                      ticks: { color: "#333" },
-                      grid: { color: "#ccc" },
-                    },
-                    y: {
-                      title: {
-                        display: true,
-                        text: `${filteredProps[1]}`,
-                        color: "#444",
-                      },
-                      ticks: { color: "#333" },
-                      grid: { color: "#ccc" },
-                    },
-                  },
-                }}
-              />
-            </Box>
-          )}
-        </Box>
+        {activeTab === 1 && selectedMats?.length > 0 && (
+          <Chart
+            chartType={CHART_TYPES.BAR}
+            materials={selectedMats}
+            properties={selectedProps}
+          />
+        )}
+        {activeTab === 2 && selectedMats?.length > 0 && (
+          <Chart
+            chartType={CHART_TYPES.BUBBLE}
+            materials={selectedMats}
+            properties={selectedProps}
+          />
+        )}
       </Container>
     </>
   );
