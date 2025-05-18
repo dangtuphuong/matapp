@@ -63,11 +63,11 @@ const extractPropertyValues = (material, props) =>
       for (const prop in material.parsed_properties[category]) {
         if (prop.toLowerCase().includes(targetProp.toLowerCase())) {
           const metric = material.parsed_properties[category][prop][0]?.metric;
-          return metric?.max || metric?.min || 0;
+          return metric?.max ?? metric?.min;
         }
       }
     }
-    return 0;
+    return null;
   });
 
 const Chart = ({ show = false, chartType, materials, properties }) => {
@@ -104,26 +104,33 @@ const Chart = ({ show = false, chartType, materials, properties }) => {
   }, [ids, props]);
 
   const bubbleData = useMemo(() => {
-    const allR = materials.map(
-      (m) => extractPropertyValues(m, filteredProps)[2] ?? 1
-    );
-    const minR = Math.min(...allR);
-    const maxR = Math.max(...allR);
+    const allR =
+      materials?.map((m) => extractPropertyValues(m, filteredProps)[2]) || [];
+    const minR = allR?.length > 0 ? Math.min(...allR) : null;
+    const maxR = allR?.length > 0 ? Math.max(...allR) : null;
     return {
       labels: filteredProps,
       datasets: materials?.map((mat, index) => {
         const values = extractPropertyValues(mat, filteredProps);
-        const rawR = values[2] ?? 1;
+        const rawR = values[2];
 
-        const scaledR =
-          minR === maxR ? 10 : 10 + ((rawR - minR) / (maxR - minR)) * (50 - 10);
-
+        let scaledR = 5;
+        const isValidR =
+          typeof rawR === "number" &&
+          typeof minR === "number" &&
+          typeof maxR === "number";
+        if (isValidR) {
+          scaledR =
+            minR === maxR
+              ? 10
+              : 10 + ((rawR - minR) / (maxR - minR)) * (50 - 10);
+        }
         return {
           label: mat?.["Material Name"] || `Material ${index + 1}`,
           data: [
             {
-              x: values[0] ?? 0,
-              y: values[1] ?? 0,
+              x: values[0],
+              y: values[1],
               r: scaledR,
               rawR,
               xLabel: filteredProps[0],
