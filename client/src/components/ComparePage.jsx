@@ -1,9 +1,6 @@
-// MaterialComparisonPage.jsx
-
 import React, { useState, useEffect, useCallback } from "react";
 import {
   Typography,
-  Button,
   Tabs,
   Tab,
   Box,
@@ -204,6 +201,7 @@ function CollapsibleTable({ rows, onDelete }) {
 }
 
 const ComparePage = () => {
+  const [loading, setLoading] = useState(false);
   const [inputValue, setInputValue] = React.useState("");
   const [materials, setMaterials] = useState([]);
   const [selectedMats, setSelectedMats] = useState([]);
@@ -212,6 +210,7 @@ const ComparePage = () => {
   const [filteredProps, setFilteredProps] = useState([]);
 
   const fetchMaterials = useCallback((params) => {
+    setLoading(true);
     return getAllMaterials(params)
       .then((data) => {
         setMaterials(
@@ -221,7 +220,8 @@ const ComparePage = () => {
           })) || []
         );
       })
-      .catch((err) => console.error(err));
+      .catch((err) => console.error(err))
+      .finally(() => setLoading(false));
   }, []);
 
   useEffect(() => {
@@ -352,14 +352,15 @@ const ComparePage = () => {
           <Autocomplete
             fullWidth
             key={selectedMats?.length}
+            loading={loading}
             size="small"
             options={materials}
             renderInput={(p) => (
               <TextField {...p} label={"Search for a material"} />
             )}
-            onInputChange={(event, newInputValue) => {
-              setInputValue(newInputValue);
-            }}
+            onInputChange={(event, newInputValue) =>
+              setInputValue(newInputValue)
+            }
             onChange={onSelectMat}
           />
         </Box>
