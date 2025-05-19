@@ -235,37 +235,29 @@ const MaterialsTable = ({ searchCategories, searchProperties }) => {
       <Modal open={openChart} onClose={() => setOpenChart(false)}>
         <Paper sx={modalStyle}>
           {/* Close Button */}
-          <Box sx={{ display: "flex", justifyContent: "flex-end", mb: 1 }}>
-            <IconButton onClick={() => setOpenChart(false)} size="small">
-              <CloseIcon />
-            </IconButton>
-          </Box>
+          <IconButton
+            sx={{ position: "absolute", top: 10, right: 10 }}
+            onClick={() => setOpenChart(false)}
+            size="small"
+          >
+            <CloseIcon />
+          </IconButton>
 
           {/* Chart Container */}
+
           <Box
             sx={{
-              flex: 1,
+              width: "100%",
+              height: "100%",
               overflow: "hidden",
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
+              padding: "10px",
             }}
           >
-            <Box
-              sx={{
-                width: "100%",
-                height: "100%",
-                overflow: "hidden",
-                padding: "10px",
-                boxSizing: "border-box",
-              }}
-            >
-              <BubbleChart
-                materials={materials}
-                currentPage={currentPage}
-                onClose={() => setOpenChart(false)}
-              />
-            </Box>
+            <BubbleChart
+              materials={materials}
+              currentPage={currentPage}
+              onClose={() => setOpenChart(false)}
+            />
           </Box>
         </Paper>
       </Modal>

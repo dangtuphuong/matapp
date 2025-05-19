@@ -108,7 +108,7 @@ const BubbleChart = ({ materials, currentPage }) => {
     },
     layout: {
       padding: {
-        bottom: 30,  // Add bottom padding
+        bottom: 45,  // Add bottom padding
       },
     },
   };
