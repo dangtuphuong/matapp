@@ -1,11 +1,14 @@
 import { useState } from "react";
 import { Typography, Box, Alert } from "@mui/material";
+import { MODELS } from "../constants";
 
 import SmartSeachInfo from "./SmartSeachInfo";
 import SubscriptionPage from "./SubscriptionPage";
 
-const PremiumInfo = () => {
+const PremiumInfo = ({ options = [] }) => {
   const [openModal, setOpenModal] = useState(false);
+  // Pass all model keys to SmartSeachInfo to show all cards
+  const allModels = Object.values(MODELS);
 
   const handleCloseModal = () => setOpenModal(false);
 
@@ -26,7 +29,7 @@ const PremiumInfo = () => {
         </Typography>
       </Box>
 
-      <SmartSeachInfo />
+      <SmartSeachInfo options={allModels} />
 
       <Box textAlign="center" mt={4}>
         <SubscriptionPage open={openModal} handleClose={handleCloseModal} />
