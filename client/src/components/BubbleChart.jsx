@@ -1,5 +1,4 @@
-import React, { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
+import React from "react";
 import { Bubble } from "react-chartjs-2";
 import {
   Chart as ChartJS,
@@ -9,17 +8,7 @@ import {
   Legend,
   Title,
 } from "chart.js";
-import { Link } from "react-router-dom";
-import {
-  Container,
-  Typography,
-  Box,
-  IconButton,
-  Tooltip as IconTooltip,
-} from "@mui/material";
-import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
-import NavbarPrivate from "./NavbarPrivate";
-import { getAllMaterials } from "../services/material-service";
+import { Box, Typography } from "@mui/material";
 
 ChartJS.register(LinearScale, PointElement, Tooltip, Legend, Title);
 
@@ -36,47 +25,28 @@ const COLORS = [
   "#ff7f00",
 ];
 
-const BubbleChart = () => {
-  const [materials, setMaterials] = useState([]);
-  const location = useLocation();
-  const { searchCategories = [], searchProperties = [] } =
-    location?.state || {};
-
-  useEffect(() => {
-    getAllMaterials({
-      page: 1,
-      limit: 100,
-      searchTerm: "",
-      searchCategories,
-      searchProperties,
-    })
-      .then((data) => {
-        setMaterials(data?.materials || []);
-      })
-      .catch((err) => console.error("Error loading materials:", err));
-  }, [searchCategories, searchProperties]);
-
-  const groupByTopLevelCategory = (materials) => {
-    const grouped = {};
-    materials.forEach((material) => {
-      material.Categories?.forEach((cat) => {
-        grouped[cat] = (grouped[cat] || 0) + 1;
-      });
+const processData = (materials) => {
+  const grouped = {};
+  materials.forEach((material) => {
+    material.Categories?.forEach((cat) => {
+      grouped[cat] = (grouped[cat] || 0) + 1;
     });
-    return grouped;
-  };
+  });
+  return grouped;
+};
 
-  const grouped = groupByTopLevelCategory(materials);
-  const categoryNames = Object.keys(grouped);
+const BubbleChart = ({ materials, currentPage }) => {
+  const groupedData = processData(materials);
+  const categoryNames = Object.keys(groupedData);
 
   const data = {
     datasets: categoryNames.map((cat, i) => ({
       label: cat,
       data: [
         {
-          x: grouped[cat],
+          x: groupedData[cat],
           y: cat,
-          r: Math.sqrt(grouped[cat]) * 3,
+          r: Math.sqrt(groupedData[cat]) * 5,
         },
       ],
       backgroundColor: COLORS[i % COLORS.length],
@@ -90,7 +60,7 @@ const BubbleChart = () => {
       legend: { display: true },
       title: {
         display: true,
-        text: "Materials per Category",
+        text: `Materials per Category - Page ${currentPage}`,
       },
       tooltip: {
         callbacks: {
@@ -103,7 +73,6 @@ const BubbleChart = () => {
         },
       },
     },
-
     scales: {
       x: {
         type: "linear",
@@ -112,70 +81,45 @@ const BubbleChart = () => {
           text: "Material Count",
         },
         beginAtZero: true,
-        ticks: { stepSize: 1 },
+        ticks: {
+          padding: 20, // Adds padding on the x-axis
+        },
         grid: {
           display: false,
         },
       },
       y: {
         type: "category",
+        labels: categoryNames,
         title: {
           display: true,
           text: "Category",
         },
-        labels: categoryNames,
+        ticks: {
+          padding: 20, // Adds padding on the y-axis
+        },
         grid: {
           display: false,
         },
+        afterDataLimits: (scale) => {
+          scale.max += 0.5; // Add space at the bottom
+        },
+      },
+    },
+    layout: {
+      padding: {
+        bottom: 30,  // Add bottom padding
       },
     },
   };
 
   return (
-    <>
-      <NavbarPrivate />
-      <div style={{ position: "relative" }}>
-        <div style={{ position: "absolute", top: 20, left: 20 }}>
-          <IconTooltip title={"Back to search page"}>
-            <IconButton component={Link} sx={{ float: "left" }} to="/search">
-              <KeyboardBackspaceIcon />
-            </IconButton>
-          </IconTooltip>
-        </div>
-      </div>
-      <Container
-        maxWidth={false}
-        disableGutters
-        sx={{
-          px: 2,
-          my: 4,
-          width: "100%",
-          overflow: "hidden",
-        }}
-      >
-        <Typography variant="h4" align="center" sx={{ mb: 3 }}>
-          Bubble Chart: Material Count by Category (Filtered)
-        </Typography>
-        <Box
-          sx={{
-            width: "100%",
-            height: "calc(100vh - 200px)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          <Bubble
-            data={data}
-            options={{
-              ...options,
-              maintainAspectRatio: false,
-            }}
-            style={{ width: "100%", height: "100%" }}
-          />
-        </Box>
-      </Container>
-    </>
+    <Box sx={{ width: "100%", height: "100%" }}>
+      <Typography variant="h6" align="center" sx={{ mb: 2 }}>
+        Bubble Chart - Materials per Category (Page {currentPage})
+      </Typography>
+      <Bubble data={data} options={options} />
+    </Box>
   );
 };
 
