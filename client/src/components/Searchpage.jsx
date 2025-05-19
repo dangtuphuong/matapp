@@ -340,6 +340,15 @@ const SearchPage = () => {
               }}
             >
               <b>By Categories</b>
+              <Tooltip title="Visualize data grouped by category">
+                <IconButton
+                  sx={{ "&:hover": { color: "primary.main" } }}
+                  size="small"
+                  onClick={handleBubbleChartRedirect}
+                >
+                  <BubbleChartIcon />
+                </IconButton>
+              </Tooltip>
             </Typography>
             <RichTreeView
               multiSelect
