@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   TextField,
   Button,
@@ -18,7 +18,7 @@ import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import { useNavigate } from "react-router-dom";
 import { ROLES } from "../constants";
-import { registerUser } from "../services/user-service";
+import { registerUser, getSettings } from "../services/user-service";
 import logo from "../img/onlylogo.png";
 import NavbarPublic from "./NavbarPublic";
 import "./styles/Register.css";
@@ -34,7 +34,8 @@ const Register = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [role, setRole] = useState(ROLES.NORMAL_USER);
+  const [role, setRole] = useState(ROLES.PREMIUM_USER);
+  const [hasRole, setHasRole] = useState(false);
 
   // UI state
   const [loading, setLoading] = useState(false);
@@ -42,6 +43,12 @@ const Register = () => {
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  useEffect(() => {
+    getSettings()
+      .then((data) => setHasRole(data?.settings?.is_premium))
+      .catch((err) => console.error(err));
+  }, []);
 
   // Handle form submission
   const handleRegister = async (e) => {
@@ -240,30 +247,35 @@ const Register = () => {
             </FormControl>
 
             {/* Role selection radio buttons */}
-            <FormControl component="fieldset" className="register-form-control">
-              <FormLabel component="legend">User Role</FormLabel>
-              <RadioGroup
-                row
-                value={String(role)}
-                onChange={(e) => setRole(e?.target?.value)}
+            {hasRole && (
+              <FormControl
+                component="fieldset"
+                className="register-form-control"
               >
-                <FormControlLabel
-                  value={String(ROLES.NORMAL_USER)}
-                  control={<Radio />}
-                  label="Normal User"
-                />
-                <FormControlLabel
-                  value={String(ROLES.PREMIUM_USER)}
-                  control={<Radio />}
-                  label="Premium User"
-                />
-                {/* <FormControlLabel
+                <FormLabel component="legend">User Role</FormLabel>
+                <RadioGroup
+                  row
+                  value={String(role)}
+                  onChange={(e) => setRole(e?.target?.value)}
+                >
+                  <FormControlLabel
+                    value={String(ROLES.NORMAL_USER)}
+                    control={<Radio />}
+                    label="Normal User"
+                  />
+                  <FormControlLabel
+                    value={String(ROLES.PREMIUM_USER)}
+                    control={<Radio />}
+                    label="Premium User"
+                  />
+                  {/* <FormControlLabel
                   value={String(ROLES.ADMIN)}
                   control={<Radio />}
                   label="Admin"
                 /> */}
-              </RadioGroup>
-            </FormControl>
+                </RadioGroup>
+              </FormControl>
+            )}
 
             {/* Submit button */}
             <Button

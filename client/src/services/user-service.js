@@ -120,18 +120,8 @@ export const getBookmarks = async () => {
 };
 
 export const getSettings = async () => {
-  // Get the token from localStorage
-  const token = localStorage.getItem("access_token");
-
-  // Make sure the token exists before sending the request
-  if (!token) {
-    throw new Error("No access token found");
-  }
-
   try {
-    const response = await axios.get(`${API_URL}/settings`, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
+    const response = await axios.get(`${API_URL}/settings`, {});
     return response.data;
   } catch (error) {
     console.error("Error fetching settings:", error);

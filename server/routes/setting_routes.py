@@ -11,7 +11,6 @@ setting_bp = Blueprint("setting_routes", __name__)
 
 # Route to fetch all setting, with JWT token check
 @setting_bp.route("/settings", methods=["GET"])
-@jwt_required()
 def get_settings():
     try:
         settings = SettingModel.get_all_settings()
