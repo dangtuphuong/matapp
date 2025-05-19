@@ -20,15 +20,27 @@ class SettingModel:
             settings_collection = mongo.db["settings"]
             first_doc = settings_collection.find_one()
 
+            update_data = {
+                "smart_search": settings.get(
+                    "smart_search",
+                    {
+                        "vector": True,
+                        "llm": False,
+                        "deepseek": False,
+                        "gemini": False,
+                    },
+                ),
+                "is_premium": settings.get("is_premium", False),
+            }
+
             if first_doc:
                 settings_collection.update_one(
-                    {"_id": first_doc["_id"]}, {"$set": {"smart_search": settings}}
+                    {"_id": first_doc["_id"]}, {"$set": update_data}
                 )
-                # Fetch the updated document
                 updated_doc = settings_collection.find_one({"_id": first_doc["_id"]})
                 return updated_doc
             else:
-                inserted = settings_collection.insert_one({"smart_search": settings})
+                inserted = settings_collection.insert_one(update_data)
                 new_doc = settings_collection.find_one({"_id": inserted.inserted_id})
                 return new_doc
         except Exception as e:

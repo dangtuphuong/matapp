@@ -10,6 +10,8 @@ import {
   Button,
   CircularProgress,
   Box,
+  Switch,
+  Divider,
 } from "@mui/material";
 import TroubleshootIcon from "@mui/icons-material/Troubleshoot";
 import NavbarPrivate from "../NavbarPrivate";
@@ -20,14 +22,22 @@ const options = [MODELS.VECTOR, MODELS.LLM, MODELS.DEEPSEEK, MODELS.GEMINI];
 
 const SettingsPage = () => {
   const [loading, setLoading] = useState(false);
-  const [settings, setSettings] = useState({});
+  const [settings, setSettings] = useState({
+    smart_search: {},
+    is_premium: false,
+  });
 
   const canSubmit = Object.keys(settings)?.length > 0;
 
   useEffect(() => {
     setLoading(true);
     getSettings()
-      .then((data) => setSettings(data?.settings?.smart_search ?? {}))
+      .then((data) =>
+        setSettings({
+          smart_search: data?.settings?.smart_search ?? {},
+          is_premium: data?.settings?.is_premium,
+        })
+      )
       .catch((err) => console.error(err))
       .finally(() => setLoading(false));
   }, []);
@@ -36,7 +46,12 @@ const SettingsPage = () => {
     setLoading(true);
     if (canSubmit) {
       updateSettings({ settings })
-        .then((data) => setSettings(data?.settings?.smart_search ?? {}))
+        .then((data) =>
+          setSettings({
+            smart_search: data?.settings?.smart_search ?? {},
+            is_premium: data?.settings?.is_premium,
+          })
+        )
         .catch((err) => console.error(err))
         .finally(() => setLoading(false));
     }
@@ -60,29 +75,32 @@ const SettingsPage = () => {
             variant="h6"
             gutterBottom
           >
-            <TroubleshootIcon />
+            <TroubleshootIcon sx={{ marginLeft: "15px" }} />
             <Box
               sx={{
                 fontWeight: 600,
                 display: "inline-block",
-                marginLeft: "10px",
+                marginLeft: "15px",
               }}
             >
               Enable Smart Search
             </Box>
           </Typography>
-          <List dense sx={{ padding: "0 50px" }}>
+          <List dense sx={{ marginLeft: "90px" }}>
             {options.map((optionKey) => (
               <ListItem key={optionKey} disablePadding>
                 <FormControlLabel
                   control={
                     <Checkbox
                       disabled={loading}
-                      checked={settings[optionKey] || false}
+                      checked={settings?.smart_search?.[optionKey] || false}
                       onChange={(e) =>
                         setSettings({
                           ...settings,
-                          [optionKey]: e.target.checked,
+                          smart_search: {
+                            ...settings?.smart_search,
+                            [optionKey]: e?.target?.checked,
+                          },
                         })
                       }
                     />
@@ -92,6 +110,25 @@ const SettingsPage = () => {
               </ListItem>
             ))}
           </List>
+          <Divider sx={{ m: "20px 0" }} />
+          <Typography
+            sx={{ display: "flex", alignItems: "center" }}
+            variant="h6"
+            gutterBottom
+          >
+            <Switch
+              checked={settings?.is_premium}
+              onChange={(e) => {
+                setSettings({
+                  ...settings,
+                  is_premium: e?.target?.checked,
+                });
+              }}
+            />
+            <Box sx={{ fontWeight: 600, display: "inline-block" }}>
+              Enable Premium
+            </Box>
+          </Typography>
         </Paper>
         <Box align="center">
           <Button
