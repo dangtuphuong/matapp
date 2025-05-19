@@ -330,25 +330,8 @@ const SearchPage = () => {
         ) : (
           <Box sx={{ marginRight: "20px", width: "320px", minWidth: "320px" }}>
             {/* Non-mobile layout: Original filter section */}
-            <Typography
-              variant="h6"
-              sx={{
-                mb: "10px",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
-              }}
-            >
+            <Typography variant="h6" sx={{ mb: "10px" }}>
               <b>By Categories</b>
-              <Tooltip title="Visualize data grouped by category">
-                <IconButton
-                  sx={{ "&:hover": { color: "primary.main" } }}
-                  size="small"
-                  onClick={handleBubbleChartRedirect}
-                >
-                  <BubbleChartIcon />
-                </IconButton>
-              </Tooltip>
             </Typography>
             <RichTreeView
               multiSelect

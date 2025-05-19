@@ -9,7 +9,14 @@ import {
   TableHead,
   TableRow,
   Skeleton,
+  IconButton,
+  Tooltip,
+  Modal,
+  Paper,
 } from "@mui/material";
+import BubbleChartIcon from "@mui/icons-material/BubbleChart";
+import BubbleChart from "./BubbleChart";
+import CloseIcon from "@mui/icons-material/Close";
 
 import { getAllMaterials } from "../services/material-service";
 import Pagination from "./Pagination";
@@ -18,6 +25,21 @@ const headerStyle = {
   backgroundColor: "#424242",
   color: "white",
   fontWeight: "bold",
+};
+
+const modalStyle = {
+  position: "absolute",
+  top: "50%",
+  left: "50%",
+  transform: "translate(-50%, -50%)",
+  width: "80%",
+  height: "80%",
+  bgcolor: "background.paper",
+  boxShadow: 24,
+  p: 2,
+  overflow: "hidden",
+  display: "flex",
+  flexDirection: "column",
 };
 
 const MaterialsTable = ({ searchCategories, searchProperties }) => {
@@ -29,6 +51,7 @@ const MaterialsTable = ({ searchCategories, searchProperties }) => {
   const [limit, setLimit] = useState(10);
   const [searchTerm, setSearchTerm] = useState("");
   const [propsCol, setPropsCol] = useState(null);
+  const [openChart, setOpenChart] = useState(false);
 
   // Fetch materials from API
   const fetchMaterials = useCallback((params) => {
@@ -84,7 +107,7 @@ const MaterialsTable = ({ searchCategories, searchProperties }) => {
   return (
     <>
       {/* Material Name */}
-      <Box sx={{ mb: 1.5 }}>
+      <Box sx={{ mb: 1.5, display: "flex", alignItems: "center", gap: 1 }}>
         <TextField
           size="small"
           label="Search by Material Name"
@@ -92,6 +115,19 @@ const MaterialsTable = ({ searchCategories, searchProperties }) => {
           value={searchTerm}
           onChange={handleSearchChange}
         />
+        {/* Bubble Chart Button */}
+        <Box sx={{ h: 40, w: 40 }}>
+          <Tooltip title="Visualize data in Bubble Chart">
+            <IconButton
+              sx={{ "&:hover": { color: "primary.main" } }}
+              size="small"
+              onClick={() => setOpenChart(true)}
+              disabled={materials.length === 0}
+            >
+              <BubbleChartIcon />
+            </IconButton>
+          </Tooltip>
+        </Box>
       </Box>
       <Box sx={{ overflowX: "auto", width: "100%" }}>
         <Table
@@ -132,10 +168,10 @@ const MaterialsTable = ({ searchCategories, searchProperties }) => {
                   <TableCell
                     sx={{
                       flex: 1,
-                      maxWidth: "10px", // You can limit the width if necessary
+                      maxWidth: "10px",
                       overflow: "hidden",
                       textOverflow: "ellipsis",
-                      whiteSpace: "normal", // This will allow wrapping of text
+                      whiteSpace: "normal",
                     }}
                   >
                     {material?.["Material Name"]}
@@ -144,10 +180,10 @@ const MaterialsTable = ({ searchCategories, searchProperties }) => {
                   <TableCell
                     sx={{
                       width: "30%",
-                      maxWidth: "150px", // limit width
+                      maxWidth: "150px",
                       overflow: "hidden",
                       textOverflow: "ellipsis",
-                      whiteSpace: "normal", // OR "normal" to wrap text
+                      whiteSpace: "normal",
                     }}
                   >
                     {material?.Categories?.join(", ")}
@@ -194,6 +230,45 @@ const MaterialsTable = ({ searchCategories, searchProperties }) => {
           isLoading={isLoading}
         />
       )}
+
+      {/* Bubble Chart Modal */}
+      <Modal open={openChart} onClose={() => setOpenChart(false)}>
+        <Paper sx={modalStyle}>
+          {/* Close Button */}
+          <Box sx={{ display: "flex", justifyContent: "flex-end", mb: 1 }}>
+            <IconButton onClick={() => setOpenChart(false)} size="small">
+              <CloseIcon />
+            </IconButton>
+          </Box>
+
+          {/* Chart Container */}
+          <Box
+            sx={{
+              flex: 1,
+              overflow: "hidden",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <Box
+              sx={{
+                width: "100%",
+                height: "100%",
+                overflow: "hidden",
+                padding: "10px",
+                boxSizing: "border-box",
+              }}
+            >
+              <BubbleChart
+                materials={materials}
+                currentPage={currentPage}
+                onClose={() => setOpenChart(false)}
+              />
+            </Box>
+          </Box>
+        </Paper>
+      </Modal>
     </>
   );
 };
