@@ -75,38 +75,7 @@ const AboutUsPage = () => {
     },
   ];
 
-  const teamMembers = [
-    {
-      name: "Aditya Roy",
-      id: "104671426",
-      email: "104671426@student.swin.edu.au",
-    },
-    {
-      name: "Lalitha Samudith",
-      id: "104760748",
-      email: "104760748@student.swin.edu.au",
-    },
-    {
-      name: "Vu Hoang Nam Dao",
-      id: "104474191",
-      email: "104474191@student.swin.edu.au",
-    },
-    {
-      name: "Pattarapol Laovanich",
-      id: "104338734",
-      email: "104338734@student.swin.edu.au",
-    },
-    {
-      name: "Riya Shrestha",
-      id: "104652997",
-      email: "104652997@student.swin.edu.au",
-    },
-    {
-      name: "Tu Phuong Dang",
-      id: "103814482",
-      email: "103814482@student.swin.edu.au",
-    },
-  ];
+  const teamMembers = []; // or null if preferred
 
   const [openTeamModal, setOpenTeamModal] = React.useState(false);
 
@@ -212,28 +181,34 @@ const AboutUsPage = () => {
         </DialogTitle>
         <DialogContent>
           <Box display="flex" justifyContent="center">
-            <Grid container spacing={3} justifyContent="center">
-              {teamMembers.map((member, idx) => (
-                <Grid item xs={12} sm={6} md={4} key={idx}>
-                  <Card className="team-card" elevation={3}>
-                    <CardContent style={{ textAlign: "center" }}>
-                      <Typography variant="h6">{member.name}</Typography>
-                      <Typography variant="body2">
-                        Student ID: {member.id}
-                      </Typography>
-                      <Typography variant="body2" className="email-text">
-                        <a
-                          href={`mailto:${member.email}`}
-                          className="email-link"
-                        >
-                          {member.email}
-                        </a>
-                      </Typography>
-                    </CardContent>
-                  </Card>
-                </Grid>
-              ))}
-            </Grid>
+            {teamMembers.length === 0 ? (
+              <Typography variant="body1" align="center">
+                Please contact website admin for more info.
+              </Typography>
+            ) : (
+              <Grid container spacing={3} justifyContent="center">
+                {teamMembers.map((member, idx) => (
+                  <Grid item xs={12} sm={6} md={4} key={idx}>
+                    <Card className="team-card" elevation={3}>
+                      <CardContent style={{ textAlign: "center" }}>
+                        <Typography variant="h6">{member.name}</Typography>
+                        <Typography variant="body2">
+                          Student ID: {member.id}
+                        </Typography>
+                        <Typography variant="body2" className="email-text">
+                          <a
+                            href={`mailto:${member.email}`}
+                            className="email-link"
+                          >
+                            {member.email}
+                          </a>
+                        </Typography>
+                      </CardContent>
+                    </Card>
+                  </Grid>
+                ))}
+              </Grid>
+            )}
           </Box>
         </DialogContent>
       </Dialog>
