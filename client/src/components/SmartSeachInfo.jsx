@@ -32,12 +32,12 @@ const MODEL_CARDS = [
   },
 ];
 
-const SmartSeachInfo = ({ options }) => (
+const SmartSeachInfo = ({ options = [] }) => (
   <Box
     display="grid"
     gridTemplateColumns={{
       xs: "1fr",
-      sm: options?.length === 1 ? "1fr" : "1fr 1fr",
+      sm: options.length === 1 ? "1fr" : "1fr 1fr",
     }}
     gap={3}
     mt={4}
@@ -48,7 +48,7 @@ const SmartSeachInfo = ({ options }) => (
         <Card
           key={idx}
           variant="outlined"
-          sx={{ p: options?.length === 1 ? 3 : 2, bgcolor: "#f9f9f9" }}
+          sx={{ p: options.length === 1 ? 3 : 2, bgcolor: "#f9f9f9" }}
         >
           <Typography variant="h6">{tool.title}</Typography>
           <Typography variant="body2" mt={1}>

@@ -25,8 +25,6 @@ import { RichTreeView } from "@mui/x-tree-view/RichTreeView";
 import { getCategories, getProperties } from "../services/material-service";
 import NavbarPrivate from "./NavbarPrivate";
 import MaterialsTable from "./MaterialsTable";
-import { useNavigate } from "react-router-dom";
-import BubbleChartIcon from "@mui/icons-material/BubbleChart";
 
 const convertTreeData = (data) =>
   data?.map(({ name, children }) => ({
@@ -186,17 +184,6 @@ const SearchPage = () => {
     searchProperties: [],
   });
 
-  const navigate = useNavigate();
-
-  const handleBubbleChartRedirect = () => {
-    navigate("/bubblechart", {
-      state: {
-        searchCategories: searchParams?.searchCategories,
-        searchProperties: searchParams?.searchProperties,
-      },
-    });
-  };
-
   useEffect(() => {
     getCategories()
       .then((data) => setCategories(convertTreeData(data?.categories || [])))
@@ -330,15 +317,7 @@ const SearchPage = () => {
         ) : (
           <Box sx={{ marginRight: "20px", width: "320px", minWidth: "320px" }}>
             {/* Non-mobile layout: Original filter section */}
-            <Typography
-              variant="h6"
-              sx={{
-                mb: "10px",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
-              }}
-            >
+            <Typography variant="h6" sx={{ mb: "10px" }}>
               <b>By Categories</b>
             </Typography>
             <RichTreeView
