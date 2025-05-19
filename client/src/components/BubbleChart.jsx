@@ -62,6 +62,16 @@ const BubbleChart = ({ materials, currentPage }) => {
         display: true,
         text: `Materials per Category - Page ${currentPage}`,
       },
+      tooltip: {
+        callbacks: {
+          label: function (context) {
+            const label = context.dataset.label || "";
+            const x = context.raw.x;
+            const r = context.raw.r;
+            return `${label}: ${x} materials`;
+          },
+        },
+      },
     },
     scales: {
       x: {
