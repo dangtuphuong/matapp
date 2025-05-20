@@ -99,7 +99,7 @@ def profile():
     if not user:
         return jsonify({"message": "User not found"}), 404
 
-    return jsonify({"_id": str(user["_id"]), **user})
+    return jsonify({"_id": str(user["_id"]), **user}), 200
 
 
 @user_bp.route("/users", methods=["GET"])

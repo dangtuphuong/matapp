@@ -83,8 +83,13 @@ const Navbar = ({ onSetUser }) => {
           onSetUser(data || null);
         }
       })
-      .catch(() => {
-        setUsername("User");
+      .catch((e) => {
+        if (e?.response?.status === 401) {
+          // Token is invalid or expired
+          localStorage.removeItem("access_token");
+          localStorage.removeItem("username");
+          localStorage.removeItem("user_role");
+        }
       });
   }, []);
 
