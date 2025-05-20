@@ -35,19 +35,19 @@ const EmptyState = () => (
     >
       <Stack spacing={1}>
         <Typography sx={emptyStyle} variant="body2">
-          <CompareArrowsIcon sx={{ color: "#505050" }} fontSize="small" />
+          <CompareArrowsIcon fontSize="small" />
           <strong>Flexible Comparison:</strong> Compare two or more materials at
-          once
+          once.
         </Typography>
         <Typography sx={emptyStyle} variant="body2">
-          <BarChartIcon sx={{ color: "#505050" }} fontSize="small" />
-          <strong>Focused View:</strong> See only properties shared by the
-          selected materials and visualize them for quick analysis
+          <BarChartIcon fontSize="small" />
+          <strong>Comprehensive View:</strong> View all properties found across
+          the selected materials, with visual comparisons.
         </Typography>
         <Typography sx={emptyStyle} variant="body2">
-          <HighlightAltIcon sx={{ color: "#505050" }} fontSize="small" />
+          <HighlightAltIcon fontSize="small" />
           <strong>Highlight Differences:</strong> Quickly identify how materials
-          differ across selected properties
+          differ across selected properties.
         </Typography>
       </Stack>
     </Paper>
