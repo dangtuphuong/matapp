@@ -163,18 +163,7 @@ const SmartSearch = () => {
   return (
     <div className="smart-search-page-container">
       <NavbarPrivate />
-      <Typography
-        align="center"
-        variant="h4"
-        sx={{
-          mt: 3,
-          mb: 2,
-          fontSize: {
-            xs: "1.5rem", // Mobile
-            sm: "2rem", // Small tablets
-          },
-        }}
-      >
+      <Typography align="center" variant="h4" sx={{ mt: 3, mb: 2 }}>
         Material Smart Search
       </Typography>
 

@@ -28,7 +28,7 @@ class MaterialModel:
         # Category filtering
         filtered_categories = [cat.strip() for cat in searchCategories if cat.strip()]
         if filtered_categories:
-            conditions.append({"Categories": {"$all": filtered_categories}})
+            conditions.append({"Categories": {"$in": filtered_categories}})
 
         # Property filtering
         for prop in searchProperties:

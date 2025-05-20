@@ -7,12 +7,52 @@ import {
   Autocomplete,
   Container,
   TextField,
+  Paper,
+  Stack,
 } from "@mui/material";
+import CompareArrowsIcon from "@mui/icons-material/CompareArrows";
+import BarChartIcon from "@mui/icons-material/BarChart";
+import HighlightAltIcon from "@mui/icons-material/HighlightAlt";
 import { getAllMaterials } from "../../services/material-service";
 import NavbarPrivate from "../NavbarPrivate";
 import CollapsibleTable from "./CollapsibleTable";
 import Chart from "./Chart";
 import { CHART_TYPES } from "../../constants";
+
+const emptyStyle = {
+  display: "flex",
+  alignItems: "center",
+  gap: 1,
+  color: "#505050",
+};
+
+const EmptyState = () => (
+  <Box sx={{ display: "flex", justifyContent: "center", mb: 3, mt: 4 }}>
+    <Paper
+      elevation={0}
+      variant="outlined"
+      sx={{ p: 2.5, backgroundColor: "#f9f9f9", width: 800 }}
+    >
+      <Stack spacing={1}>
+        <Typography sx={emptyStyle} variant="body2">
+          <CompareArrowsIcon sx={{ color: "#505050" }} fontSize="small" />
+          <strong>Flexible Comparison:</strong> Compare two or more materials at
+          once
+        </Typography>
+        <Typography sx={emptyStyle} variant="body2">
+          <BarChartIcon sx={{ color: "#505050" }} fontSize="small" />
+          <strong>Focused View:</strong> See only properties shared by the
+          selected materials and visualize them for quick analysis
+        </Typography>
+        <Typography sx={emptyStyle} variant="body2">
+          <HighlightAltIcon sx={{ color: "#505050" }} fontSize="small" />
+          <strong>Highlight Differences:</strong> Quickly identify how materials
+          differ across selected properties
+        </Typography>
+      </Stack>
+    </Paper>
+  </Box>
+);
 
 const ComparePage = () => {
   const [loading, setLoading] = useState(false);
@@ -123,18 +163,16 @@ const ComparePage = () => {
           </Box>
         </Box>
 
-        <Box sx={{ m: "30px 0" }}>
-          {selectedMats?.length > 0 && (
-            <Box className="table-comparison-horizontal">
-              <CollapsibleTable
-                rows={selectedMats}
-                onDelete={handleDeleteMat}
-              />
-            </Box>
-          )}
-        </Box>
-        {selectedMats?.length > 0 && (
+        {selectedMats?.length > 0 ? (
           <>
+            <Box sx={{ m: "30px 0" }}>
+              <Box className="table-comparison-horizontal">
+                <CollapsibleTable
+                  rows={selectedMats}
+                  onDelete={handleDeleteMat}
+                />
+              </Box>
+            </Box>
             <Tabs
               value={activeTab}
               onChange={(_, val) => setActiveTab(val)}
@@ -167,6 +205,8 @@ const ComparePage = () => {
               properties={selectedProps}
             />
           </>
+        ) : (
+          <EmptyState />
         )}
       </Container>
     </>
