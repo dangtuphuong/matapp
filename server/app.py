@@ -14,6 +14,8 @@ from routes.machine_learning.llmSearch import ml_bp
 from routes.machine_learning.deepseek_search import deepseek_bp
 from routes.machine_learning.gemini_search import gemini_bp
 
+from utils.llm import get_embeddings_model
+
 
 def create_app():
     app = Flask(
@@ -63,6 +65,9 @@ def create_app():
             print("Pinged your deployment. Successfully connected to MongoDB!")
         except Exception as e:
             print(f"MongoDB connection error: {e}")
+
+    # Preload SentenceTransformer embedding model
+    embedding_model = get_embeddings_model()
 
     return app
 
