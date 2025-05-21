@@ -1,4 +1,4 @@
-name: Build and Deploy to Azure Web App (No ACR)
+name: Build and Deploy to Azure Web App (No ACR, ZIP Deploy)
 
 on:
   push:
@@ -13,7 +13,6 @@ env:
 
   AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}
   WEB_APP_NAME: ${{ secrets.CLIENT_WEB_APP_NAME }}
-  IMAGE_NAME: matapp-image
 
 jobs:
   build-and-deploy:
@@ -41,24 +40,29 @@ jobs:
           mkdir -p ${{ env.SERVER_BUILD_TARGET_DIR }}
           cp -a ${{ env.CLIENT_DIST_DIR }}/. ${{ env.SERVER_BUILD_TARGET_DIR }}/
 
+      - name: Install Python dependencies
+        working-directory: ${{ env.SERVER_DIR }}
+        run: |
+          python3 -m venv venv
+          source venv/bin/activate
+          pip install --no-cache-dir -r requirements.txt
+
+      - name: Zip server directory for deployment
+        run: |
+          cd ${{ env.SERVER_DIR }}
+          zip -r ../app.zip ./*
+          cd ..
+
       - name: Log in to Azure
         uses: azure/login@v1
         with:
           creds: ${{ env.AZURE_CREDENTIALS }}
 
-      - name: Build Docker image
-        run: |
-          docker build -t ${{ env.IMAGE_NAME }} ${{ env.SERVER_DIR }}
-
-      - name: Save Docker image as TAR
-        run: |
-          docker save ${{ env.IMAGE_NAME }} | gzip > app.tar.gz
-
-      - name: Deploy TAR to Azure Web App
+      - name: Deploy to Azure Web App (ZIP Deploy)
         uses: azure/webapps-deploy@v2
         with:
           app-name: ${{ env.WEB_APP_NAME }}
-          package: app.tar.gz
+          package: app.zip
 
       - name: Azure logout
         if: always()
