@@ -1,0 +1,68 @@
+name: Build and Deploy to Azure Web App (No ACR)
+
+on:
+  push:
+    branches: ["client-deploy"]
+  workflow_dispatch:
+
+env:
+  CLIENT_DIR: ./client
+  SERVER_DIR: ./server
+  CLIENT_DIST_DIR: ./client/dist
+  SERVER_BUILD_TARGET_DIR: ./server/build
+
+  AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}
+  WEB_APP_NAME: ${{ secrets.CLIENT_WEB_APP_NAME }}
+  IMAGE_NAME: matapp-image
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: "${{ env.CLIENT_DIR }}/package-lock.json"
+
+      - name: Install client dependencies and build
+        working-directory: ${{ env.CLIENT_DIR }}
+        run: |
+          npm ci
+          npm run build
+
+      - name: Prepare server build directory
+        run: |
+          mkdir -p ${{ env.SERVER_BUILD_TARGET_DIR }}
+          cp -a ${{ env.CLIENT_DIST_DIR }}/. ${{ env.SERVER_BUILD_TARGET_DIR }}/
+
+      - name: Log in to Azure
+        uses: azure/login@v1
+        with:
+          creds: ${{ env.AZURE_CREDENTIALS }}
+
+      - name: Build Docker image
+        run: |
+          docker build -t ${{ env.IMAGE_NAME }} ${{ env.SERVER_DIR }}
+
+      - name: Save Docker image as TAR
+        run: |
+          docker save ${{ env.IMAGE_NAME }} | gzip > app.tar.gz
+
+      - name: Deploy TAR to Azure Web App
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: ${{ env.WEB_APP_NAME }}
+          package: app.tar.gz
+
+      - name: Azure logout
+        if: always()
+        run: |
+          az logout
+          az cache purge
+          az account clear
