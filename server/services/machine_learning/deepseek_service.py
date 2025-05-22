@@ -21,10 +21,6 @@ deepseek_api_key = os.getenv("DEEPSEEK_API_KEY")
 deepseek_api_base = "https://api.deepseek.com/v1"
 deepseek_model = "deepseek-chat"
 
-if not deepseek_api_key:
-    raise EnvironmentError(
-        "DEEPSEEK_API_KEY is missing. Set it in your environment or .env file."
-    )
 
 # ================= Load Static Resources =================
 example_data = []
@@ -64,6 +60,8 @@ def get_embeddings():
 def get_llm():
     global llm
     if llm is None:
+        if not deepseek_api_key:
+            raise ValueError("DEEPSEEK_API_KEY is missing.")
         llm = ChatOpenAI(
             model=deepseek_model,
             temperature=0,
