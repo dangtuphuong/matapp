@@ -1,8 +1,8 @@
-name: Build and Deploy to Azure Web App and Azure Container App
+name: Build and Deploy to Azure Web App
 
 on:
   push:
-    branches: ["production"]
+    branches: ["client-production"]
   workflow_dispatch:
 
 env:
@@ -10,6 +10,14 @@ env:
   SERVER_DIR: ./server
   CLIENT_DIST_DIR: ./client/dist
   SERVER_BUILD_TARGET_DIR: ./server/build
+
+  # Centralized secrets for easier management
+  AZURE_CREDENTIALS: ${{ secrets.CLIENT_AZURE_CREDENTIALS }}
+  ACR_LOGIN_SERVER: ${{ secrets.CLIENT_ACR_LOGIN_SERVER }}
+  ACR_USERNAME: ${{ secrets.CLIENT_ACR_USERNAME }}
+  ACR_PASSWORD: ${{ secrets.CLIENT_ACR_PASSWORD }}
+  IMAGE_NAME: ${{ secrets.CLIENT_AZURE_IMAGE_NAME }}
+  WEB_APP_NAME: ${{ secrets.CLIENT_AZURE_WEB_APP_NAME }}
 
 jobs:
   build-and-deploy:
@@ -40,14 +48,14 @@ jobs:
       - name: Log in to Azure
         uses: azure/login@v1
         with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
+          creds: ${{ env.AZURE_CREDENTIALS }}
 
       - name: Log in to ACR
         uses: azure/docker-login@v1
         with:
-          login-server: ${{ secrets.ACR_LOGIN_SERVER }}
-          username: ${{ secrets.ACR_USERNAME }}
-          password: ${{ secrets.ACR_PASSWORD }}
+          login-server: ${{ env.ACR_LOGIN_SERVER }}
+          username: ${{ env.ACR_USERNAME }}
+          password: ${{ env.ACR_PASSWORD }}
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -60,80 +68,15 @@ jobs:
           context: ${{ env.SERVER_DIR }}
           file: ${{ env.SERVER_DIR }}/Dockerfile
           push: true
-          tags: ${{ secrets.ACR_LOGIN_SERVER }}/${{ secrets.IMAGE_NAME }}:${{ github.sha }}, ${{ secrets.ACR_LOGIN_SERVER }}/${{ secrets.IMAGE_NAME }}:latest
+          tags: ${{ env.ACR_LOGIN_SERVER }}/${{ env.IMAGE_NAME }}:${{ github.sha }}, ${{ env.ACR_LOGIN_SERVER }}/${{ env.IMAGE_NAME }}:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v2
         with:
-          app-name: ${{ secrets.WEB_APP_NAME }}
-
-          images: "${{ secrets.ACR_LOGIN_SERVER }}/${{ secrets.IMAGE_NAME }}:${{ github.sha }}"
-
-      - name: Set Azure Container Apps to use multiple revision mode
-        run: |
-          az containerapp revision set-mode \
-            --name ${{ secrets.CONTAINER_APP_NAME }} \
-            --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} \
-            --mode multiple
-
-      - name: Deploy new revision (0% traffic)
-        run: |
-          az containerapp update \
-            --name ${{ secrets.CONTAINER_APP_NAME }} \
-            --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} \
-            --image ${{ secrets.ACR_LOGIN_SERVER }}/${{ secrets.IMAGE_NAME }}:${{ github.sha }} \
-            --set-env-vars "PORT=8000"
-
-      - name: Wait for new revision to become ready
-        run: |
-          echo "Waiting for healthy revision..."
-          LATEST_REVISION=""
-          # First get the latest revision name
-          for i in {1..10}; do
-            LATEST_REVISION=$(az containerapp revision list \
-              --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} \
-              --name ${{ secrets.CONTAINER_APP_NAME }} \
-              --query "[?properties.active==\`true\`].name | [0]" -o tsv)
-            if [ -n "$LATEST_REVISION" ]; then
-              echo "Latest active revision: $LATEST_REVISION"
-              break
-            fi
-            sleep 5
-          done
-
-          # Then check if it's healthy
-          for i in {1..30}; do
-            STATUS=$(az containerapp revision show \
-              --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} \
-              --name ${{ secrets.CONTAINER_APP_NAME }} \
-              --revision $LATEST_REVISION \
-              --query "properties.healthState" -o tsv)
-            echo "Revision health status: $STATUS"
-            if [ "$STATUS" == "Healthy" ]; then
-              echo "✅ Revision is healthy"
-              exit 0
-            fi
-            sleep 10
-          done
-          echo "❌ Revision failed to become healthy in time"
-
-
-          exit 1
-
-      - name: Set revision mode to single
-        run: |
-          az containerapp revision set-mode \
-            --name ${{ secrets.CONTAINER_APP_NAME }} \
-            --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} \
-            --mode single
-
-      - name: Fail workflow if revision is unhealthy
-        if: env.REVISION_HEALTHY == 'false'
-        run: |
-          echo "❌ Deployment failed: new revision is unhealthy"
-          exit 1
+          app-name: ${{ env.WEB_APP_NAME }}
+          images: "${{ env.ACR_LOGIN_SERVER }}/${{ env.IMAGE_NAME }}:${{ github.sha }}"
 
       - name: Azure logout
         if: always()
