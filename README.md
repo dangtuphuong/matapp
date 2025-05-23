@@ -4,18 +4,19 @@
 
 - **Frontend**: React
 - **Backend**: Python + Flask
-- **AI/ML**: TBA
+- **AI/ML**: Sentence Transformer, OpenAI, DeepSeek, Google Gemini
+- **Database**: MongoDB
 
-## Installation
+## Installation & Setup
 
-### Clone the project repository
+### 1. Clone the project repository
 
 ```bash
 git clone https://github.com/dangtuphuong/matapp.git
 cd matapp
 ```
 
-### Client - Install Dependencies:
+### 2. Client - Install Dependencies:
 
 ```bash
 cd client
@@ -23,7 +24,7 @@ cd client
 npm install
 ```
 
-### Server - Set Up a Virtual Environment and Install Dependencies:
+### 3. Server - Set Up a Virtual Environment and Install Dependencies:
 
 #### For Windows:
 
@@ -45,10 +46,22 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-### Database - Setup
+### 4. Database - Setup
 
-Make sure the MongoDB service is running locally  
+Make sure the MongoDB service is running  
 Create a database named `matdb`
+
+### 5. Environment Variables
+
+Create a .env file inside the server/ directory with the following:
+
+```
+MONGO_URI=your_mongo_uri
+JWT_SECRET_KEY=your_jwt_secret
+GOOGLE_API_KEY=your_google_api_key
+DEEPSEEK_API_KEY=your_deepseek_api_key
+OPENAI_API_KEY=your_openai_api_key
+```
 
 ## Running the Application
 
