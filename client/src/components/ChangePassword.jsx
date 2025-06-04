@@ -54,8 +54,8 @@ export default function ChangePassword() {
   };
 
   return (
-    <section style={{ maxWidth: "640px" }}>
-      <Typography variant="h5" sx={{ fontWeight: 600 }}>
+    <section style={{ maxWidth: "640px", marginBottom: "40px" }}>
+      <Typography variant="h5" sx={{ fontWeight: 600, mb: 3 }}>
         Password
       </Typography>
 
@@ -63,7 +63,6 @@ export default function ChangePassword() {
         label="Old Password"
         type={showOldPassword ? "text" : "password"}
         fullWidth
-        size="small"
         margin="normal"
         value={oldPassword}
         onChange={(e) => setOldPassword(e.target.value)}
@@ -88,7 +87,6 @@ export default function ChangePassword() {
         label="New Password"
         type={showNewPassword ? "text" : "password"}
         fullWidth
-        size="small"
         margin="normal"
         value={newPassword}
         onChange={(e) => setNewPassword(e.target.value)}

@@ -9,6 +9,7 @@ import {
   Avatar,
   TextField,
   IconButton,
+  Divider,
 } from "@mui/material";
 import {
   AccountCircle,
@@ -158,7 +159,7 @@ const ProfilePage = () => {
                 onChange={(e) => setEmail(e.target.value)}
                 InputProps={{ readOnly: !isEditing }}
               />
-              <TextField
+              {/* <TextField
                 fullWidth
                 label="Date of Birth"
                 margin="normal"
@@ -181,7 +182,7 @@ const ProfilePage = () => {
                 defaultValue={ROLE_LABELS[profile?.role] || "Unknown"}
                 key={profile?.role}
                 InputProps={{ readOnly: true }}
-              />
+              /> */}
 
               <div className="profile-buttons">
                 {renderRoleButtons(profile?.role)}
@@ -208,7 +209,11 @@ const ProfilePage = () => {
             </form>
           </section>
 
+          <Divider sx={{mb: 3, width: "640px"}} />
+
           <ChangePassword />
+
+          <Divider />
 
           {/* Bookmarks Section */}
           <section className="bookmarks-section">
