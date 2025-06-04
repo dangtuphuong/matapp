@@ -144,6 +144,30 @@ def update_user(user_id):
     return jsonify({"message": "User updated successfully"}), 200
 
 
+@user_bp.route("/users/change-own-password", methods=["POST"])
+@jwt_required()
+def reset_own_password():
+    current_email = get_jwt_identity()
+    current_user = User.find_by_email(current_email)
+
+    if not current_user:
+        return jsonify({"message": "User not found"}), 404
+
+    old_password = request.json.get("oldPassword")
+    new_password = request.json.get("newPassword")
+
+    if not old_password or not new_password:
+        return jsonify({"message": "Old and new passwords are required"}), 400
+
+    if not check_password(current_user["password"], old_password):
+        return jsonify({"message": "Old password is incorrect"}), 401
+
+    hashed = hash_password(new_password)
+    User.reset_password(current_user["_id"], hashed)
+
+    return jsonify({"message": "Password updated successfully"}), 200
+
+
 @user_bp.route("/users/<user_id>/reset-password", methods=["POST"])
 @jwt_required()
 def reset_user_password(user_id):

@@ -20,6 +20,7 @@ import {
 import { getUserProfile } from "../services/user-service";
 import { useNavigate } from "react-router-dom";
 import NavbarPrivate from "./NavbarPrivate";
+import ChangePassword from "./ChangePassword";
 import { ROLES, ROLE_LABELS } from "../constants";
 import "./styles/Profile.css";
 import axios from "axios";
@@ -117,7 +118,7 @@ const ProfilePage = () => {
       console.error("Failed to delete bookmark", error);
     }
   };
-
+  
 
   return (
     <>
@@ -206,6 +207,8 @@ const ProfilePage = () => {
               </div>
             </form>
           </section>
+
+          <ChangePassword />
 
           {/* Bookmarks Section */}
           <section className="bookmarks-section">
