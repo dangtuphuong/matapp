@@ -69,6 +69,25 @@ export const resetUserPassword = async (token, userId, newPassword) =>
     }
   );
 
+export const changeOwnPassword = async ({ oldPassword, newPassword }) => {
+  const token = localStorage.getItem("access_token");
+
+  try {
+    const response = await axios.post(
+      `${API_URL}/users/change-own-password`,
+      { oldPassword, newPassword },
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+    return response.data;
+  } catch (error) {
+    console.error(
+      "Error changing password:",
+      error.response?.data || error.message
+    );
+    throw error;
+  }
+};
+
 // Delete a user by email (admin access required)
 export const deleteUser = async (token, email) =>
   await axios.delete(`${API_URL}/users/${email}`, {

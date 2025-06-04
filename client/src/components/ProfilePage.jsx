@@ -9,6 +9,7 @@ import {
   Avatar,
   TextField,
   IconButton,
+  Divider,
 } from "@mui/material";
 import {
   AccountCircle,
@@ -20,6 +21,7 @@ import {
 import { getUserProfile } from "../services/user-service";
 import { useNavigate } from "react-router-dom";
 import NavbarPrivate from "./NavbarPrivate";
+import ChangePassword from "./ChangePassword";
 import { ROLES, ROLE_LABELS } from "../constants";
 import "./styles/Profile.css";
 import axios from "axios";
@@ -117,7 +119,7 @@ const ProfilePage = () => {
       console.error("Failed to delete bookmark", error);
     }
   };
-
+  
 
   return (
     <>
@@ -157,7 +159,7 @@ const ProfilePage = () => {
                 onChange={(e) => setEmail(e.target.value)}
                 InputProps={{ readOnly: !isEditing }}
               />
-              <TextField
+              {/* <TextField
                 fullWidth
                 label="Date of Birth"
                 margin="normal"
@@ -180,7 +182,7 @@ const ProfilePage = () => {
                 defaultValue={ROLE_LABELS[profile?.role] || "Unknown"}
                 key={profile?.role}
                 InputProps={{ readOnly: true }}
-              />
+              /> */}
 
               <div className="profile-buttons">
                 {renderRoleButtons(profile?.role)}
@@ -206,6 +208,12 @@ const ProfilePage = () => {
               </div>
             </form>
           </section>
+
+          <Divider sx={{mb: 3, width: "640px"}} />
+
+          <ChangePassword />
+
+          <Divider />
 
           {/* Bookmarks Section */}
           <section className="bookmarks-section">
