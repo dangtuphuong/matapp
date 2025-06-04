@@ -17,8 +17,12 @@ const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).+$/;
 export default function ChangePassword() {
   const [oldPassword, setOldPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+
   const [showOldPassword, setShowOldPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
@@ -28,8 +32,8 @@ export default function ChangePassword() {
     setError("");
     setSuccess("");
 
-    if (!oldPassword || !newPassword) {
-      setError("Both fields are required");
+    if (!oldPassword || !newPassword || !confirmPassword) {
+      setError("All fields are required.");
       return;
     }
 
@@ -40,12 +44,18 @@ export default function ChangePassword() {
       return;
     }
 
+    if (newPassword !== confirmPassword) {
+      setError("New password and confirm password do not match.");
+      return;
+    }
+
     setLoading(true);
     try {
       await changeOwnPassword({ oldPassword, newPassword });
       setSuccess("Password updated successfully!");
       setOldPassword("");
       setNewPassword("");
+      setConfirmPassword("");
     } catch (err) {
       setError(err.response?.data?.message || "Failed to change password");
     } finally {
@@ -101,6 +111,30 @@ export default function ChangePassword() {
                 aria-label="toggle new password visibility"
               >
                 {showNewPassword ? <VisibilityOff /> : <Visibility />}
+              </IconButton>
+            </InputAdornment>
+          ),
+        }}
+      />
+
+      <TextField
+        label="Confirm New Password"
+        type={showConfirmPassword ? "text" : "password"}
+        fullWidth
+        margin="normal"
+        value={confirmPassword}
+        onChange={(e) => setConfirmPassword(e.target.value)}
+        required
+        InputProps={{
+          endAdornment: (
+            <InputAdornment position="end">
+              <IconButton
+                onClick={() => setShowConfirmPassword((show) => !show)}
+                edge="end"
+                size="small"
+                aria-label="toggle confirm password visibility"
+              >
+                {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
               </IconButton>
             </InputAdornment>
           ),
