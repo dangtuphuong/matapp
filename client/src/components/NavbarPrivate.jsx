@@ -46,7 +46,7 @@ const Navbar = ({ onSetUser }) => {
   );
 
   const rawNavItems = [
-    { label: "Home", path: "/home", icon: <HomeOutlinedIcon /> },
+    { label: "Home", path: "/", icon: <HomeOutlinedIcon /> },
     { label: "Search", path: "/search", icon: <SearchIcon /> },
     {
       label: "Smart Search",
@@ -120,7 +120,7 @@ const Navbar = ({ onSetUser }) => {
           {/* Logo */}
           <Box
             component={Link}
-            to="/home"
+            to="/"
             className="navbar-logo"
             sx={{
               display: "flex",

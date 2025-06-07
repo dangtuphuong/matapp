@@ -8,7 +8,7 @@ const PublicRoute = ({ children }) => {
 
   // If authenticated, redirect to home page
   if (token) {
-    return <Navigate to="/home" replace />;
+    return <Navigate to="/" replace />;
   }
 
   // Otherwise, allow access to public route (e.g., login, register)
