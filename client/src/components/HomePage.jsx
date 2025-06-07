@@ -1,12 +1,12 @@
-import NavbarPublic from "./NavbarPublic";
 import React from "react";
 
-import Dashboard from "./Dashboard";
+import Dashboard from "./home-page/Dashboard";
+import PublicHome from "./home-page/PublicHome";
 
 const HomePage = () => {
   const token = localStorage.getItem("access_token");
 
-  return <>{!token ? <NavbarPublic /> : <Dashboard />}</>;
+  return <>{!token ? <PublicHome /> : <Dashboard />}</>;
 };
 
 export default HomePage;

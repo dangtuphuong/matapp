@@ -13,8 +13,8 @@ import {
   ListItemText,
 } from "@mui/material";
 import { Delete, BookmarkAdded } from "@mui/icons-material";
-import NavbarPrivate from "./NavbarPrivate";
-import { toggleBookmark, getUserBookmarks } from "../services/user-service";
+import NavbarPrivate from "../NavbarPrivate";
+import { toggleBookmark, getUserBookmarks } from "../../services/user-service";
 
 const Dashboard = () => {
   const [openSnackbar, setOpenSnackbar] = useState(false);
