@@ -2,7 +2,7 @@ name: Build and Deploy to Azure Web App and Azure Container App
 
 on:
   push:
-    branches: ["production"]
+    branches: ["azure-production"]
   workflow_dispatch:
 
 env:
