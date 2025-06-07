@@ -50,16 +50,40 @@ function App() {
             </FlexibleRoute>
           }
         />
-
-        {/* Protected routes (require login) */}
         <Route
-          path="/home"
+          path="/search"
           element={
-            <ProtectedRoute>
-              <Home />
-            </ProtectedRoute>
+            <FlexibleRoute>
+              <Search />
+            </FlexibleRoute>
           }
         />
+        <Route
+          path="/material/:matGUID"
+          element={
+            <FlexibleRoute>
+              <Material />
+            </FlexibleRoute>
+          }
+        />
+        <Route
+          path="/smart-search"
+          element={
+            <FlexibleRoute>
+              <SmartSearch />
+            </FlexibleRoute>
+          }
+        />
+        <Route
+          path="/compare-page"
+          element={
+            <FlexibleRoute>
+              <ComparePage />
+            </FlexibleRoute>
+          }
+        />
+
+        {/* Protected routes (require login) */}
         <Route
           path="/profile"
           element={
@@ -73,38 +97,6 @@ function App() {
           element={
             <ProtectedRoute>
               <EditUsers />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/search"
-          element={
-            <ProtectedRoute>
-              <Search />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/material/:matGUID"
-          element={
-            <ProtectedRoute>
-              <Material />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/smart-search"
-          element={
-            <ProtectedRoute>
-              <SmartSearch />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/compare-page"
-          element={
-            <ProtectedRoute>
-              <ComparePage />
             </ProtectedRoute>
           }
         />

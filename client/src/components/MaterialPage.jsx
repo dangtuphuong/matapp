@@ -21,7 +21,6 @@ import PrecisionManufacturingIcon from "@mui/icons-material/PrecisionManufacturi
 import EditNoteIcon from "@mui/icons-material/EditNote";
 import KeyIcon from "@mui/icons-material/Key";
 
-import NavbarPrivate from "./NavbarPrivate";
 import { getMaterialByMatGUID } from "../services/material-service";
 import { toggleBookmark } from "../services/user-service";
 import { exportElementToPDF } from "../utils/pdfExporter";
@@ -67,12 +66,11 @@ const LoadingComponent = () => (
   </Container>
 );
 
-const MaterialPage = () => {
+const MaterialPage = ({ currentUser }) => {
   const { matGUID } = useParams();
   const [isLoading, setLoading] = useState(false);
   const [material, setMaterial] = useState(null);
   const contentRef = useRef();
-  const [currentUser, setCurrentUser] = useState(null);
   const [isBookmarked, setBookmarked] = useState(false);
 
   useEffect(() => {
@@ -111,24 +109,25 @@ const MaterialPage = () => {
 
   return (
     <div>
-      <NavbarPrivate onSetUser={(user) => setCurrentUser(user)} />
       {isLoading ? (
         <LoadingComponent />
       ) : (
         //BOOKMARK BUTTON
         <Container className="mat-container">
-          <div style={{ textAlign: "right", marginTop: "10px" }}>
-            <Tooltip title={`${isBookmarked ? "Remove" : "Add"} Bookmark`}>
-              <IconButton
-                aria-label="bookmark"
-                sx={{ float: "right" }}
-                color={isBookmarked ? "primary" : "default"}
-                onClick={handleBookmark}
-              >
-                <Bookmark />
-              </IconButton>
-            </Tooltip>
-          </div>
+          {!!currentUser && (
+            <div style={{ textAlign: "right", marginTop: "10px" }}>
+              <Tooltip title={`${isBookmarked ? "Remove" : "Add"} Bookmark`}>
+                <IconButton
+                  aria-label="bookmark"
+                  sx={{ float: "right" }}
+                  color={isBookmarked ? "primary" : "default"}
+                  onClick={handleBookmark}
+                >
+                  <Bookmark />
+                </IconButton>
+              </Tooltip>
+            </div>
+          )}
 
           <div ref={contentRef}>
             <Typography align="center" variant="h4" sx={{ mt: 3, mb: 3 }}>

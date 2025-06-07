@@ -118,14 +118,16 @@ const MaterialsTable = ({ searchCategories, searchProperties }) => {
         {/* Bubble Chart Button */}
         <Box sx={{ h: 40, w: 40 }}>
           <Tooltip title="Visualize data in Bubble Chart">
-            <IconButton
-              sx={{ "&:hover": { color: "primary.main" } }}
-              size="small"
-              onClick={() => setOpenChart(true)}
-              disabled={materials.length === 0}
-            >
-              <BubbleChartIcon />
-            </IconButton>
+            <span>
+              <IconButton
+                sx={{ "&:hover": { color: "primary.main" } }}
+                size="small"
+                onClick={() => setOpenChart(true)}
+                disabled={materials.length === 0}
+              >
+                <BubbleChartIcon />
+              </IconButton>
+            </span>
           </Tooltip>
         </Box>
       </Box>
