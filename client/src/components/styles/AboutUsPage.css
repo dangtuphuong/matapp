@@ -1,5 +1,6 @@
 /* --- About US --- */
 .about-hero {
+  margin: -2.1rem;
   position: relative;
   background-color: #0f172a;
   color: white;
@@ -51,6 +52,7 @@
 }
 
 .section-gray {
+  margin: -2.1rem;
   background-color: #f8fafc;
   padding: 80px 20px;
 }

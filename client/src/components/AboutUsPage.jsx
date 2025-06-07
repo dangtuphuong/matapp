@@ -65,7 +65,7 @@ const AboutUsPage = () => {
   return (
     <>
       {/* Header section */}
-      <div className="about-hero" style={{ margin: "-2.1rem" }}>
+      <div className="about-hero">
         <div className="hero-overlay" />
         <div className="hero-content">
           <h1>

@@ -17,10 +17,6 @@ import "./styles/Home.css";
 
 import img1 from "../img/img.jpg";
 import img2 from "../img/img2.jpg";
-import m1 from "../img/materials/m1.png";
-import m2 from "../img/materials/m2.png";
-import m3 from "../img/materials/m3.png";
-import m4 from "../img/materials/m4.png";
 
 const HomePage = () => {
   const [openSnackbar, setOpenSnackbar] = useState(false);
@@ -103,59 +99,6 @@ const HomePage = () => {
             >
               <span>Search for Materials</span>
             </Button>
-          </Box>
-
-          <Box className="how-it-works">
-            <h2 className="material-title">
-              <span>Explore Material Categories</span>
-            </h2>
-
-            <Box className="steps-grid">
-              {[
-                {
-                  img: m1,
-                  title: "Metal",
-                  desc: "Strong, durable materials ideal for structural and load-bearing applications.",
-                },
-                {
-                  img: m2,
-                  title: "Plastic",
-                  desc: "Lightweight and corrosion-resistant, perfect for packaging solutions.",
-                },
-                {
-                  img: m3,
-                  title: "Fluids",
-                  desc: "Used for hydraulic, lubrication, or thermal regulation needs.",
-                },
-                {
-                  img: m4,
-                  title: "Composites",
-                  desc: "Engineered blends with tailored properties for shelves and panels.",
-                },
-              ].map((item, idx) => (
-                <Box key={idx} className="step-card">
-                  <Box className="step-card-inner">
-                    <Box
-                      className="step-card-front"
-                      style={{ backgroundImage: `url(${item.img})` }}
-                    >
-                      <Box className="step-title-overlay">{item.title}</Box>
-                    </Box>
-                    <Box className="step-card-back">
-                      <Typography
-                        variant="subtitle1"
-                        className="step-title-back"
-                      >
-                        <span>{item.title}</span>
-                      </Typography>
-                      <Typography variant="body2" className="step-desc">
-                        {item.desc}
-                      </Typography>
-                    </Box>
-                  </Box>
-                </Box>
-              ))}
-            </Box>
           </Box>
 
           <Snackbar
