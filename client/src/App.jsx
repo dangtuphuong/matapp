@@ -11,7 +11,6 @@ import EditUsers from "./components/EditUsers";
 import Material from "./components/MaterialPage";
 import Search from "./components/Searchpage";
 import SmartSearch from "./components/SmartSearch";
-import ComparisonPage from "./components/MaterialComparisonPage";
 import UploadPage from "./components/UploadPage";
 import ComparePage from "./components/compare-page/ComparePage";
 import SettingsPage from "./components/settings-page/Settings";
@@ -20,7 +19,6 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import PublicRoute from "./components/PublicRoute";
 import FlexibleRoute from "./components/FlexibleRoute";
 import AboutUsPage from "./components/AboutUsPage";
-import BubbleChartPage from "./components/BubbleChart";
 
 function App() {
   return (
@@ -103,14 +101,6 @@ function App() {
           }
         />
         <Route
-          path="/compare"
-          element={
-            <ProtectedRoute>
-              <ComparisonPage />
-            </ProtectedRoute>
-          }
-        />
-        <Route
           path="/compare-page"
           element={
             <ProtectedRoute>
@@ -131,15 +121,6 @@ function App() {
           element={
             <ProtectedRoute>
               <SettingsPage />
-            </ProtectedRoute>
-          }
-        />
-
-        <Route
-          path="/bubblechart"
-          element={
-            <ProtectedRoute>
-              <BubbleChartPage />
             </ProtectedRoute>
           }
         />
