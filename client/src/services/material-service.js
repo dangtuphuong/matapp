@@ -9,14 +9,6 @@ export const getAllMaterials = async ({
   searchCategories = [],
   searchProperties = [],
 }) => {
-  // Get the token from localStorage
-  const token = localStorage.getItem("access_token");
-
-  // Make sure the token exists before sending the request
-  if (!token) {
-    throw new Error("No access token found");
-  }
-
   try {
     const response = await axios.post(
       `${API_URL}/materials`,
@@ -28,10 +20,7 @@ export const getAllMaterials = async ({
         searchProperties,
       },
       {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
       }
     );
 
@@ -43,20 +32,8 @@ export const getAllMaterials = async ({
 };
 
 export const getMaterialByMatGUID = async (matGUID) => {
-  // Get the token from localStorage
-  const token = localStorage.getItem("access_token");
-
-  // Make sure the token exists before sending the request
-  if (!token) {
-    throw new Error("No access token found");
-  }
-
   try {
-    const response = await axios.get(`${API_URL}/materials/${matGUID}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    const response = await axios.get(`${API_URL}/materials/${matGUID}`, {});
     return response.data;
   } catch (error) {
     console.error("Error fetching material:", error);
@@ -65,18 +42,8 @@ export const getMaterialByMatGUID = async (matGUID) => {
 };
 
 export const getCategories = async () => {
-  // Get the token from localStorage
-  const token = localStorage.getItem("access_token");
-
-  // Make sure the token exists before sending the request
-  if (!token) {
-    throw new Error("No access token found");
-  }
-
   try {
-    const response = await axios.get(`${API_URL}/categories`, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
+    const response = await axios.get(`${API_URL}/categories`, {});
     return response.data;
   } catch (error) {
     console.error("Error fetching categories:", error);
@@ -85,18 +52,8 @@ export const getCategories = async () => {
 };
 
 export const getProperties = async () => {
-  // Get the token from localStorage
-  const token = localStorage.getItem("access_token");
-
-  // Make sure the token exists before sending the request
-  if (!token) {
-    throw new Error("No access token found");
-  }
-
   try {
-    const response = await axios.get(`${API_URL}/properties`, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
+    const response = await axios.get(`${API_URL}/properties`, {});
     return response.data;
   } catch (error) {
     console.error("Error fetching properties:", error);

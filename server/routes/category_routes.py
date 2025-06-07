@@ -5,9 +5,8 @@ from models.category_model import CategoryModel
 category_bp = Blueprint("category_routes", __name__)
 
 
-# Route to fetch all categories, with JWT token check
+# Route to fetch all categories
 @category_bp.route("/categories", methods=["GET"])
-@jwt_required()
 def get_categories():
     try:
         categories = CategoryModel.get_categories()
