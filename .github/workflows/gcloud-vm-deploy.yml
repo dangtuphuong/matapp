@@ -1,16 +1,20 @@
-name: Build and Deploy to Google Cloud Run
+name: Build and Deploy to Google Compute Engine VM
 
 on:
   push:
-    branches: ["gcloud-production"]
+    branches: ["gcloud-vm-production"]
   workflow_dispatch:
 
 env:
   # Google Cloud Configuration
   GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+  GCP_SA_KEY: ${{ secrets.GCP_SA_KEY }}
   GAR_LOCATION: ${{ secrets.GAR_LOCATION }}
-  CLOUD_RUN_SERVICE_NAME: ${{ secrets.CLOUD_RUN_SERVICE_NAME }}
-  CLOUD_RUN_REGION: ${{ secrets.CLOUD_RUN_REGION }}
+  GCLOUD_IMAGE_NAME: ${{ secrets.GCLOUD_IMAGE_NAME }}
+  VM_NAME: ${{ secrets.GCP_VM_NAME }}
+  VM_ZONE: ${{ secrets.GCP_VM_ZONE }}
+  VM_SSH_USER: ${{ secrets.GCP_VM_SSH_USER }}
+  VM_SSH_KEY: ${{ secrets.GCP_VM_SSH_KEY }}
 
   # Application Configuration
   CLIENT_DIR: ./client
@@ -19,7 +23,6 @@ env:
   SERVER_BUILD_TARGET_DIR: ./server/build
 
   # Derived: Full image path in Google Artifact Registry
-  # Format: <location>-docker.pkg.dev/<project-id>/<repository-name>/<image-name>
   GAR_IMAGE_PATH: ${{ secrets.GAR_LOCATION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.GCLOUD_IMAGE_NAME }}/${{ secrets.GCLOUD_IMAGE_NAME }}
 
 jobs:
@@ -60,7 +63,7 @@ jobs:
         id: auth
         uses: google-github-actions/auth@v2
         with:
-          credentials_json: ${{ secrets.GCP_SA_KEY }}
+          credentials_json: ${{ env.GCP_SA_KEY }}
 
       - name: Set up Google Cloud SDK
         uses: google-github-actions/setup-gcloud@v2
@@ -86,16 +89,23 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-      - name: Deploy to Google Cloud Run
-        id: deploy
+      # --- Deploy to Compute Engine VM ---
+      - name: Setup SSH key
         run: |
-          set -eo pipefail
-          gcloud run deploy ${{ env.CLOUD_RUN_SERVICE_NAME }} \
-            --image ${{ env.GAR_IMAGE_PATH }}:${{ github.sha }} \
-            --platform managed \
-            --region ${{ env.CLOUD_RUN_REGION }} \
-            --allow-unauthenticated \
-            --memory 1Gi \
-            --port 8000 \
-            --quiet
-          echo "✅ Deployment to Cloud Run successful. Service is updating."
+          mkdir -p ~/.ssh
+          echo "${{ env.VM_SSH_KEY }}" > ~/.ssh/gce_ssh_key
+          chmod 600 ~/.ssh/gce_ssh_key
+
+      - name: Deploy to VM (Pull and Run Docker image)
+        run: |
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/gce_ssh_key ${{ env.VM_SSH_USER }}@$(gcloud compute instances describe ${{ env.VM_NAME }} --zone=${{ env.VM_ZONE }} --format='get(networkInterfaces[0].accessConfigs[0].natIP)') << EOF
+            set -e
+            echo "Connected to VM: pulling latest Docker image..."
+            docker pull ${{ env.GAR_IMAGE_PATH }}:${{ github.sha }}
+            echo "Stopping old container (if any)..."
+            docker stop app || true
+            docker rm app || true
+            echo "Starting new container..."
+            docker run -d --name app -p 80:8000 ${{ env.GAR_IMAGE_PATH }}:${{ github.sha }}
+            echo "Deployed new version on VM."
+          EOF
