@@ -15,7 +15,7 @@ env:
   CLIENT_DIST_DIR: ./client/dist
   SERVER_BUILD_TARGET_DIR: ./server/build
   # GitHub Container Registry image path
-  GHCR_IMAGE: ghcr.io/${{ secrets.GHCR_USERNAME }}/your-app-name
+  GHCR_IMAGE: ghcr.io/${{ secrets.GHCR_USERNAME }}/matapp
 
 # ----------------------------------------------------
 # Required Secrets (set in GitHub repo settings):
@@ -91,10 +91,10 @@ jobs:
             docker pull ${{ env.GHCR_IMAGE }}:latest
 
             echo "Stopping existing container (if running)..."
-            docker stop my-app || true
-            docker rm my-app || true
+            docker stop matapp || true
+            docker rm matapp || true
 
             echo "Running new container..."
-            docker run -d -p 80:8000 --name my-app ${{ env.GHCR_IMAGE }}:latest
+            docker run -d -p 80:8000 --name matapp ${{ env.GHCR_IMAGE }}:latest
 
             echo "✅ Deployment complete!"
