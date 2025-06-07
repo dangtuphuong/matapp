@@ -1,5 +1,4 @@
 from flask import Blueprint, request, jsonify
-from flask_jwt_extended import jwt_required
 from models.property_model import PropertyModel
 
 property_bp = Blueprint("property_routes", __name__)

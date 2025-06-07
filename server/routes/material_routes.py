@@ -1,5 +1,4 @@
 from flask import Blueprint, request, jsonify
-from flask_jwt_extended import jwt_required
 from models.material_model import MaterialModel
 
 material_bp = Blueprint("material_routes", __name__)

@@ -1,5 +1,4 @@
 from flask import Blueprint, request, jsonify
-from flask_jwt_extended import jwt_required
 from models.category_model import CategoryModel
 
 category_bp = Blueprint("category_routes", __name__)

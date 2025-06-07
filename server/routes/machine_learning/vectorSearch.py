@@ -27,7 +27,6 @@ def get_embedding_for_new_material(data):
 vt_bp = Blueprint("vt_bp", __name__)
 
 @vt_bp.route("/ML/vector_search", methods=["POST"])
-@jwt_required()
 def llm_search():
     user_query = request.json.get("query")
     limit = request.json.get("limit")
