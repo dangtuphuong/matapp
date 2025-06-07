@@ -69,18 +69,16 @@ const HomePage = () => {
               Saved Favorites
             </Typography>
 
-            {bookmarks.length > 0 ? (
-              <List>
-                {bookmarks.map((bookmark, index) => (
+            <List>
+              {bookmarks.length > 0 ? (
+                bookmarks.map((bookmark, index) => (
                   <ListItem
                     key={index}
                     divider
                     secondaryAction={
                       <IconButton
                         edge="end"
-                        onClick={() =>
-                          navigate(`/material/${bookmark.matGUID}`)
-                        }
+                        onClick={() => handleDeleteBookmark(bookmark?.matGUID)}
                       >
                         <Delete />
                       </IconButton>
@@ -109,13 +107,21 @@ const HomePage = () => {
                         : "N/A"}
                     </span>
                   </ListItem>
-                ))}
-              </List>
-            ) : (
-              <Typography variant="body2" sx={{ color: "#777" }}>
-                No bookmarks found.
-              </Typography>
-            )}
+                ))
+              ) : (
+                <ListItem
+                  sx={{
+                    justifyContent: "center",
+                    color: "#666",
+                    border: "1px dashed #ccc",
+                    borderRadius: "8px",
+                    padding: 3,
+                  }}
+                >
+                  No bookmarks found.
+                </ListItem>
+              )}
+            </List>
           </section>
           <Snackbar
             open={openSnackbar}
