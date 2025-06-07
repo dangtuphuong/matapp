@@ -5,18 +5,28 @@ import {
   Typography,
   Container,
   Box,
-  Button,
+  IconButton,
   Snackbar,
   Alert,
+  Link,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
 } from "@mui/material";
+import { Delete, BookmarkAdded } from "@mui/icons-material";
+import { toggleBookmark, getUserBookmarks } from "../services/user-service";
 
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const HomePage = () => {
+  const navigate = useNavigate();
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [username, setUsername] = useState(localStorage.getItem("username"));
+  const [bookmarks, setBookmarks] = useState([]);
+  const [loading, setLoading] = useState(false);
 
-  const isLogin = localStorage.getItem("access_token");
+  const token = localStorage.getItem("access_token");
 
   useEffect(() => {
     const isFirstLogin = localStorage.getItem("first_login");
@@ -26,12 +36,87 @@ const HomePage = () => {
     }
   }, []);
 
+  useEffect(() => {
+    setLoading(true);
+    getUserBookmarks(token)
+      .then(setBookmarks)
+      .finally(() => setLoading(false));
+  }, [token]);
+
+  const handleDeleteBookmark = async (matGUID) => {
+    try {
+      toggleBookmark(matGUID).then((data) => {
+        if (!data?.is_bookmarked) {
+          setBookmarks((prev) => prev.filter((b) => b.matGUID !== matGUID));
+        }
+      });
+    } catch (error) {
+      console.error("Failed to delete bookmark", error);
+    }
+  };
+
   return (
     <>
-      {!isLogin ? <NavbarPublic /> : <NavbarPrivate />}
+      {!token ? <NavbarPublic /> : <NavbarPrivate />}
 
-      <Box className="background-wrapper">
-        <Container className="landing-container">
+      <Box>
+        <Typography align="center" variant="h4" sx={{ mt: 3, mb: 2 }}>
+          Dashboard
+        </Typography>
+        <Container>
+          <section>
+            <Typography variant="h5" sx={{ mb: "10px" }}>
+              Saved Favorites
+            </Typography>
+
+            {bookmarks.length > 0 ? (
+              <List>
+                {bookmarks.map((bookmark, index) => (
+                  <ListItem
+                    key={index}
+                    divider
+                    secondaryAction={
+                      <IconButton
+                        edge="end"
+                        onClick={() =>
+                          navigate(`/material/${bookmark.matGUID}`)
+                        }
+                      >
+                        <Delete />
+                      </IconButton>
+                    }
+                  >
+                    <ListItemIcon>
+                      <BookmarkAdded />
+                    </ListItemIcon>
+                    <ListItemText
+                      primary={
+                        <Link
+                          href={`/material/${bookmark.matGUID}`}
+                          underline="hover"
+                          sx={{ color: "black" }}
+                          className="bookmark-title"
+                        >
+                          {bookmark?.["Material Name"]}
+                        </Link>
+                      }
+                      secondary={bookmark?.["Categories"]?.join(", ")}
+                    />
+                    <span className="bookmark-date">
+                      Saved on{" "}
+                      {bookmark.saved_at
+                        ? new Date(bookmark.saved_at).toLocaleDateString()
+                        : "N/A"}
+                    </span>
+                  </ListItem>
+                ))}
+              </List>
+            ) : (
+              <Typography variant="body2" sx={{ color: "#777" }}>
+                No bookmarks found.
+              </Typography>
+            )}
+          </section>
           <Snackbar
             open={openSnackbar}
             autoHideDuration={3000}
