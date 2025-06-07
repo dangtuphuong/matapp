@@ -14,7 +14,6 @@ import { useTheme } from "@mui/material/styles";
 import { Link } from "react-router-dom";
 import "./styles/Navbar.css";
 import "./styles/Home.css";
-import "./styles/Landing.css";
 
 import img1 from "../img/img.jpg";
 import img2 from "../img/img2.jpg";
