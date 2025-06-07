@@ -7,21 +7,8 @@ import {
   Lightbulb,
   Psychology,
   RocketLaunch,
-  CheckCircle,
 } from "@mui/icons-material";
-import {
-  Dialog,
-  DialogContent,
-  DialogTitle,
-  IconButton,
-  Box,
-  Grid,
-  Typography,
-  Card,
-  CardContent,
-} from "@mui/material";
-import CloseIcon from "@mui/icons-material/Close";
-import FlexibleRoute from "./FlexibleRoute";
+
 import "./styles/AboutUsPage.css";
 
 const AboutUsPage = () => {
@@ -74,10 +61,6 @@ const AboutUsPage = () => {
       icon: <Psychology className="icon" />,
     },
   ];
-
-  const teamMembers = []; // or null if preferred
-
-  const [openTeamModal, setOpenTeamModal] = React.useState(false);
 
   return (
     <>
@@ -147,71 +130,6 @@ const AboutUsPage = () => {
           ))}
         </div>
       </section>
-
-      <Box textAlign="center" mt={4}>
-        <button
-          className="contact-dev-button"
-          onClick={() => setOpenTeamModal(true)}
-        >
-          Contact the Developers
-        </button>
-      </Box>
-
-      <Dialog
-        open={openTeamModal}
-        onClose={() => setOpenTeamModal(false)}
-        fullWidth
-        maxWidth="md"
-        className="team-dialog"
-      >
-        <DialogTitle>
-          Meet the Team
-          <IconButton
-            aria-label="close"
-            onClick={() => setOpenTeamModal(false)}
-            sx={{
-              position: "absolute",
-              right: 8,
-              top: 8,
-              color: (theme) => theme.palette.grey[500],
-            }}
-          >
-            <CloseIcon />
-          </IconButton>
-        </DialogTitle>
-        <DialogContent>
-          <Box display="flex" justifyContent="center">
-            {teamMembers.length === 0 ? (
-              <Typography variant="body1" align="center">
-                Please contact website admin for more info.
-              </Typography>
-            ) : (
-              <Grid container spacing={3} justifyContent="center">
-                {teamMembers.map((member, idx) => (
-                  <Grid item xs={12} sm={6} md={4} key={idx}>
-                    <Card className="team-card" elevation={3}>
-                      <CardContent style={{ textAlign: "center" }}>
-                        <Typography variant="h6">{member.name}</Typography>
-                        <Typography variant="body2">
-                          Student ID: {member.id}
-                        </Typography>
-                        <Typography variant="body2" className="email-text">
-                          <a
-                            href={`mailto:${member.email}`}
-                            className="email-link"
-                          >
-                            {member.email}
-                          </a>
-                        </Typography>
-                      </CardContent>
-                    </Card>
-                  </Grid>
-                ))}
-              </Grid>
-            )}
-          </Box>
-        </DialogContent>
-      </Dialog>
     </>
   );
 };
