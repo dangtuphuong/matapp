@@ -1,4 +1,4 @@
-name: Build and Deploy to AWS EC2 (No Docker)
+name: Build and Deploy to AWS EC2 without Docker
 
 on:
   push:
@@ -10,8 +10,6 @@ env:
   SERVER_DIR: ./server
   CLIENT_DIST_DIR: ./client/dist
   SERVER_BUILD_TARGET_DIR: ./server/build
-  APP_DIR: /home/${{ secrets.EC2_SSH_USER }}/app
-  VENV_DIR: /home/${{ secrets.EC2_SSH_USER }}/app/venv
 
 jobs:
   build-and-deploy:
@@ -21,14 +19,14 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
+      - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: "20"
           cache: "npm"
           cache-dependency-path: "${{ env.CLIENT_DIR }}/package-lock.json"
 
-      - name: Build client
+      - name: Install client dependencies and build
         working-directory: ${{ env.CLIENT_DIR }}
         run: |
           npm ci
@@ -39,64 +37,50 @@ jobs:
           mkdir -p ${{ env.SERVER_BUILD_TARGET_DIR }}
           cp -a ${{ env.CLIENT_DIST_DIR }}/. ${{ env.SERVER_BUILD_TARGET_DIR }}/
 
-      - name: Archive server build for upload
+      - name: Package server app
         run: |
           cd ${{ env.SERVER_DIR }}
-          tar czf ../server-build.tar.gz .
+          tar czf ../matapp.tar.gz .
 
-      - name: Upload server build to EC2
-        uses: appleboy/scp-action@v0.1.5
+      - name: Upload server package to EC2
+        uses: appleboy/scp-action@v1.0.3
         with:
-          host: ${{ secrets.EC2_HOST }}
+          host: ${{ secrets.EC2_HOST_NO_DOCKER }}
           username: ${{ secrets.EC2_SSH_USER }}
           key: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
           port: 22
-          source: |
-            ./server-build.tar.gz
-          target: ${{ env.APP_DIR }}
+          source: matapp.tar.gz
 
-      - name: Upload .env file
+      - name: Deploy to EC2
         uses: appleboy/ssh-action@v1.0.3
         with:
-          host: ${{ secrets.EC2_HOST }}
+          host: ${{ secrets.EC2_HOST_NO_DOCKER }}
           username: ${{ secrets.EC2_SSH_USER }}
           key: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
           port: 22
+          timeout: 900s
           script: |
-            if [ -n "${{ secrets.EC2_APP_ENV }}" ]; then
-              echo "${{ secrets.EC2_APP_ENV }}" > ${{ env.APP_DIR }}/.env
-              chmod 600 ${{ env.APP_DIR }}/.env
-              echo ".env uploaded"
-            else
-              echo "No EC2_APP_ENV secret defined — skipping .env upload"
-            fi
+            # Ensure deployment folder exists
+            mkdir -p matapp
 
-      - name: Install dependencies and restart Gunicorn
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ secrets.EC2_HOST }}
-          username: ${{ secrets.EC2_SSH_USER }}
-          key: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
-          port: 22
-          script: |
-            cd ${{ env.APP_DIR }}
+            # Extract new code inside matapp folder
+            tar xzf matapp.tar.gz -C matapp
+            rm matapp.tar.gz
 
-            # Extract new code
-            tar xzf server-build.tar.gz
-            rm server-build.tar.gz
+            cd matapp
 
-            # Create venv if not exist
-            if [ ! -d "venv" ]; then
-              python3 -m venv venv
-            fi
+            # Create venv if not exists
+            python3 -m venv venv
 
             source venv/bin/activate
 
-            # Upgrade pip & install dependencies
             pip install --upgrade pip
             pip install -r requirements.txt
 
-            # Stop existing Gunicorn
+            # Pre-download SentenceTransformer model
+            python3 -c "from sentence_transformers import SentenceTransformer; SentenceTransformer('all-MiniLM-L6-v2')"
+
+            # Stop existing Gunicorn if running
             if [ -f gunicorn.pid ]; then
               kill $(cat gunicorn.pid) || true
               rm gunicorn.pid
