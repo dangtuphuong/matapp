@@ -93,7 +93,7 @@ jobs:
       - name: Setup SSH key
         run: |
           mkdir -p ~/.ssh
-          echo "${{ env.VM_SSH_KEY }}" > ~/.ssh/gce_ssh_key
+          echo "${{ env.VM_SSH_KEY }}" | tr -d '\r' > ~/.ssh/gce_ssh_key
           chmod 600 ~/.ssh/gce_ssh_key
 
       - name: Deploy to VM (Pull and Run Docker image)
