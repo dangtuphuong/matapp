@@ -1,4 +1,4 @@
-name: Build and Deploy to AWS EC2 without Docker
+name: Build and Deploy to AWS EC2 (No Docker)
 
 on:
   push:
@@ -9,7 +9,9 @@ env:
   CLIENT_DIR: ./client
   SERVER_DIR: ./server
   CLIENT_DIST_DIR: ./client/dist
-  SERVER_DEPLOY_DIR: ./server_deploy
+  SERVER_BUILD_TARGET_DIR: ./server/build
+  APP_DIR: /home/${{ secrets.EC2_SSH_USER }}/app
+  VENV_DIR: /home/${{ secrets.EC2_SSH_USER }}/app/venv
 
 jobs:
   build-and-deploy:
@@ -19,75 +21,84 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up Node.js
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: "20"
           cache: "npm"
           cache-dependency-path: "${{ env.CLIENT_DIR }}/package-lock.json"
 
-      - name: Install client dependencies and build
+      - name: Build client
         working-directory: ${{ env.CLIENT_DIR }}
         run: |
           npm ci
           npm run build
 
-      - name: Prepare server deploy directory
+      - name: Prepare server build directory (copy client build)
         run: |
-          rm -rf ${{ env.SERVER_DEPLOY_DIR }}
-          mkdir -p ${{ env.SERVER_DEPLOY_DIR }}
+          mkdir -p ${{ env.SERVER_BUILD_TARGET_DIR }}
+          cp -a ${{ env.CLIENT_DIST_DIR }}/. ${{ env.SERVER_BUILD_TARGET_DIR }}/
 
-          # Copy server code
-          cp -a ${{ env.SERVER_DIR }}/* ${{ env.SERVER_DEPLOY_DIR }}/
+      - name: Archive server build for upload
+        run: |
+          cd ${{ env.SERVER_DIR }}
+          tar czf ../server-build.tar.gz .
 
-          # Copy client build to server deploy dir
-          mkdir -p ${{ env.SERVER_DEPLOY_DIR }}/build
-          cp -a ${{ env.CLIENT_DIST_DIR }}/. ${{ env.SERVER_DEPLOY_DIR }}/build/
-
-          # Optional: check result
-          ls -la ${{ env.SERVER_DEPLOY_DIR }}
-
-      - name: Upload server files to EC2
-        uses: appleboy/scp-action@v0.1.4
+      - name: Deploy to EC2
+        uses: appleboy/scp-action@v0.1.5
         with:
-          host: ${{ secrets.EC2_HOST_NO_DOCKER }}
+          host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_SSH_USER }}
           key: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
           port: 22
-          source: ${{ env.SERVER_DEPLOY_DIR }}/*
-          target: /home/${{ secrets.EC2_SSH_USER }}/app
+          source: |
+            ./server-build.tar.gz
+          target: ${{ env.APP_DIR }}
 
-      - name: Deploy app on EC2 via SSH
+      - name: Upload .env file
+        if: secrets.EC2_APP_ENV != ''
         uses: appleboy/ssh-action@v1.0.3
         with:
-          host: ${{ secrets.EC2_HOST_NO_DOCKER }}
+          host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_SSH_USER }}
           key: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
           port: 22
-          timeout: 600s
           script: |
-            # Navigate to app directory
-            cd /home/${{ secrets.EC2_SSH_USER }}/app
+            echo "${{ secrets.EC2_APP_ENV }}" > ${{ env.APP_DIR }}/.env
+            chmod 600 ${{ env.APP_DIR }}/.env
 
-            # Setup Python venv if needed
-            python3 -m venv venv
+      - name: Install dependencies and restart Gunicorn
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_SSH_USER }}
+          key: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
+          port: 22
+          script: |
+            cd ${{ env.APP_DIR }}
+
+            # Extract new code
+            tar xzf server-build.tar.gz
+            rm server-build.tar.gz
+
+            # Create venv if not exist
+            if [ ! -d "venv" ]; then
+              python3.11 -m venv venv
+            fi
+
             source venv/bin/activate
 
-            # Install requirements
+            # Upgrade pip & install dependencies
             pip install --upgrade pip
             pip install -r requirements.txt
-            pip install gunicorn
 
-            # Pre-download the model (optional, if not cached)
-            python -c "from sentence_transformers import SentenceTransformer; SentenceTransformer('all-MiniLM-L6-v2')"
-
-            # Stop existing Gunicorn process if running
+            # Stop existing Gunicorn
             if [ -f gunicorn.pid ]; then
               kill $(cat gunicorn.pid) || true
               rm gunicorn.pid
             fi
 
-            # Start Gunicorn in background
+            # Start Gunicorn in background on port 8000
             nohup venv/bin/gunicorn --bind 0.0.0.0:8000 app:app --pid gunicorn.pid --daemon
 
             echo "✅ Deployment complete. App running on port 8000."
