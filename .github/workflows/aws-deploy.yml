@@ -43,7 +43,7 @@ jobs:
           tar czf ../matapp.tar.gz .
 
       - name: Upload server package to EC2
-        uses: appleboy/scp-action@v1.0.3
+        uses: appleboy/scp-action@v1.0.0
         with:
           host: ${{ secrets.EC2_HOST_NO_DOCKER }}
           username: ${{ secrets.EC2_SSH_USER }}
@@ -52,7 +52,7 @@ jobs:
           source: matapp.tar.gz
 
       - name: Deploy to EC2
-        uses: appleboy/ssh-action@v1.0.0
+        uses: appleboy/ssh-action@v1.2.2
         with:
           host: ${{ secrets.EC2_HOST_NO_DOCKER }}
           username: ${{ secrets.EC2_SSH_USER }}
