@@ -52,7 +52,7 @@ jobs:
           source: matapp.tar.gz
 
       - name: Deploy to EC2
-        uses: appleboy/ssh-action@v1.0.3
+        uses: appleboy/ssh-action@v1.0.0
         with:
           host: ${{ secrets.EC2_HOST_NO_DOCKER }}
           username: ${{ secrets.EC2_SSH_USER }}
