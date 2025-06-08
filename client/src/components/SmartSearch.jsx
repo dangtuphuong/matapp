@@ -72,7 +72,7 @@ const FilterPropInfo = ({ material }) => {
 };
 
 const SmartSearch = () => {
-  const userRole = localStorage.getItem("user_role");
+  const userRole = localStorage.getItem("user_role") || "premium_user";
   const isAllowed = userRole === "admin" || userRole === "premium_user";
 
   const [isLoading, setLoading] = useState(false);
