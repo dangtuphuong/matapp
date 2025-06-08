@@ -68,10 +68,21 @@ jobs:
           port: 22
           timeout: 600s
           script: |
+            # Login to GHCR inside droplet
             echo "${{ secrets.GHCR_PAT }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
+            # Pull latest image
             docker pull ${{ env.IMAGE_NAME }}:latest
+
+            # Stop and remove existing container if exists
             docker stop matapp || true
             docker rm matapp || true
+
+            # Run new container with env file
             docker run -d --env-file /root/app/.env --name matapp -p 8000:8000 ${{ env.IMAGE_NAME }}:latest
+
+            # Cleanup dangling and unused images to free space
             docker system prune -f
+            docker image prune -af
+
             echo "✅ Deployment to DigitalOcean complete."
