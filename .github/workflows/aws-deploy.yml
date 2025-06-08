@@ -56,7 +56,7 @@ jobs:
           target: ${{ env.APP_DIR }}
 
       - name: Upload .env file
-        if: ${{ secrets.EC2_APP_ENV != '' }}
+        if: ${{ secrets.EC2_APP_ENV }}
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.EC2_HOST }}
