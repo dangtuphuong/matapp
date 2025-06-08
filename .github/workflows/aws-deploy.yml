@@ -56,7 +56,6 @@ jobs:
           target: ${{ env.APP_DIR }}
 
       - name: Upload .env file
-        if: ${{ secrets.EC2_APP_ENV }}
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.EC2_HOST }}
@@ -64,8 +63,13 @@ jobs:
           key: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
           port: 22
           script: |
-            echo "${{ secrets.EC2_APP_ENV }}" > ${{ env.APP_DIR }}/.env
-            chmod 600 ${{ env.APP_DIR }}/.env
+            if [ -n "${{ secrets.EC2_APP_ENV }}" ]; then
+              echo "${{ secrets.EC2_APP_ENV }}" > ${{ env.APP_DIR }}/.env
+              chmod 600 ${{ env.APP_DIR }}/.env
+              echo ".env uploaded"
+            else
+              echo "No EC2_APP_ENV secret defined — skipping .env upload"
+            fi
 
       - name: Install dependencies and restart Gunicorn
         uses: appleboy/ssh-action@v1.0.3
