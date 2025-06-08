@@ -67,6 +67,10 @@ def create_app():
     return app
 
 
+# Create the WSGI application object for production servers (Gunicorn)
+app = create_app()
+
+# Run the app in local development mode
 if __name__ == "__main__":
     app = create_app()
     app.run(debug=True)
