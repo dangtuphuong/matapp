@@ -72,6 +72,6 @@ jobs:
             docker pull ${{ env.IMAGE_NAME }}:latest
             docker stop matapp || true
             docker rm matapp || true
-            docker run -d --name matapp -p 8000:8000 ${{ env.IMAGE_NAME }}:latest
+            docker run -d --env-file /root/app/.env --name matapp -p 8000:8000 ${{ env.IMAGE_NAME }}:latest
             docker system prune -f
             echo "✅ Deployment to DigitalOcean complete."
