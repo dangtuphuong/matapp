@@ -66,6 +66,7 @@ jobs:
           username: ${{ secrets.DO_SSH_USER }}
           key: ${{ secrets.DO_SSH_PRIVATE_KEY }}
           port: 22
+          timeout: 600s
           script: |
             echo "${{ secrets.GHCR_PAT }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
             docker pull ${{ env.IMAGE_NAME }}:latest
