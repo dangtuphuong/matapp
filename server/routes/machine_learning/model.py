@@ -38,9 +38,9 @@ few_shot_prompt = None
 def get_llm():
     global llm
     if llm is None:
-        # gpt-4o-mini or gpt-4.1-mini
+        # gpt-4.1-nano, gpt-4o-mini or gpt-4.1-mini
         llm = ChatOpenAI(
-            temperature=0, model="gpt-4.1-mini", openai_api_key=require_api_key()
+            temperature=0, model="gpt-4.1-nano", openai_api_key=require_api_key()
         )
     return llm
 

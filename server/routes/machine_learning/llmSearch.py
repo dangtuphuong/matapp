@@ -1,5 +1,6 @@
 from flask import Blueprint, jsonify, request
-from flask_jwt_extended import jwt_required
+
+# from flask_jwt_extended import jwt_required
 from routes.machine_learning.model import get_answer
 from utils.llm import clean_and_parse_pipeline
 from models.material_model import MaterialModel
@@ -10,7 +11,7 @@ ml_bp = Blueprint("ml_bp", __name__)
 
 
 @ml_bp.route("/ML/llm_search", methods=["POST"])
-@jwt_required()
+# @jwt_required()
 def llm_search():
     try:
         user_query = request.json.get("query")
