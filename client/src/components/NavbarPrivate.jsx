@@ -27,7 +27,6 @@ import SearchIcon from "@mui/icons-material/Search";
 import TroubleshootIcon from "@mui/icons-material/Troubleshoot";
 import BarChart from "@mui/icons-material/BarChart";
 import FileUploadOutlinedIcon from "@mui/icons-material/FileUploadOutlined";
-import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 
 import { ROLES } from "../constants";
 
@@ -60,7 +59,6 @@ const Navbar = ({ onSetUser }) => {
       icon: <FileUploadOutlinedIcon />,
       adminOnly: true,
     },
-    { label: "About Us", path: "/aboutus", icon: <InfoOutlinedIcon /> },
   ];
 
   const navItems = rawNavItems.filter(

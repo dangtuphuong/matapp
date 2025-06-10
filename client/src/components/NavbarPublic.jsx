@@ -28,7 +28,6 @@ const navItems = [
   { label: "Search", path: "/search", icon: <SearchIcon /> },
   { label: "Smart Search", path: "/smart-search", icon: <TroubleshootIcon /> },
   { label: "Compare", path: "/compare-page", icon: <BarChart /> },
-  { label: "About Us", path: "/aboutus", icon: <InfoOutlinedIcon /> },
 ];
 
 const NavbarPublic = () => {

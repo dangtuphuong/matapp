@@ -18,7 +18,6 @@ import SettingsPage from "./components/settings-page/Settings";
 import ProtectedRoute from "./components/ProtectedRoute";
 import PublicRoute from "./components/PublicRoute";
 import FlexibleRoute from "./components/FlexibleRoute";
-import AboutUsPage from "./components/AboutUsPage";
 
 function App() {
   return (
@@ -42,14 +41,6 @@ function App() {
           }
         />
         {/* Flexible routes (accessible on both status) */}
-        <Route
-          path="/aboutus"
-          element={
-            <FlexibleRoute>
-              <AboutUsPage />
-            </FlexibleRoute>
-          }
-        />
         <Route
           path="/search"
           element={
