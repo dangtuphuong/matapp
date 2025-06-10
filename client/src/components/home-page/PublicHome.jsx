@@ -39,8 +39,8 @@ const PublicHome = () => {
       <Box
         sx={{
           backgroundColor: PRIMARY_COLOR,
-          color: "#fff",
-          padding: "3.5rem 0",
+          color: "#FFFFFFE5",
+          padding: "4rem 0",
           marginTop: "-1px",
         }}
       >
@@ -59,10 +59,12 @@ const PublicHome = () => {
             variant="h6"
             align="center"
             paragraph
-            sx={{ maxWidth: 800 }}
+            sx={{ maxWidth: 1000 }}
           >
-            Explore thousands of materials with advanced search tools, compare
-            their properties, and visualize the results in interactive charts.
+            Explore thousands of materials and accelerate material discovery
+            using advanced search tools, property comparisons, and interactive
+            charts to simplify selection for engineers, students, and
+            researchers.
           </Typography>
         </Box>
 
