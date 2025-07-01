@@ -15,6 +15,8 @@ import {
   TextField,
   Typography,
   Tooltip,
+  TableContainer,
+  Paper,
 } from "@mui/material";
 import { Edit, Delete, LockReset } from "@mui/icons-material";
 import {
@@ -27,6 +29,12 @@ import NavbarPrivate from "./NavbarPrivate";
 import "./styles/EditUsers.css";
 import { ROLE_LABELS } from "../constants";
 import { MenuItem } from "@mui/material";
+
+const headerStyle = {
+  backgroundColor: "#424242",
+  color: "white",
+  fontWeight: "bold",
+};
 
 const EditUsers = () => {
   const [users, setUsers] = useState([]);
@@ -113,33 +121,36 @@ const EditUsers = () => {
     <>
       {/* Navbar with logged-in admin's name */}
       <NavbarPrivate />
-      <Container className="edit-users-container">
-        <Typography className="edit-users-title">Manage Users</Typography>
 
+      <Typography align="center" variant="h4" sx={{ mt: 3, mb: 2 }}>
+        Manage Users
+      </Typography>
+
+      <Container className="edit-users-container">
         {/* Users Table */}
-        <div style={{ overflowX: "auto" }}>
-          <Table className="user-table">
+        <TableContainer component={Paper}>
+          <Table>
             <TableHead>
-              <TableRow className="table-header-row">
-                <TableCell className="table-cell">
+              <TableRow>
+                <TableCell sx={headerStyle}>
                   <span>First Name</span>
                 </TableCell>
-                <TableCell>
+                <TableCell sx={headerStyle}>
                   <span>Last Name</span>
                 </TableCell>
-                <TableCell>
+                <TableCell sx={headerStyle}>
                   <span>Email</span>
                 </TableCell>
-                <TableCell>
+                <TableCell sx={headerStyle}>
                   <span>Gender</span>
                 </TableCell>
-                <TableCell>
+                <TableCell sx={headerStyle}>
                   <span>DOB</span>
                 </TableCell>
-                <TableCell>
+                <TableCell sx={headerStyle}>
                   <span>Role</span>
                 </TableCell>
-                <TableCell align="right">
+                <TableCell align="center" sx={headerStyle}>
                   <span>Actions</span>
                 </TableCell>
               </TableRow>
@@ -182,7 +193,7 @@ const EditUsers = () => {
               ))}
             </TableBody>
           </Table>
-        </div>
+        </TableContainer>
 
         {/* Edit User Dialog */}
         <Dialog open={editDialogOpen} onClose={() => setEditDialogOpen(false)}>

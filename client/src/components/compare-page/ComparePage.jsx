@@ -14,7 +14,6 @@ import CompareArrowsIcon from "@mui/icons-material/CompareArrows";
 import BarChartIcon from "@mui/icons-material/BarChart";
 import HighlightAltIcon from "@mui/icons-material/HighlightAlt";
 import { getAllMaterials } from "../../services/material-service";
-import NavbarPrivate from "../NavbarPrivate";
 import CollapsibleTable from "./CollapsibleTable";
 import Chart from "./Chart";
 import { CHART_TYPES } from "../../constants";
@@ -124,7 +123,6 @@ const ComparePage = () => {
 
   return (
     <>
-      <NavbarPrivate />
       <Container
         sx={{
           px: { xs: 1, sm: 2, md: 4 },

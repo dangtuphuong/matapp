@@ -49,7 +49,10 @@ const Login = () => {
       localStorage.setItem("username", response.data.firstName);
 
       // Store the user role
-      localStorage.setItem("user_role", response?.data?.role ?? ROLES.NORMAL_USER); // Store the user's role
+      localStorage.setItem(
+        "user_role",
+        response?.data?.role ?? ROLES.NORMAL_USER
+      ); // Store the user's role
 
       // Set the first_login flag if it’s not already set
       if (!localStorage.getItem("first_login")) {
@@ -58,7 +61,7 @@ const Login = () => {
 
       setLoading(false);
       setOpenSnackbar(true);
-      navigate("/home");
+      navigate("/");
     } catch (error) {
       setLoading(false);
 

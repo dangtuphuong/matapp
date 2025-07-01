@@ -19,7 +19,6 @@ import {
 } from "@mui/material";
 import ClearIcon from "@mui/icons-material/Clear";
 
-import NavbarPrivate from "./NavbarPrivate";
 import SmartSeachInfo from "./SmartSeachInfo";
 import PremiumInfo from "./PremiumInfo";
 
@@ -73,7 +72,7 @@ const FilterPropInfo = ({ material }) => {
 };
 
 const SmartSearch = () => {
-  const userRole = localStorage.getItem("user_role");
+  const userRole = localStorage.getItem("user_role") || "premium_user";
   const isAllowed = userRole === "admin" || userRole === "premium_user";
 
   const [isLoading, setLoading] = useState(false);
@@ -162,7 +161,6 @@ const SmartSearch = () => {
 
   return (
     <div className="smart-search-page-container">
-      <NavbarPrivate />
       <Typography align="center" variant="h4" sx={{ mt: 3, mb: 2 }}>
         Material Smart Search
       </Typography>

@@ -23,7 +23,6 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { RichTreeView } from "@mui/x-tree-view/RichTreeView";
 
 import { getCategories, getProperties } from "../services/material-service";
-import NavbarPrivate from "./NavbarPrivate";
 import MaterialsTable from "./MaterialsTable";
 
 const convertTreeData = (data) =>
@@ -227,7 +226,6 @@ const SearchPage = () => {
 
   return (
     <div className="search-page-container">
-      <NavbarPrivate />
       <Typography align="center" variant="h4" sx={{ mt: 3, mb: 2 }}>
         Material Search
       </Typography>

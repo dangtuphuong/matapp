@@ -1,24 +1,7 @@
 .edit-users-container {
-  padding: 40px 24px;
+  padding: 20px 24px;
   max-width: 1200px;
   margin: 0 auto;
-}
-
-.edit-users-title {
-  font-size: 2rem;
-  font-weight: 700;
-  text-align: center;
-  margin-bottom: 32px;
-  padding: 16px;
-  background: linear-gradient(to right, #000000, #444444);
-  color: #ffffff;
-  border-radius: 8px 8px 0 0;
-  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.15);
-  letter-spacing: 1px;
-}
-
-.table-header-row{
-  font-weight: bold;
 }
 
 .MuiTable-root {
@@ -33,10 +16,6 @@
   transition: background-color 0.2s ease;
 }
 
-.MuiTableRow-root:hover {
-  background-color: #f9f9f9;
-}
-
 .MuiTableCell-root {
   padding: 12px 16px;
   border-bottom: none;
@@ -44,9 +23,7 @@
 }
 
 .MuiTableHead .MuiTableCell-root {
-  background-color: #f0f0f0;
   font-weight: 600;
-  color: #333;
   border-top-left-radius: 6px;
   border-top-right-radius: 6px;
 }

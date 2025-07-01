@@ -27,7 +27,6 @@ import SearchIcon from "@mui/icons-material/Search";
 import TroubleshootIcon from "@mui/icons-material/Troubleshoot";
 import BarChart from "@mui/icons-material/BarChart";
 import FileUploadOutlinedIcon from "@mui/icons-material/FileUploadOutlined";
-import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 
 import { ROLES } from "../constants";
 
@@ -46,7 +45,7 @@ const Navbar = ({ onSetUser }) => {
   );
 
   const rawNavItems = [
-    { label: "Home", path: "/home", icon: <HomeOutlinedIcon /> },
+    { label: "Home", path: "/", icon: <HomeOutlinedIcon /> },
     { label: "Search", path: "/search", icon: <SearchIcon /> },
     {
       label: "Smart Search",
@@ -60,7 +59,6 @@ const Navbar = ({ onSetUser }) => {
       icon: <FileUploadOutlinedIcon />,
       adminOnly: true,
     },
-    { label: "About Us", path: "/aboutus", icon: <InfoOutlinedIcon /> },
   ];
 
   const navItems = rawNavItems.filter(
@@ -120,7 +118,7 @@ const Navbar = ({ onSetUser }) => {
           {/* Logo */}
           <Box
             component={Link}
-            to="/home"
+            to="/"
             className="navbar-logo"
             sx={{
               display: "flex",

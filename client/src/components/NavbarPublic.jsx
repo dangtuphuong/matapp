@@ -16,13 +16,18 @@ import {
 import MenuIcon from "@mui/icons-material/Menu";
 import HomeOutlinedIcon from "@mui/icons-material/HomeOutlined";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
+import SearchIcon from "@mui/icons-material/Search";
+import TroubleshootIcon from "@mui/icons-material/Troubleshoot";
+import BarChart from "@mui/icons-material/BarChart";
 import { Link, useLocation } from "react-router-dom";
 import logo from "../img/onlylogo.png";
 import "./styles/Navbar.css";
 
 const navItems = [
   { label: "Home", path: "/", icon: <HomeOutlinedIcon /> },
-  { label: "About Us", path: "/aboutus", icon: <InfoOutlinedIcon /> },
+  { label: "Search", path: "/search", icon: <SearchIcon /> },
+  { label: "Smart Search", path: "/smart-search", icon: <TroubleshootIcon /> },
+  { label: "Compare", path: "/compare-page", icon: <BarChart /> },
 ];
 
 const NavbarPublic = () => {

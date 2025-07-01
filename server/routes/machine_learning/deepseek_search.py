@@ -1,5 +1,6 @@
 from flask import Blueprint, jsonify, request
-from flask_jwt_extended import jwt_required
+
+# from flask_jwt_extended import jwt_required
 
 from services.machine_learning.deepseek_service import generate_mongodb_query
 from models.material_model import MaterialModel
@@ -9,7 +10,7 @@ deepseek_bp = Blueprint("deepseek_bp", __name__)
 
 
 @deepseek_bp.route("/deepseek_search", methods=["POST"])
-@jwt_required()
+# @jwt_required()
 def deepseek_search():
     try:
         # Validate request

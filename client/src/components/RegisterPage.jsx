@@ -103,7 +103,7 @@ const Register = () => {
       // Save token and navigate to home
       localStorage.setItem("access_token", response.data.access_token);
       setLoading(false);
-      navigate("/home");
+      navigate("/");
     } catch (error) {
       setLoading(false);
       if (error.response && error.response.status === 400) {

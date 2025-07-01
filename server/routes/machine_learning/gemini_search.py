@@ -1,5 +1,4 @@
 from flask import Blueprint, jsonify, request
-from flask_jwt_extended import jwt_required
 
 from services.machine_learning.gemini_service import generate_mongodb_query
 from models.material_model import MaterialModel
@@ -9,7 +8,6 @@ gemini_bp = Blueprint("gemini_bp", __name__)
 
 
 @gemini_bp.route("/gemini_search", methods=["POST"])
-@jwt_required()
 def gemini_search():
     try:
         # Validate request

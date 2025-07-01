@@ -16,7 +16,7 @@ load_dotenv()
 
 # ================= Gemini Configuration =================
 GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
-GEMINI_MODEL = "gemini-2.5-flash-preview-04-17"
+GEMINI_MODEL = "gemini-2.5-flash-preview-05-20"
 
 # ================= Load Example Data =================
 example_data = []

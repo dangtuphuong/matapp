@@ -1,13 +1,11 @@
 from flask import Blueprint, request, jsonify
-from flask_jwt_extended import jwt_required
 from models.material_model import MaterialModel
 
 material_bp = Blueprint("material_routes", __name__)
 
 
-# Route to fetch all materials, with JWT token check
+# Route to fetch all materials
 @material_bp.route("/materials", methods=["POST"])
-@jwt_required()
 def get_materials():
     try:
         data = request.get_json() or {}
@@ -40,9 +38,8 @@ def get_materials():
         return jsonify({"error": "Server error"}), 500
 
 
-# Route to fetch a material by matGUID, with JWT token check
+# Route to fetch a material by matGUID
 @material_bp.route("/materials/<mat_guid>", methods=["GET"])
-@jwt_required()
 def get_material_by_guid(mat_guid):
     try:
         material = MaterialModel.get_material_by_guid(mat_guid)

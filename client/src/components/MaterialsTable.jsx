@@ -13,6 +13,7 @@ import {
   Tooltip,
   Modal,
   Paper,
+  TableContainer,
 } from "@mui/material";
 import BubbleChartIcon from "@mui/icons-material/BubbleChart";
 import BubbleChart from "./BubbleChart";
@@ -118,21 +119,25 @@ const MaterialsTable = ({ searchCategories, searchProperties }) => {
         {/* Bubble Chart Button */}
         <Box sx={{ h: 40, w: 40 }}>
           <Tooltip title="Visualize data in Bubble Chart">
-            <IconButton
-              sx={{ "&:hover": { color: "primary.main" } }}
-              size="small"
-              onClick={() => setOpenChart(true)}
-              disabled={materials.length === 0}
-            >
-              <BubbleChartIcon />
-            </IconButton>
+            <span>
+              <IconButton
+                sx={{ "&:hover": { color: "primary.main" } }}
+                size="small"
+                onClick={() => setOpenChart(true)}
+                disabled={materials.length === 0}
+              >
+                <BubbleChartIcon />
+              </IconButton>
+            </span>
           </Tooltip>
         </Box>
       </Box>
-      <Box sx={{ overflowX: "auto", width: "100%" }}>
-        <Table
-          sx={{ border: "1px solid #ccc", tableLayout: "fixed", width: "100%" }}
-        >
+
+      <TableContainer
+        component={Paper}
+        sx={{ overflowX: "auto", width: "100%" }}
+      >
+        <Table sx={{ width: "100%" }}>
           <TableHead>
             <TableRow>
               <TableCell sx={{ ...headerStyle, flex: 1 }}>Name</TableCell>
@@ -159,7 +164,7 @@ const MaterialsTable = ({ searchCategories, searchProperties }) => {
                 </TableRow>
               ))
             ) : materials?.length > 0 ? (
-              materials?.map((material) => (
+              materials?.map((material, index) => (
                 <TableRow
                   key={material?._id}
                   onClick={() => onRowClick(material?.matGUID)}
@@ -168,10 +173,13 @@ const MaterialsTable = ({ searchCategories, searchProperties }) => {
                   <TableCell
                     sx={{
                       flex: 1,
-                      maxWidth: "10px",
+                      minWidth: "200px",
                       overflow: "hidden",
                       textOverflow: "ellipsis",
                       whiteSpace: "normal",
+                      ...(index === materials?.length - 1
+                        ? { border: "none" }
+                        : {}),
                     }}
                   >
                     {material?.["Material Name"]}
@@ -184,13 +192,23 @@ const MaterialsTable = ({ searchCategories, searchProperties }) => {
                       overflow: "hidden",
                       textOverflow: "ellipsis",
                       whiteSpace: "normal",
+                      ...(index === materials?.length - 1
+                        ? { border: "none" }
+                        : {}),
                     }}
                   >
                     {material?.Categories?.join(", ")}
                   </TableCell>
 
                   {!!propsCol?.length && (
-                    <TableCell sx={{ width: "20%" }}>
+                    <TableCell
+                      sx={{
+                        width: "20%",
+                        ...(index === materials?.length - 1
+                          ? { border: "none" }
+                          : {}),
+                      }}
+                    >
                       {propsCol?.map(({ group, property, unit }) => {
                         const items =
                           material?.["Properties"]?.[group]?.[property];
@@ -218,7 +236,7 @@ const MaterialsTable = ({ searchCategories, searchProperties }) => {
             )}
           </TableBody>
         </Table>
-      </Box>
+      </TableContainer>
 
       {totalPages > 0 && (
         <Pagination
