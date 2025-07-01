@@ -193,7 +193,11 @@ const SmartSearch = () => {
                   onChange={(e) => setModel(e?.target?.value)}
                 >
                   {options?.map((option) => (
-                    <MenuItem key={option} value={option}>
+                    <MenuItem
+                      key={option}
+                      disabled={option === MODELS.LLM}
+                      value={option}
+                    >
                       {MODELS_LABELS[option]}
                     </MenuItem>
                   ))}
