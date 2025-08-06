@@ -10,7 +10,7 @@ from routes.setting_routes import setting_bp
 from routes.upload.material import upload_bp
 
 from routes.machine_learning.vectorSearch import vt_bp
-from routes.machine_learning.llmSearch import ml_bp
+from routes.machine_learning.openai_search import openai_bp
 from routes.machine_learning.deepseek_search import deepseek_bp
 from routes.machine_learning.gemini_search import gemini_bp
 
@@ -35,7 +35,7 @@ def create_app():
     app.register_blueprint(material_bp, url_prefix="/api")
     app.register_blueprint(setting_bp, url_prefix="/api")
     app.register_blueprint(vt_bp, url_prefix="/api")
-    app.register_blueprint(ml_bp, url_prefix="/api")
+    app.register_blueprint(openai_bp, url_prefix="/api")
     app.register_blueprint(category_bp, url_prefix="/api")
     app.register_blueprint(property_bp, url_prefix="/api")
     app.register_blueprint(upload_bp, url_prefix="/api")

@@ -5,16 +5,16 @@ const API_URL = "/api";
 export const vectorSearch = async (query, limit, skip) => {
   const token = localStorage.getItem("access_token");
   return await axios.post(
-    `${API_URL}/ML/vector_search`,
+    `${API_URL}/vector_search`,
     { query, limit, skip },
     { headers: { Authorization: `Bearer ${token}` } }
   );
 };
 
-export const llmSearch = async (query, limit, skip) => {
+export const openaiSearch = async (query) => {
   const token = localStorage.getItem("access_token");
   return await axios.post(
-    `${API_URL}/ML/llm_search`,
+    `${API_URL}/openai_search`,
     { query },
     { headers: { Authorization: `Bearer ${token}` } }
   );

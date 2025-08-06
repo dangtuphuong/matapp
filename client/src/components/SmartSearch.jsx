@@ -24,7 +24,7 @@ import PremiumInfo from "./PremiumInfo";
 
 import {
   vectorSearch,
-  llmSearch,
+  openaiSearch,
   deepseekSearch,
   geminiSearch,
 } from "../services/smart-search-service";
@@ -112,7 +112,7 @@ const SmartSearch = () => {
           response?.data?.map((i) => ({ ...(i ?? {}), ...(i?.material ?? {}) }))
         );
       } else if (model === MODELS.LLM) {
-        const response = await llmSearch(query);
+        const response = await openaiSearch(query);
         setSearchResult(response?.data?.result || []);
       } else if (model === MODELS.DEEPSEEK) {
         const response = await deepseekSearch(query);
@@ -193,11 +193,7 @@ const SmartSearch = () => {
                   onChange={(e) => setModel(e?.target?.value)}
                 >
                   {options?.map((option) => (
-                    <MenuItem
-                      key={option}
-                      disabled={option === MODELS.LLM}
-                      value={option}
-                    >
+                    <MenuItem key={option} value={option}>
                       {MODELS_LABELS[option]}
                     </MenuItem>
                   ))}
