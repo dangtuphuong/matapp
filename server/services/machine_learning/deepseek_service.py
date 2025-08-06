@@ -1,8 +1,7 @@
 import os
 import json
 from dotenv import load_dotenv
-from langchain_openai import ChatOpenAI
-from langchain_google_genai import GoogleGenerativeAIEmbeddings
+from langchain_openai import OpenAIEmbeddings, ChatOpenAI
 from langchain_core.prompts import (
     ChatPromptTemplate,
     SystemMessagePromptTemplate,
@@ -40,20 +39,20 @@ example_selector = None
 few_shot_prompt = None
 
 
-GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
+def require_api_key():
+    openai_api_key = os.getenv("OPENAI_API_KEY")
+    if not openai_api_key:
+        raise ValueError(
+            "Embedding failed: OPENAI API Key is missing. DeepSeek currently does not support embedding."
+        )
+    return openai_api_key
 
 
 def get_embeddings():
     global embeddings
     if embeddings is None:
-        # Check if the Google API key is missing
-        if GOOGLE_API_KEY is None:
-            raise ValueError(
-                "Embedding failed: Google API Key is missing. DeepSeek currently does not support embedding."
-            )
-
-        embeddings = GoogleGenerativeAIEmbeddings(
-            model="models/embedding-001", google_api_key=GOOGLE_API_KEY
+        embeddings = OpenAIEmbeddings(
+            model="text-embedding-3-small", openai_api_key=require_api_key()
         )
     return embeddings
 
