@@ -20,7 +20,7 @@ const PRIMARY_COLOR = "#338FCC";
 
 const itemStyle = {
   display: "flex",
-  alignItems: "flex-end",
+  alignItems: "center",
   marginBottom: 1,
 };
 
@@ -111,18 +111,14 @@ const PublicHome = () => {
           <Grid size={6}>
             <Card sx={cardStyle}>
               <CardContent>
-                <Typography variant="h5" sx={itemStyle}>
-                  <TroubleshootIcon
-                    fontSize="large"
-                    color="primary"
-                    sx={{ marginRight: 1 }}
-                  />
+                <Typography variant="h6" sx={itemStyle}>
+                  <TroubleshootIcon color="primary" sx={{ marginRight: 1 }} />
                   <span>Smart AI-Powered Search</span>
                 </Typography>
-                <Typography variant="body1" color="textSecondary">
+                <Typography variant="body2" color="textSecondary">
                   Use advanced vector search and large language models (LLMs) to
-                  find materials with natural language queries without the need
-                  for complex filters.
+                  find materials through natural language queries, eliminating
+                  the need for complex filters or manual search parameters.
                 </Typography>
               </CardContent>
             </Card>
@@ -131,15 +127,11 @@ const PublicHome = () => {
           <Grid size={6}>
             <Card sx={cardStyle}>
               <CardContent>
-                <Typography variant="h5" sx={itemStyle}>
-                  <SearchIcon
-                    fontSize="large"
-                    color="primary"
-                    sx={{ marginRight: 1 }}
-                  />
+                <Typography variant="h6" sx={itemStyle}>
+                  <SearchIcon color="primary" sx={{ marginRight: 1 }} />
                   <span>Traditional Search</span>
                 </Typography>
-                <Typography variant="body1" color="textSecondary">
+                <Typography variant="body2" color="textSecondary">
                   Find materials quickly using filters based on categories and
                   multiple properties, including text and range values. Browse
                   thousands of materials with precision and control.
@@ -151,15 +143,11 @@ const PublicHome = () => {
           <Grid size={6}>
             <Card sx={cardStyle}>
               <CardContent>
-                <Typography variant="h5" sx={itemStyle}>
-                  <DescriptionIcon
-                    fontSize="large"
-                    color="primary"
-                    sx={{ marginRight: 1 }}
-                  />
+                <Typography variant="h6" sx={itemStyle}>
+                  <DescriptionIcon color="primary" sx={{ marginRight: 1 }} />
                   <span>View & Download Material Details</span>
                 </Typography>
-                <Typography variant="body1" color="textSecondary">
+                <Typography variant="body2" color="textSecondary">
                   Explore comprehensive material profiles, including categories,
                   properties, and metadata. Easily download material details as
                   a PDF for offline reference and reporting.
@@ -171,15 +159,11 @@ const PublicHome = () => {
           <Grid size={6}>
             <Card sx={cardStyle}>
               <CardContent>
-                <Typography variant="h5" sx={itemStyle}>
-                  <RadarIcon
-                    fontSize="large"
-                    color="primary"
-                    sx={{ marginRight: 1 }}
-                  />
+                <Typography variant="h6" sx={itemStyle}>
+                  <RadarIcon color="primary" sx={{ marginRight: 1 }} />
                   <span>Visualize Materials with Charts</span>
                 </Typography>
-                <Typography variant="body1" color="textSecondary">
+                <Typography variant="body2" color="textSecondary">
                   Compare and explore materials using interactive visualizations
                   including radar charts, bar charts, and bubble charts. Analyze
                   material properties and trends at a glance.
@@ -190,14 +174,14 @@ const PublicHome = () => {
         </Grid>
 
         {/* Footer */}
-        <Typography
+        {/* <Typography
           variant="body2"
           color="textSecondary"
           align="center"
           sx={{ mt: 6, padding: 2 }}
         >
           2025 Material Search App
-        </Typography>
+        </Typography> */}
       </Container>
     </>
   );
