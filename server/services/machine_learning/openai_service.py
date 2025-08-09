@@ -40,7 +40,7 @@ def get_llm():
     if llm is None:
         # gpt-4.1-nano, gpt-4o-mini or gpt-4.1-mini
         llm = ChatOpenAI(
-            temperature=0, model="gpt-4o-mini", openai_api_key=require_api_key()
+            temperature=0, model="gpt-5-nano", openai_api_key=require_api_key()
         )
     return llm
 
