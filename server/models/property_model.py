@@ -1,7 +1,9 @@
-from extensions import mongo
+from extensions import mongo, redis_client
 from datetime import datetime, timezone
 from bson import ObjectId
 from pymongo import UpdateOne
+import pickle
+import redis
 
 from utils.upload import parse_value_range, extract_unit
 
@@ -9,14 +11,34 @@ from utils.upload import parse_value_range, extract_unit
 class PropertyModel:
     @staticmethod
     def get_properties():
-        properties_collection = mongo.db["property_filters"]
+        # Try to get from Redis cache first
+        if redis_client:
+            try:
+                cache_key = "property_filters:all"
+                cached_properties = redis_client.get(cache_key)
 
+                if cached_properties:
+                    return pickle.loads(cached_properties)
+            except (redis.RedisError, pickle.PickleError) as e:
+                print(f"Redis error in get_properties: {str(e)}")
+
+        # If not in cache or Redis is unavailable, fetch from MongoDB
+        properties_collection = mongo.db["property_filters"]
         properties = properties_collection.find({})
 
         properties_list = []
         for property in properties:
             property["_id"] = str(property["_id"])
             properties_list.append(property)
+
+        # Cache the result if Redis is available
+        if redis_client:
+            try:
+                redis_client.setex(
+                    "property_filters:all", 86400, pickle.dumps(properties_list)
+                )
+            except redis.RedisError as e:
+                print(f"Redis error while caching properties: {str(e)}")
 
         return properties_list
 
