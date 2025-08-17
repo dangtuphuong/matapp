@@ -4,6 +4,7 @@ Flask-PyMongo
 Flask-JWT-Extended
 flask-bcrypt
 python-dotenv
+redis
 openai
 faiss-cpu
 langchain

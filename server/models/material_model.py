@@ -1,6 +1,8 @@
-from extensions import mongo
+from extensions import mongo, redis_client
 import json
 from datetime import datetime, timezone
+import pickle
+import redis
 from bson import ObjectId
 from services.upload.parse_service import parse_properties, flatten_and_concatenate
 from services.search.query_service import build_range_conditions
@@ -14,6 +16,17 @@ class MaterialModel:
     def get_all_materials(
         page=1, limit=10, searchTerm="", searchCategories=None, searchProperties=None
     ):
+        # Create a cache key based on the query parameters
+        if redis_client:
+            try:
+                cache_key = f"materials:page={page}:limit={limit}:search={searchTerm}:cats={str(searchCategories)}:props={str(searchProperties)}"
+                cached_result = redis_client.get(cache_key)
+
+                if cached_result:
+                    return pickle.loads(cached_result)
+            except (redis.RedisError, pickle.PickleError) as e:
+                print(f"Redis error in get_all_materials: {str(e)}")
+
         materials_collection = mongo.db["materials"]
         searchCategories = searchCategories or []
         searchProperties = searchProperties or []
@@ -91,16 +104,34 @@ class MaterialModel:
             materials_list.append(material)
 
         total_count = materials_collection.count_documents(query)
-        return materials_list, total_count
+        result = (materials_list, total_count)
+
+        # Cache the result for 1 day
+        redis_client.setex(cache_key, 86400, pickle.dumps(result))
+
+        return result
 
     @staticmethod
     def get_material_by_guid(mat_guid):
-        # Fetch a single material by its matGUID
+        # Try to get from Redis cache first if available
+        if redis_client:
+            try:
+                cache_key = f"material:{mat_guid}"
+                cached_material = redis_client.get(cache_key)
+
+                if cached_material:
+                    return pickle.loads(cached_material)
+            except (redis.RedisError, pickle.PickleError) as e:
+                print(f"Redis error in get_material_by_guid: {str(e)}")
+
+        # If not in cache, fetch from MongoDB
         materials_collection = mongo.db["materials"]
         material = materials_collection.find_one({"matGUID": mat_guid})
 
         if material:
             material["_id"] = str(material["_id"])
+            # Cache the result in Redis for 1 day
+            redis_client.setex(cache_key, 86400, pickle.dumps(material))
 
         return material
 
@@ -246,6 +277,10 @@ class MaterialModel:
 
                 # Insert into MongoDB
                 inserted = materials_collection.insert_one(document)
+
+                # Cache the new material in Redis
+                cache_key = f"material:{mat_guid_str}"
+                redis_client.setex(cache_key, 3600, pickle.dumps(document))
 
                 object_for_embedding = {**json_data}
 
