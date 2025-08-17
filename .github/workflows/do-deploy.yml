@@ -74,12 +74,36 @@ jobs:
             # Pull latest image
             docker pull ${{ env.IMAGE_NAME }}:latest
 
-            # Stop and remove existing container if exists
-            docker stop matapp || true
-            docker rm matapp || true
+            # Create Docker network if it doesn't exist
+            docker network create matapp-network || true
 
-            # Run new container with env file
-            docker run -d --env-file /root/app/.env --name matapp -p 8000:8000 ${{ env.IMAGE_NAME }}:latest
+            # Stop and remove existing containers if they exist
+            docker stop matapp redis || true
+            docker rm matapp redis || true
+
+            # Create Redis data directory if it doesn't exist
+            mkdir -p /root/redis-data
+
+            # Start Redis container with resource constraints
+            docker run -d \
+              --name redis \
+              --network matapp-network \
+              --memory=256m \
+              --memory-swap=256m \
+              -p 127.0.0.1:6379:6379 \
+              -v /root/redis-data:/data \
+              redis:latest redis-server \
+                --maxmemory 200mb \
+                --maxmemory-policy allkeys-lru \
+                --appendonly yes
+
+            # Run new application container with env file
+            docker run -d \
+              --env-file /root/app/.env \
+              --name matapp \
+              --network matapp-network \
+              -p 8000:8000 \
+              ${{ env.IMAGE_NAME }}:latest
 
             # Cleanup dangling and unused images to free space
             docker system prune -f
