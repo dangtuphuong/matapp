@@ -278,10 +278,6 @@ class MaterialModel:
                 # Insert into MongoDB
                 inserted = materials_collection.insert_one(document)
 
-                # Cache the new material in Redis
-                cache_key = f"material:{mat_guid_str}"
-                redis_client.setex(cache_key, 3600, pickle.dumps(document))
-
                 object_for_embedding = {**json_data}
 
                 text_object = flatten_and_concatenate(object_for_embedding, False)
