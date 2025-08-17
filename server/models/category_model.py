@@ -1,19 +1,41 @@
-from extensions import mongo
+from extensions import mongo, redis_client
 from datetime import datetime, timezone
 from pymongo import UpdateOne
+import pickle
+import redis
 
 
 class CategoryModel:
     @staticmethod
     def get_categories():
-        categories_collection = mongo.db["categories"]
+        # Try to get from Redis cache first
+        if redis_client:
+            try:
+                cache_key = "categories:all"
+                cached_categories = redis_client.get(cache_key)
 
+                if cached_categories:
+                    return pickle.loads(cached_categories)
+            except (redis.RedisError, pickle.PickleError) as e:
+                print(f"Redis error in get_categories: {str(e)}")
+
+        # If not in cache or Redis is unavailable, fetch from MongoDB
+        categories_collection = mongo.db["categories"]
         categories = categories_collection.find({})
 
         categories_list = []
         for category in categories:
             category["_id"] = str(category["_id"])
             categories_list.append(category)
+
+        # Cache the result if Redis is available
+        if redis_client:
+            try:
+                redis_client.setex(
+                    "categories:all", 86400, pickle.dumps(categories_list)
+                )
+            except redis.RedisError as e:
+                print(f"Redis error while caching categories: {str(e)}")
 
         return categories_list
 
@@ -69,6 +91,14 @@ class CategoryModel:
 
         # Execute bulk update
         result = categories_collection.bulk_write(updates)
+
+        # Invalidate the cache after successful update
+        if redis_client:
+            try:
+                redis_client.delete("categories:all")
+            except redis.RedisError as e:
+                print(f"Redis error while invalidating categories cache: {str(e)}")
+
         return {
             "status": "success",
             "added_to_other": missing_categories,
