@@ -107,7 +107,11 @@ class MaterialModel:
         result = (materials_list, total_count)
 
         # Cache the result for 1 day
-        redis_client.setex(cache_key, 86400, pickle.dumps(result))
+        if redis_client:
+            try:
+                redis_client.setex(cache_key, 86400, pickle.dumps(result))
+            except (redis.RedisError, pickle.PickleError) as e:
+                print(f"Redis error in get_all_materials (setex): {str(e)}")
 
         return result
 
@@ -131,7 +135,11 @@ class MaterialModel:
         if material:
             material["_id"] = str(material["_id"])
             # Cache the result in Redis for 1 day
-            redis_client.setex(cache_key, 86400, pickle.dumps(material))
+            if redis_client:
+                try:
+                    redis_client.setex(cache_key, 86400, pickle.dumps(material))
+                except (redis.RedisError, pickle.PickleError) as e:
+                    print(f"Redis error in get_material_by_guid (setex): {str(e)}")
 
         return material
 
