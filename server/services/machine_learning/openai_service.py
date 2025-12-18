@@ -5,7 +5,10 @@ from langchain_openai import OpenAIEmbeddings, ChatOpenAI
 from langchain_community.vectorstores import FAISS
 from langchain_core.prompts import ChatPromptTemplate, FewShotChatMessagePromptTemplate
 from langchain_core.example_selectors import SemanticSimilarityExampleSelector
-from langchain.prompts import SystemMessagePromptTemplate, HumanMessagePromptTemplate
+from langchain_core.prompts import (
+    SystemMessagePromptTemplate,
+    HumanMessagePromptTemplate,
+)
 
 # ================= Load Example Data =================
 example_data = []
